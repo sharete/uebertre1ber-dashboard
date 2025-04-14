@@ -5,7 +5,6 @@ const { DateTime } = require("luxon");
 const FACEIT_API_KEY = process.env.FACEIT_API_KEY;
 const PLAYERS_FILE = "players.txt";
 const INDEX_FILE = "index.html";
-const TABLE_PLACEHOLDER = "<!-- INSERT_ELO_TABLE_HERE -->";
 
 async function fetchPlayerData(playerId) {
   const headers = { Authorization: `Bearer ${FACEIT_API_KEY}` };
@@ -37,6 +36,11 @@ async function fetchPlayerData(playerId) {
 }
 
 (async () => {
+  if (!FACEIT_API_KEY) {
+    console.error("❌ FACEIT_API_KEY fehlt!");
+    process.exit(1);
+  }
+
   const lines = fs.readFileSync(PLAYERS_FILE, "utf-8").trim().split("\n");
   const results = [];
 
@@ -59,77 +63,24 @@ async function fetchPlayerData(playerId) {
 
   const updatedTime = DateTime.now().setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm");
 
-  const html = `
-<div class="table-wrapper">
-  <table class="alt sortable" id="elo-table">
-    <thead>
-      <tr>
-        <th data-sort="string">Nickname</th>
-        <th data-sort="number">ELO</th>
-        <th data-sort="number">Level</th>
-        <th data-sort="number">Winrate</th>
-        <th data-sort="number">Matches</th>
-        <th data-sort="date">Letztes Match</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${results
-        .map(
-          ({ nickname, elo, level, winrate, matches, lastMatch, faceitUrl }) => `
-          <tr>
-            <td><a href="${faceitUrl}" target="_blank">${nickname}</a></td>
-            <td>${elo}</td>
-            <td><img src="icons/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24" title="Level ${level}"></td>
-            <td>${winrate}</td>
-            <td>${matches}</td>
-            <td>${lastMatch}</td>
-          </tr>`
-        )
-        .join("\n")}
-    </tbody>
-  </table>
-</div>
-<p style="text-align:right; font-size: 0.9em;">Zuletzt aktualisiert: ${updatedTime}</p>
-
-<script>
-  document.querySelectorAll("th").forEach((header, columnIndex) => {
-    header.style.cursor = "pointer";
-    header.addEventListener("click", () => {
-      const table = header.closest("table");
-      const tbody = table.querySelector("tbody");
-      const rows = Array.from(tbody.querySelectorAll("tr"));
-      const type = header.dataset.sort;
-      const asc = !header.classList.contains("asc");
-
-      rows.sort((a, b) => {
-        const getText = (row) => row.children[columnIndex].textContent.trim();
-        let aVal = getText(a);
-        let bVal = getText(b);
-
-        if (type === "number") {
-          aVal = parseFloat(aVal.replace("%", "")) || 0;
-          bVal = parseFloat(bVal.replace("%", "")) || 0;
-        } else if (type === "date") {
-          aVal = new Date(aVal);
-          bVal = new Date(bVal);
-        }
-
-        return asc ? aVal > bVal ? 1 : -1 : aVal < bVal ? 1 : -1;
-      });
-
-      table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
-      header.classList.add(asc ? "asc" : "desc");
-      rows.forEach(row => tbody.appendChild(row));
-    });
-  });
-</script>
-<style>
-  th.asc::after { content: " ▲"; font-size: 0.8em; }
-  th.desc::after { content: " ▼"; font-size: 0.8em; }
-</style>
-`.trim();
+  const tableBody = results
+    .map(
+      ({ nickname, elo, level, winrate, matches, lastMatch, faceitUrl }) => `
+        <tr>
+          <td class="p-2"><a href="${faceitUrl}" target="_blank" class="underline">${nickname}</a></td>
+          <td class="p-2">${elo}</td>
+          <td class="p-2"><img src="icons/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24" title="Level ${level}"></td>
+          <td class="p-2">${winrate}</td>
+          <td class="p-2">${matches}</td>
+          <td class="p-2">${lastMatch}</td>
+        </tr>`
+    )
+    .join("\n");
 
   const indexHtml = fs.readFileSync(INDEX_FILE, "utf-8");
-  const updated = indexHtml.replace(/<div class="table-wrapper">[\s\S]*?<\/div>(\n<p.*?<\/p>)?/, html);
-  fs.writeFileSync(INDEX_FILE, updated);
+  const updatedHtml = indexHtml
+    .replace("<!-- INSERT_ELO_TABLE_HERE -->", tableBody)
+    .replace("<!-- INSERT_LAST_UPDATED -->", updatedTime);
+
+  fs.writeFileSync(INDEX_FILE, updatedHtml);
 })();
