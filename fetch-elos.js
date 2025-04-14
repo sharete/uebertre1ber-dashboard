@@ -1,5 +1,5 @@
 const fs = require("fs");
-const puppeteer = require("puppeteer");
+const fetch = require("node-fetch");
 
 const FACEIT_API_KEY = process.env.FACEIT_API_KEY;
 const PLAYERS_FILE = "players.txt";
@@ -7,43 +7,21 @@ const INDEX_FILE = "index.html";
 const TABLE_PLACEHOLDER = "<!-- INSERT_ELO_TABLE_HERE -->";
 
 async function fetchPlayerData(playerId) {
-  const browser = await puppeteer.launch({
-    headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"]
-  });
+  const headers = { Authorization: `Bearer ${FACEIT_API_KEY}` };
 
-  const page = await browser.newPage();
-  await page.goto("https://example.com");
+  const playerRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}`, { headers });
+  const playerJson = await playerRes.json();
 
-  const data = await page.evaluate(async (playerId, apiKey) => {
-    const headers = {
-      Authorization: `Bearer ${apiKey}`
-    };
+  const matchRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/history?game=cs2&limit=1`, { headers });
+  const matchJson = await matchRes.json();
 
-    try {
-      const playerRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}`, { headers });
-      const playerJson = await playerRes.json();
+  const elo = playerJson.games?.cs2?.faceit_elo ?? null;
+  const nickname = playerJson.nickname;
 
-      const matchRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/history?game=cs2&limit=1`, { headers });
-      const matchJson = await matchRes.json();
-
-      return {
-        nickname: playerJson.nickname,
-        elo: playerJson.games?.cs2?.faceit_elo ?? null,
-        lastMatch: matchJson.items?.[0]?.started_at ?? null
-      };
-    } catch (error) {
-      return { error: error.message };
-    }
-  }, playerId, FACEIT_API_KEY);
-
-  await browser.close();
-
-  if (data.error) throw new Error(data.error);
-
-  const lastMatchFormatted = data.lastMatch
+  const lastMatchTimestamp = matchJson.items?.[0]?.started_at;
+  const lastMatchFormatted = lastMatchTimestamp
     ? new Date(
-        new Date(data.lastMatch * 1000).toLocaleString("en-US", {
+        new Date(lastMatchTimestamp * 1000).toLocaleString("en-US", {
           timeZone: "Europe/Berlin"
         })
       )
@@ -52,11 +30,7 @@ async function fetchPlayerData(playerId) {
         .slice(0, 16)
     : "—";
 
-  return {
-    nickname: data.nickname,
-    elo: data.elo,
-    lastMatch: lastMatchFormatted
-  };
+  return { nickname, elo, lastMatch: lastMatchFormatted };
 }
 
 (async () => {
@@ -75,10 +49,9 @@ async function fetchPlayerData(playerId) {
 
   results.sort((a, b) => b.elo - a.elo);
 
-  // Debug: Zeige sha89 Zeit in Console
   const debugSha = results.find(r => r.nickname === "sha89");
   if (debugSha) {
-    console.log(`DEBUG: sha89 hat ${debugSha.elo} ELO | Letztes Match: ${debugSha.lastMatch}`);
+    console.log(`✅ sha89 hat ${debugSha.elo} ELO | Letztes Match: ${debugSha.lastMatch}`);
   }
 
   const html = `
@@ -99,6 +72,5 @@ async function fetchPlayerData(playerId) {
 
   const indexHtml = fs.readFileSync(INDEX_FILE, "utf-8");
   const updated = indexHtml.replace(TABLE_PLACEHOLDER, `${TABLE_PLACEHOLDER}\n${html}`);
-
   fs.writeFileSync(INDEX_FILE, updated);
 })();
