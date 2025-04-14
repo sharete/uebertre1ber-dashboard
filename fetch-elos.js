@@ -17,7 +17,6 @@ const RANGE_FILES = {
   latest: "elo-latest.json"
 };
 
-// 🛠 Erstelle data-Ordner, wenn er fehlt
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR);
 }
@@ -31,10 +30,10 @@ function readJson(file) {
 }
 
 function writeJson(file, data) {
-    const fullPath = path.join(DATA_DIR, file);
-    fs.writeFileSync(fullPath, JSON.stringify(data, null, 2));
-    console.log(`✅ Datei geschrieben: ${file} (${data.length} Einträge)`);
-  }
+  const fullPath = path.join(DATA_DIR, file);
+  fs.writeFileSync(fullPath, JSON.stringify(data, null, 2));
+  console.log(`✅ Datei geschrieben: ${file} (${data.length} Einträge)`);
+}
 
 async function fetchPlayerData(playerId) {
   const headers = { Authorization: `Bearer ${FACEIT_API_KEY}` };
@@ -89,10 +88,12 @@ async function fetchPlayerData(playerId) {
   }
 
   results.sort((a, b) => b.elo - a.elo);
-
   const updatedTime = DateTime.now().setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm");
 
-  const comparisonRange = "daily";
+  const latestSnapshot = results.map(({ nickname, elo }) => ({ nickname, elo }));
+  writeJson(RANGE_FILES.latest, latestSnapshot);
+
+  const comparisonRange = "daily"; // Standardmäßig für Anzeige verwenden
   const previousSnapshot = readJson(RANGE_FILES[comparisonRange]);
 
   function getDiff(nickname, currentElo) {
@@ -101,24 +102,24 @@ async function fetchPlayerData(playerId) {
   }
 
   const tableBody = results
-  .map(({ nickname, elo, level, winrate, matches, lastMatch, faceitUrl }) => {
-    const diff = getDiff(nickname, elo);
-    const diffHtml = diff === null
-      ? "-"
-      : `<span class="${diff >= 0 ? 'text-green-400' : 'text-red-400'} text-xs font-semibold">(${diff >= 0 ? '+' : ''}${diff})</span>`;
+    .map(({ nickname, elo, level, winrate, matches, lastMatch, faceitUrl }) => {
+      const diff = getDiff(nickname, elo);
+      const diffHtml = diff === null
+        ? "-"
+        : `<span class="${diff >= 0 ? 'text-green-400' : 'text-red-400'} text-xs font-semibold">(${diff >= 0 ? '+' : ''}${diff})</span>`;
 
-    return `
-      <tr>
-        <td class="p-2"><a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a></td>
-        <td class="p-2">${elo}</td>
-        <td class="p-2">${diffHtml}</td>
-        <td class="p-2"><img src="icons/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24" title="Level ${level}"></td>
-        <td class="p-2">${winrate}</td>
-        <td class="p-2">${matches}</td>
-        <td class="p-2">${lastMatch}</td>
-      </tr>`;
-  })
-  .join("\n");
+      return `
+        <tr>
+          <td class="p-2"><a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a></td>
+          <td class="p-2">${elo}</td>
+          <td class="p-2">${diffHtml}</td>
+          <td class="p-2"><img src="icons/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24" title="Level ${level}"></td>
+          <td class="p-2">${winrate}</td>
+          <td class="p-2">${matches}</td>
+          <td class="p-2">${lastMatch}</td>
+        </tr>`;
+    })
+    .join("\n");
 
   const templateHtml = fs.readFileSync(TEMPLATE_FILE, "utf-8");
   const updatedHtml = templateHtml
@@ -128,32 +129,28 @@ async function fetchPlayerData(playerId) {
   fs.writeFileSync(OUTPUT_FILE, updatedHtml);
   console.log(`✅ Dashboard aktualisiert: ${OUTPUT_FILE}`);
 
-  // 📦 Schreibe immer elo-latest.json
-  const latestSnapshot = results.map(({ nickname, elo }) => ({ nickname, elo }));
-  writeJson(RANGE_FILES.latest, latestSnapshot);
-
-  // 📆 Nur einmal pro Tag elo-daily.json aktualisieren
-  const metaFile = path.join(DATA_DIR, "elo-daily-meta.json");
   const today = DateTime.now().toISODate();
-  let lastUpdated = null;
 
-  try {
-    const meta = JSON.parse(fs.readFileSync(metaFile, "utf-8"));
-    lastUpdated = meta.lastUpdated;
-  } catch {
-    lastUpdated = null;
-  }
+  ["daily", "weekly", "monthly", "yearly"].forEach(range => {
+    const metaFile = path.join(DATA_DIR, `elo-${range}-meta.json`);
+    let lastUpdated = null;
+    try {
+      const meta = JSON.parse(fs.readFileSync(metaFile, "utf-8"));
+      lastUpdated = meta.lastUpdated;
+    } catch {
+      lastUpdated = null;
+    }
 
-  if (lastUpdated !== today) {
-    writeJson(RANGE_FILES.daily, latestSnapshot);
-    fs.writeFileSync(metaFile, JSON.stringify({ lastUpdated: today }, null, 2));
-    console.log("✅ elo-daily.json wurde aktualisiert.");
-  } else {
-    console.log("ℹ️ elo-daily.json ist bereits aktuell.");
-  }
-    console.log("📊 Anzahl Spieler:", results.length);
-    console.log("📂 Arbeitsverzeichnis:", __dirname);
-    console.log("📝 Ziel-Datei:", path.join(DATA_DIR, RANGE_FILES.latest));
+    if (lastUpdated !== today) {
+      writeJson(RANGE_FILES[range], latestSnapshot);
+      fs.writeFileSync(metaFile, JSON.stringify({ lastUpdated: today }, null, 2));
+      console.log(`✅ ${RANGE_FILES[range]} wurde aktualisiert.`);
+    } else {
+      console.log(`ℹ️ ${RANGE_FILES[range]} ist bereits aktuell.`);
+    }
+  });
+
+  console.log("📊 Anzahl Spieler:", results.length);
+  console.log("📂 Arbeitsverzeichnis:", __dirname);
+  console.log("📝 Ziel-Datei:", path.join(DATA_DIR, RANGE_FILES.latest));
 })();
-
-
