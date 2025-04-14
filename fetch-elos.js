@@ -4,6 +4,7 @@ const puppeteer = require("puppeteer");
 const FACEIT_API_KEY = process.env.FACEIT_API_KEY;
 const PLAYERS_FILE = "players.txt";
 const INDEX_FILE = "index.html";
+const TABLE_PLACEHOLDER = "<!-- INSERT_ELO_TABLE_HERE -->";
 
 async function fetchPlayerData(playerId) {
   const browser = await puppeteer.launch({
@@ -74,6 +75,12 @@ async function fetchPlayerData(playerId) {
 
   results.sort((a, b) => b.elo - a.elo);
 
+  // Debug: Zeige sha89 Zeit in Console
+  const debugSha = results.find(r => r.nickname === "sha89");
+  if (debugSha) {
+    console.log(`DEBUG: sha89 hat ${debugSha.elo} ELO | Letztes Match: ${debugSha.lastMatch}`);
+  }
+
   const html = `
 <div class="table-wrapper">
   <table class="alt">
@@ -91,9 +98,7 @@ async function fetchPlayerData(playerId) {
 `.trim();
 
   const indexHtml = fs.readFileSync(INDEX_FILE, "utf-8");
-  const updated = indexHtml.replace(
-    /<div class="table-wrapper">[\s\S]*?<\/div>/,
-    html
-  );
+  const updated = indexHtml.replace(TABLE_PLACEHOLDER, `${TABLE_PLACEHOLDER}\n${html}`);
+
   fs.writeFileSync(INDEX_FILE, updated);
 })();
