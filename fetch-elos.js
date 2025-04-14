@@ -1,5 +1,6 @@
 const fs = require("fs");
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
+const { DateTime } = require("luxon");
 
 const FACEIT_API_KEY = process.env.FACEIT_API_KEY;
 const PLAYERS_FILE = "players.txt";
@@ -20,14 +21,9 @@ async function fetchPlayerData(playerId) {
 
   const lastMatchTimestamp = matchJson.items?.[0]?.started_at;
   const lastMatchFormatted = lastMatchTimestamp
-    ? new Date(
-        new Date(lastMatchTimestamp * 1000).toLocaleString("en-US", {
-          timeZone: "Europe/Berlin"
-        })
-      )
-        .toISOString()
-        .replace("T", " ")
-        .slice(0, 16)
+    ? DateTime.fromSeconds(lastMatchTimestamp)
+        .setZone("Europe/Berlin")
+        .toFormat("yyyy-MM-dd HH:mm")
     : "—";
 
   return { nickname, elo, lastMatch: lastMatchFormatted };
@@ -43,13 +39,13 @@ async function fetchPlayerData(playerId) {
       const data = await fetchPlayerData(playerId);
       if (data.elo) results.push(data);
     } catch (e) {
-      console.error(`Fehler bei ${nickname || playerId}: ${e.message}`);
+      console.error(`❌ Fehler bei ${nickname || playerId}: ${e.message}`);
     }
   }
 
   results.sort((a, b) => b.elo - a.elo);
 
-  const debugSha = results.find(r => r.nickname === "sha89");
+  const debugSha = results.find((r) => r.nickname === "sha89");
   if (debugSha) {
     console.log(`✅ sha89 hat ${debugSha.elo} ELO | Letztes Match: ${debugSha.lastMatch}`);
   }
