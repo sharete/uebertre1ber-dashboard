@@ -17,7 +17,7 @@
       color: #ffffff;
     }
     a.nickname-link:hover {
-      color: #38bdf8; /* cyan-400 */
+      color: #38bdf8;
       text-decoration: underline;
       text-shadow: 0 0 6px #38bdf8;
     }
@@ -26,7 +26,17 @@
 <body class="min-h-screen flex flex-col text-white bg-[#1e1f26]">
   <header class="p-6 text-center text-3xl font-bold text-white">uebertre1ber ELO Dashboard</header>
 
-  <main class="flex-grow flex justify-center items-start p-4">
+  <main class="flex-grow flex flex-col items-center p-4">
+    <div class="mb-4 w-full max-w-6xl">
+      <label for="eloRange" class="mr-2 text-white text-sm">Zeitraum:</label>
+      <select id="eloRange" class="bg-white/10 text-white border border-white/20 rounded p-2 text-sm">
+        <option value="daily">Täglich</option>
+        <option value="weekly">Wöchentlich</option>
+        <option value="monthly">Monatlich</option>
+        <option value="yearly">Jährlich</option>
+      </select>
+    </div>
+
     <div class="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl shadow-2xl p-6 w-full max-w-6xl overflow-auto">
       <h2 class="text-2xl font-semibold mb-4 text-white">Leaderboard</h2>
       <div class="overflow-x-auto">
@@ -35,6 +45,7 @@
             <tr class="border-b border-white/10">
               <th class="text-left p-2 cursor-pointer">Nickname</th>
               <th class="text-left p-2 cursor-pointer">ELO</th>
+              <th class="text-left p-2 cursor-pointer">Δ ELO</th>
               <th class="text-left p-2 cursor-pointer">Level</th>
               <th class="text-left p-2 cursor-pointer">Winrate</th>
               <th class="text-left p-2 cursor-pointer">Matches</th>
@@ -44,8 +55,8 @@
           <tbody>
             
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/noxq" target="_blank" class="nickname-link">noxq</a>
-          <td class="p-2">3078</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/noxq" target="_blank" class="nickname-link">noxq</a></td>
+          <td class="p-2">3078 </td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
           <td class="p-2">51</td>
           <td class="p-2">3608</td>
@@ -53,8 +64,8 @@
         </tr>
 
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/any" target="_blank" class="nickname-link">any</a>
-          <td class="p-2">2989</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/any" target="_blank" class="nickname-link">any</a></td>
+          <td class="p-2">2989 </td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
           <td class="p-2">53</td>
           <td class="p-2">2252</td>
@@ -62,8 +73,8 @@
         </tr>
 
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/SEYED" target="_blank" class="nickname-link">SEYED</a>
-          <td class="p-2">2930</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/SEYED" target="_blank" class="nickname-link">SEYED</a></td>
+          <td class="p-2">2930 </td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
           <td class="p-2">52</td>
           <td class="p-2">5485</td>
@@ -71,8 +82,8 @@
         </tr>
 
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/knuuuuub" target="_blank" class="nickname-link">knuuuuub</a>
-          <td class="p-2">2804</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/knuuuuub" target="_blank" class="nickname-link">knuuuuub</a></td>
+          <td class="p-2">2804 </td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
           <td class="p-2">52</td>
           <td class="p-2">1499</td>
@@ -80,8 +91,8 @@
         </tr>
 
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/WalkingFast" target="_blank" class="nickname-link">WalkingFast</a>
-          <td class="p-2">2728</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/WalkingFast" target="_blank" class="nickname-link">WalkingFast</a></td>
+          <td class="p-2">2728 </td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
           <td class="p-2">54</td>
           <td class="p-2">1192</td>
@@ -89,8 +100,8 @@
         </tr>
 
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/rolanHEHE" target="_blank" class="nickname-link">rolanHEHE</a>
-          <td class="p-2">2705</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/rolanHEHE" target="_blank" class="nickname-link">rolanHEHE</a></td>
+          <td class="p-2">2705 </td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
           <td class="p-2">52</td>
           <td class="p-2">5332</td>
@@ -98,8 +109,8 @@
         </tr>
 
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/GIANN11" target="_blank" class="nickname-link">GIANN11</a>
-          <td class="p-2">2659</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/GIANN11" target="_blank" class="nickname-link">GIANN11</a></td>
+          <td class="p-2">2659 </td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
           <td class="p-2">50</td>
           <td class="p-2">7145</td>
@@ -107,8 +118,8 @@
         </tr>
 
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/Saphyy" target="_blank" class="nickname-link">Saphyy</a>
-          <td class="p-2">2601</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/Saphyy" target="_blank" class="nickname-link">Saphyy</a></td>
+          <td class="p-2">2601 </td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
           <td class="p-2">52</td>
           <td class="p-2">2650</td>
@@ -116,8 +127,8 @@
         </tr>
 
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/SaN" target="_blank" class="nickname-link">SaN</a>
-          <td class="p-2">2568</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/SaN" target="_blank" class="nickname-link">SaN</a></td>
+          <td class="p-2">2568 </td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
           <td class="p-2">49</td>
           <td class="p-2">7326</td>
@@ -125,8 +136,8 @@
         </tr>
 
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/KyP" target="_blank" class="nickname-link">KyP</a>
-          <td class="p-2">2363</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/KyP" target="_blank" class="nickname-link">KyP</a></td>
+          <td class="p-2">2363 </td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
           <td class="p-2">51</td>
           <td class="p-2">2820</td>
@@ -134,8 +145,8 @@
         </tr>
 
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/sha89" target="_blank" class="nickname-link">sha89</a>
-          <td class="p-2">2352</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/sha89" target="_blank" class="nickname-link">sha89</a></td>
+          <td class="p-2">2352 </td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
           <td class="p-2">52</td>
           <td class="p-2">1619</td>
@@ -143,8 +154,8 @@
         </tr>
 
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/-SMN-" target="_blank" class="nickname-link">-SMN-</a>
-          <td class="p-2">2050</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/-SMN-" target="_blank" class="nickname-link">-SMN-</a></td>
+          <td class="p-2">2050 </td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
           <td class="p-2">51</td>
           <td class="p-2">3084</td>
@@ -152,8 +163,8 @@
         </tr>
 
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/Vik" target="_blank" class="nickname-link">Vik</a>
-          <td class="p-2">2032</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/Vik" target="_blank" class="nickname-link">Vik</a></td>
+          <td class="p-2">2032 </td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
           <td class="p-2">52</td>
           <td class="p-2">1760</td>
@@ -161,8 +172,8 @@
         </tr>
 
         <tr>
-          <td class="p-2"><a href="https://www.faceit.com/de/players/straccione" target="_blank" class="nickname-link">straccione</a>
-          <td class="p-2">911</td>
+          <td class="p-2"><a href="https://www.faceit.com/de/players/straccione" target="_blank" class="nickname-link">straccione</a></td>
+          <td class="p-2">911 </td>
           <td class="p-2"><img src="icons/levels/level_4_icon.png" alt="Level 4" width="24" height="24" title="Level 4"></td>
           <td class="p-2">50</td>
           <td class="p-2">584</td>
@@ -171,7 +182,7 @@
           </tbody>
         </table>
       </div>
-      <p class="text-right text-xs mt-4 text-white/70">Zuletzt aktualisiert: 2025-04-15 00:18</p>
+      <p class="text-right text-xs mt-4 text-white/70">Zuletzt aktualisiert: 2025-04-15 00:28</p>
     </div>
   </main>
 
