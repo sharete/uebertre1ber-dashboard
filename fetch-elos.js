@@ -31,8 +31,10 @@ function readJson(file) {
 }
 
 function writeJson(file, data) {
-  fs.writeFileSync(path.join(DATA_DIR, file), JSON.stringify(data, null, 2));
-}
+    const fullPath = path.join(DATA_DIR, file);
+    fs.writeFileSync(fullPath, JSON.stringify(data, null, 2));
+    console.log(`✅ Datei geschrieben: ${file} (${data.length} Einträge)`);
+  }
 
 async function fetchPlayerData(playerId) {
   const headers = { Authorization: `Bearer ${FACEIT_API_KEY}` };
@@ -148,4 +150,9 @@ async function fetchPlayerData(playerId) {
   } else {
     console.log("ℹ️ elo-daily.json ist bereits aktuell.");
   }
+    console.log("📊 Anzahl Spieler:", results.length);
+    console.log("📂 Arbeitsverzeichnis:", __dirname);
+    console.log("📝 Ziel-Datei:", path.join(DATA_DIR, RANGE_FILES.latest));
 })();
+
+
