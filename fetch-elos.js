@@ -28,8 +28,8 @@ async function fetchPlayerData(playerId) {
   const faceitUrl = profile.faceit_url.replace("{lang}", "de");
   const level = profile.games?.cs2?.skill_level ?? null;
 
-  const kd = lifetime["K/D Ratio"] ?? "—";
-  const winrate = lifetime["Win Rate %"] ?? "—";
+  const kd = lifetime["K/D Ratio"] ? `K/D ${parseFloat(lifetime["K/D Ratio"]).toFixed(2).replace('.', ',')}` : "—";
+  const winrate = lifetime["Win Rate %"] ? `${lifetime["Win Rate %"]}%` : "—";
   const matches = lifetime["Matches"] ?? "—";
 
   const lastMatchTimestamp = matchJson.items?.[0]?.finished_at;
@@ -82,9 +82,9 @@ async function fetchPlayerData(playerId) {
           <tr>
             <td><a href="${faceitUrl}" target="_blank">${nickname}</a></td>
             <td>${elo}</td>
-            <td><img src="https://faceitfinder.com/img/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24"></td>
+            <td><img src="https://faceit-stats.me/img/levels/${level}.svg" alt="Level ${level}" width="24" height="24"></td>
             <td>${kd}</td>
-            <td>${winrate}%</td>
+            <td>${winrate}</td>
             <td>${matches}</td>
             <td>${lastMatch}</td>
           </tr>`
