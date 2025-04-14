@@ -67,7 +67,7 @@ async function fetchPlayerData(playerId) {
     .map(
       ({ nickname, elo, level, winrate, matches, lastMatch, faceitUrl }) => `
         <tr>
-          <td class="p-2"><a href="${faceitUrl}" target="_blank" class="underline">${nickname}</a></td>
+          <td class="p-2"><a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a>
           <td class="p-2">${elo}</td>
           <td class="p-2"><img src="icons/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24" title="Level ${level}"></td>
           <td class="p-2">${winrate}</td>
