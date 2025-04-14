@@ -16,6 +16,16 @@ while read -r line; do
   player_data=$(curl -s -H "Authorization: Bearer $API_KEY" \
     "https://open.faceit.com/data/v4/players/$player_id")
 
+  # DEBUG: Ausgabe der Rohantwort für den Spieler
+  echo "DEBUG: Response für Spieler $player_id ($nickname): $player_data" >&2
+  
+  # Überprüfe, ob die Antwort mit einem "{" beginnt (Grundprüfung auf JSON)
+  if [[ -z "$player_data" || "${player_data:0:1}" != "{" ]]; then
+    echo "DEBUG: Ungültige JSON-Antwort für Spieler $player_id ($nickname)" >&2
+    continue
+  fi
+  
+  # ELO aus der JSON-Antwort extrahieren
   elo=$(echo "$player_data" | jq -r '.games.cs2.faceit_elo')
 
   # Letztes Match-Datum abrufen
