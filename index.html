@@ -155,50 +155,7 @@
     </tbody>
   </table>
 </div>
-<p style="text-align:right; font-size: 0.9em;">Zuletzt aktualisiert: 2025-04-14 21:58</p>
-
-<script>
-  document.querySelectorAll("th").forEach((header, columnIndex) => {
-    header.style.cursor = "pointer";
-    header.addEventListener("click", () => {
-      const table = header.closest("table");
-      const tbody = table.querySelector("tbody");
-      const rows = Array.from(tbody.querySelectorAll("tr"));
-      const type = header.dataset.sort;
-      const asc = !header.classList.contains("asc");
-
-      rows.sort((a, b) => {
-        const getCell = (row) => row.children[columnIndex].textContent.trim();
-
-        let aVal = getCell(a);
-        let bVal = getCell(b);
-
-        if (type === "number") {
-          aVal = parseFloat(aVal.replace("%", "")) || 0;
-          bVal = parseFloat(bVal.replace("%", "")) || 0;
-          return asc ? aVal - bVal : bVal - aVal;
-        } else if (type === "date") {
-          return asc
-            ? new Date(aVal) - new Date(bVal)
-            : new Date(bVal) - new Date(aVal);
-        } else {
-          aVal = aVal.toLowerCase();
-          bVal = bVal.toLowerCase();
-          return asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-        }
-      });
-
-      table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
-      header.classList.add(asc ? "asc" : "desc");
-
-      rows.forEach(row => tbody.appendChild(row));
-    });
-  });
-</script>
-<style>
-  th.asc::after { content: " ▲"; font-size: 0.8em; }
-  th.desc::after { content: " ▼"; font-size: 0.8em; }
-</style>
+<p style="text-align:right; font-size: 0.9em;">Zuletzt aktualisiert: 2025-04-14 21:48</p>
 
 <script>
   document.querySelectorAll("th").forEach((header, columnIndex) => {
