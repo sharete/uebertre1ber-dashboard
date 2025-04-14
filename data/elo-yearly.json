@@ -1,58 +1,16 @@
 [
-  {
-    "nickname": "noxq",
-    "elo": 3078
-  },
-  {
-    "nickname": "any",
-    "elo": 2989
-  },
-  {
-    "nickname": "SEYED",
-    "elo": 2930
-  },
-  {
-    "nickname": "knuuuuub",
-    "elo": 2804
-  },
-  {
-    "nickname": "WalkingFast",
-    "elo": 2728
-  },
-  {
-    "nickname": "rolanHEHE",
-    "elo": 2705
-  },
-  {
-    "nickname": "GIANN11",
-    "elo": 2659
-  },
-  {
-    "nickname": "Saphyy",
-    "elo": 2601
-  },
-  {
-    "nickname": "SaN",
-    "elo": 2568
-  },
-  {
-    "nickname": "KyP",
-    "elo": 2363
-  },
-  {
-    "nickname": "sha89",
-    "elo": 2352
-  },
-  {
-    "nickname": "-SMN-",
-    "elo": 2050
-  },
-  {
-    "nickname": "Vik",
-    "elo": 2032
-  },
-  {
-    "nickname": "straccione",
-    "elo": 911
-  }
+  { "nickname": "sha89", "elo": 1681 },
+  { "nickname": "noxq", "elo": 3020 },
+  { "nickname": "any", "elo": 3013 },
+  { "nickname": "rolanHEHE", "elo": 2887 },
+  { "nickname": "Vik", "elo": 2122 },
+  { "nickname": "SEYED", "elo": 3094 },
+  { "nickname": "SaN", "elo": 2204 },
+  { "nickname": "knuuuuub", "elo": 2599 },
+  { "nickname": "WalkingFast", "elo": 2707 },
+  { "nickname": "GIANN11", "elo": 2367 },
+  { "nickname": "Saphyy", "elo": 3006 },
+  { "nickname": "KyP", "elo": 2091 },
+  { "nickname": "-SMN-", "elo": 2091 },
+  { "nickname": "straccione", "elo": 594 }
 ]
