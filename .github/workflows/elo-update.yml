@@ -25,6 +25,11 @@ jobs:
       env:
         PLAYER_IDS: ${{ secrets.PLAYER_IDS }}
 
+    - name: Inhalt von players.txt anzeigen (Debug)
+      run: |
+        echo "Inhalt von players.txt:"
+        cat players.txt
+
     - name: 🧠 FACEIT Script ausführen
       env:
         FACEIT_API_KEY: ${{ secrets.FACEIT_API_KEY }}
