@@ -12,24 +12,29 @@ async function fetchPlayerData(playerId) {
   });
 
   const page = await browser.newPage();
-  await page.goto("https://example.com"); // Dummy-Seite für Browser-Kontext
+  await page.goto("https://example.com"); // Seite notwendig für JS-Kontext
 
   const data = await page.evaluate(async (playerId, apiKey) => {
     const headers = {
-      "Authorization": `Bearer ${apiKey}`
+      Authorization: `Bearer ${apiKey}`
     };
 
     try {
+      // Spieler-Daten holen
       const playerRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}`, { headers });
       const playerJson = await playerRes.json();
 
-      const matchRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/history?game=cs2&limit=1`, { headers });
+      // Match-Historie (mehrere Matches zur Sicherheit)
+      const matchRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/history?game=cs2&limit=5`, { headers });
       const matchJson = await matchRes.json();
+
+      const timestamps = matchJson.items?.map((item) => item.started_at) || [];
+      const maxStartTime = timestamps.length ? Math.max(...timestamps) : null;
 
       return {
         nickname: playerJson.nickname,
         elo: playerJson.games?.cs2?.faceit_elo ?? null,
-        lastMatch: matchJson.items?.[0]?.started_at ?? null
+        lastMatch: maxStartTime
       };
     } catch (error) {
       return { error: error.message };
@@ -40,8 +45,16 @@ async function fetchPlayerData(playerId) {
 
   if (data.error) throw new Error(data.error);
 
+  // Lokale Berliner Zeit berechnen
   const lastMatchFormatted = data.lastMatch
-    ? new Date(data.lastMatch * 1000).toISOString().replace("T", " ").slice(0, 16)
+    ? new Date(
+        new Date(data.lastMatch * 1000).toLocaleString("en-US", {
+          timeZone: "Europe/Berlin"
+        })
+      )
+        .toISOString()
+        .replace("T", " ")
+        .slice(0, 16)
     : "—";
 
   return {
