@@ -19,7 +19,7 @@ async function fetchPlayerData(playerId) {
   const elo = playerJson.games?.cs2?.faceit_elo ?? null;
   const nickname = playerJson.nickname;
 
-  const lastMatchTimestamp = matchJson.items?.[0]?.started_at;
+  const lastMatchTimestamp = matchJson.items?.[0]?.finished_at;
   const lastMatchFormatted = lastMatchTimestamp
     ? DateTime.fromSeconds(lastMatchTimestamp)
         .setZone("Europe/Berlin")
