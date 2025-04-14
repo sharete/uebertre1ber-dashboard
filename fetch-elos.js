@@ -17,6 +17,11 @@ const RANGE_FILES = {
   latest: "elo-latest.json"
 };
 
+// 🛠 Erstelle data-Ordner, wenn er fehlt
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR);
+}
+
 function readJson(file) {
   try {
     return JSON.parse(fs.readFileSync(path.join(DATA_DIR, file), "utf-8"));
