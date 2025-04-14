@@ -5,7 +5,8 @@
       "start": "node fetch-elos.js"
     },
     "dependencies": {
-      "puppeteer": "^24.6.1"
+      "puppeteer": "^24.6.1",
+      "node-fetch": "^3.3.2"
     }
   }
   
