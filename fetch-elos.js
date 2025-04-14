@@ -26,7 +26,7 @@ async function fetchPlayerData(playerId) {
         .toFormat("yyyy-MM-dd HH:mm")
     : "—";
 
-  return { nickname, elo, lastMatch: lastMatchFormatted };
+  return { nickname, elo, lastMatch: lastMatchFormatted, faceitUrl: playerJson.faceit_url.replace("{lang}", "de") };
 }
 
 (async () => {
@@ -57,9 +57,13 @@ async function fetchPlayerData(playerId) {
     <tbody>
       ${results
         .map(
-          ({ nickname, elo, lastMatch }) =>
-            `<tr><td>${nickname}</td><td>${elo}</td><td>${lastMatch}</td></tr>`
-        )
+            ({ nickname, elo, lastMatch, faceitUrl }) =>
+              `<tr>
+                <td><a href="${faceitUrl}" target="_blank">${nickname}</a></td>
+                <td>${elo}</td>
+                <td>${lastMatch}</td>
+              </tr>`
+          )          
         .join("\n")}
     </tbody>
   </table>
