@@ -1,0 +1,11 @@
+{
+    "name": "faceit-elo-updater",
+    "version": "1.0.0",
+    "scripts": {
+      "start": "node fetch-elos.js"
+    },
+    "dependencies": {
+      "puppeteer": "^21.3.8"
+    }
+  }
+  

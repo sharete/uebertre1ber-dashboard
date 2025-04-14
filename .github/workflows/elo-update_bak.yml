@@ -2,7 +2,7 @@ name: FACEIT ELO Auto Update
 
 on:
   schedule:
-  - cron: "*/30 * * * *"
+  - cron: "*/30 * * * *" # alle 30 Minuten automatisch
   workflow_dispatch:
 
 
@@ -14,18 +14,16 @@ jobs:
     - name: 📥 Repo auschecken
       uses: actions/checkout@v3
 
-    - name: 🟢 Node.js einrichten
-      uses: actions/setup-node@v3
-      with:
-        node-version: "20"
+    - name: 🛠️ jq installieren
+      run: sudo apt-get update && sudo apt-get install -y jq
 
-    - name: 📦 Abhängigkeiten installieren
-      run: npm install
+    - name: 🟢 Ausführrechte setzen
+      run: chmod +x ./get_elos_from_ids.sh
 
-    - name: 🧠 Puppeteer Script ausführen
+    - name: 🧠 FACEIT Script ausführen
       env:
         FACEIT_API_KEY: ${{ secrets.FACEIT_API_KEY }}
-      run: npm start
+      run: ./get_elos_from_ids.sh
 
     - name: 🔁 Änderungen committen und pushen
       run: |
