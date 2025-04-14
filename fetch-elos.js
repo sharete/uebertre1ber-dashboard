@@ -10,26 +10,31 @@ const TABLE_PLACEHOLDER = "<!-- INSERT_ELO_TABLE_HERE -->";
 async function fetchPlayerData(playerId) {
   const headers = { Authorization: `Bearer ${FACEIT_API_KEY}` };
 
-  const playerRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}`, { headers });
-  const playerJson = await playerRes.json();
+  // Spielerprofil
+  const profileRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}`, { headers });
+  const profile = await profileRes.json();
 
+  // Letztes Match
   const matchRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/history?game=cs2&limit=1`, { headers });
   const matchJson = await matchRes.json();
 
-  const stats = playerJson.games?.cs2?.statistics || {};
-  const elo = playerJson.games?.cs2?.faceit_elo ?? null;
-  const nickname = playerJson.nickname;
-  const faceitUrl = playerJson.faceit_url.replace("{lang}", "de");
-  const level = playerJson.games?.cs2?.skill_level ?? null;
-  const kd = stats["K/D Ratio"] ?? "—";
-  const winrate = stats["Win Rate %"] ?? "—";
-  const matches = stats["Matches"] ?? "—";
+  // Stats
+  const statsRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/stats/cs2`, { headers });
+  const statsJson = await statsRes.json();
+  const lifetime = statsJson.lifetime || {};
+
+  const elo = profile.games?.cs2?.faceit_elo ?? null;
+  const nickname = profile.nickname;
+  const faceitUrl = profile.faceit_url.replace("{lang}", "de");
+  const level = profile.games?.cs2?.skill_level ?? null;
+
+  const kd = lifetime["K/D Ratio"] ?? "—";
+  const winrate = lifetime["Win Rate %"] ?? "—";
+  const matches = lifetime["Matches"] ?? "—";
 
   const lastMatchTimestamp = matchJson.items?.[0]?.finished_at;
   const lastMatchFormatted = lastMatchTimestamp
-    ? DateTime.fromSeconds(lastMatchTimestamp)
-        .setZone("Europe/Berlin")
-        .toFormat("yyyy-MM-dd HH:mm")
+    ? DateTime.fromSeconds(lastMatchTimestamp).setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm")
     : "—";
 
   return { nickname, elo, lastMatch: lastMatchFormatted, faceitUrl, level, kd, winrate, matches };
@@ -77,7 +82,7 @@ async function fetchPlayerData(playerId) {
           <tr>
             <td><a href="${faceitUrl}" target="_blank">${nickname}</a></td>
             <td>${elo}</td>
-            <td><img src="https://cdn.faceit.com/core/img/skill-icons/skill_level_${level}_svg.svg" alt="Level ${level}" width="24" height="24"></td>
+            <td><img src="https://faceitfinder.com/img/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24"></td>
             <td>${kd}</td>
             <td>${winrate}%</td>
             <td>${matches}</td>
