@@ -62,41 +62,35 @@
   </main>
 
   <footer class="text-center p-4 text-sm text-white/50">
-    &copy; uebertre1ber Dashboard – Made by <a href="https://www.faceit.com/de/players/sha89" class="hover:underline">Sharam</a>
+    &copy; uebertre1ber Dashboard – Made by <a href="https://www.faceit.com/de/players/sha89" class="hover:underline">sha89</a>
   </footer>
 
   <script>
-    document.querySelectorAll("th").forEach((header, columnIndex) => {
-      header.addEventListener("click", () => {
-        const table = header.closest("table");
-        const tbody = table.querySelector("tbody");
-        const rows = Array.from(tbody.querySelectorAll("tr"));
-        const asc = !header.classList.contains("asc");
+    async function updateEloDiff(range) {
+      const res = await fetch(`data/elo-${range}.json`);
+      const snapshot = await res.json();
+      const lookup = Object.fromEntries(snapshot.map(p => [p.nickname, p.elo]));
 
-        rows.sort((a, b) => {
-          const getText = (row) => row.children[columnIndex].textContent.trim();
-          let aVal = getText(a);
-          let bVal = getText(b);
+      document.querySelectorAll("tbody tr").forEach(row => {
+        const nickname = row.dataset.nickname;
+        const nowElo = parseInt(row.dataset.elo);
+        const prevElo = lookup[nickname];
+        const diff = prevElo != null ? nowElo - prevElo : null;
+        const cell = row.querySelector(".elo-diff");
 
-          const isDate = /\d{4}-\d{2}-\d{2}/.test(aVal);
-          const isNumber = !isNaN(parseFloat(aVal.replace("%", "")));
-
-          if (isDate) {
-            aVal = new Date(aVal);
-            bVal = new Date(bVal);
-          } else if (isNumber) {
-            aVal = parseFloat(aVal.replace("%", ""));
-            bVal = parseFloat(bVal.replace("%", ""));
-          }
-
-          return asc ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
-        });
-
-        table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
-        header.classList.add(asc ? "asc" : "desc");
-        rows.forEach(row => tbody.appendChild(row));
+        if (diff === null) {
+          cell.textContent = "—";
+        } else {
+          cell.innerHTML = `<span class="text-xs ${diff >= 0 ? 'text-green-400' : 'text-red-400'}">(${diff >= 0 ? '+' : ''}${diff})</span>`;
+        }
       });
+    }
+
+    document.getElementById("eloRange").addEventListener("change", e => {
+      updateEloDiff(e.target.value);
     });
+
+    updateEloDiff("daily");
   </script>
 </body>
 </html>

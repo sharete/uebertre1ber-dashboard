@@ -100,26 +100,13 @@ async function fetchPlayerData(playerId) {
   const latestSnapshot = results.map(({ nickname, elo }) => ({ nickname, elo }));
   writeJson(RANGE_FILES.latest, latestSnapshot);
 
-  const comparisonRange = "daily";
-  const previousSnapshot = readJson(RANGE_FILES[comparisonRange]);
-
-  function getDiff(nickname, currentElo) {
-    const prev = previousSnapshot.find(p => p.nickname === nickname);
-    return prev ? currentElo - prev.elo : null;
-  }
-
   const tableBody = results
     .map(({ nickname, elo, level, winrate, matches, lastMatch, faceitUrl }) => {
-      const diff = getDiff(nickname, elo);
-      const diffHtml = diff === null
-        ? "-"
-        : `<span class="${diff >= 0 ? 'text-green-400' : 'text-red-400'} text-xs font-semibold">(${diff >= 0 ? '+' : ''}${diff})</span>`;
-
       return `
-        <tr>
+        <tr data-nickname="${nickname}" data-elo="${elo}">
           <td class="p-2"><a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a></td>
-          <td class="p-2">${elo}</td>
-          <td class="p-2">${diffHtml}</td>
+          <td class="p-2 elo-now">${elo}</td>
+          <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24" title="Level ${level}"></td>
           <td class="p-2">${winrate}</td>
           <td class="p-2">${matches}</td>
@@ -139,22 +126,13 @@ async function fetchPlayerData(playerId) {
   const now = DateTime.now();
 
   for (const range of ["daily", "weekly", "monthly", "yearly"]) {
-    const targetDate = RANGE_DATES[range];
-    const metaFile = path.join(DATA_DIR, `elo-${range}-meta.json`);
-    let lastUpdated = null;
-    try {
-      const meta = JSON.parse(fs.readFileSync(metaFile, "utf-8"));
-      lastUpdated = meta.lastUpdated;
-    } catch {
-      lastUpdated = null;
-    }
-
-    if (!lastUpdated || DateTime.fromISO(lastUpdated) < targetDate) {
+    const filePath = path.join(DATA_DIR, RANGE_FILES[range]);
+    if (!fs.existsSync(filePath)) {
       writeJson(RANGE_FILES[range], latestSnapshot);
-      fs.writeFileSync(metaFile, JSON.stringify({ lastUpdated: now.toISODate() }, null, 2));
-      console.log(`✅ ${RANGE_FILES[range]} wurde aktualisiert.`);
+      fs.writeFileSync(path.join(DATA_DIR, `elo-${range}-meta.json`), JSON.stringify({ lastUpdated: now.toISODate() }, null, 2));
+      console.log(`✅ ${RANGE_FILES[range]} wurde einmalig erstellt.`);
     } else {
-      console.log(`ℹ️ ${RANGE_FILES[range]} ist bereits aktuell.`);
+      console.log(`ℹ️ ${RANGE_FILES[range]} existiert bereits und wird nicht überschrieben.`);
     }
   }
 
