@@ -32,5 +32,6 @@ jobs:
         git config user.name "faceit-bot"
         git config user.email "faceit-bot@localhost"
         git add index.html
-        git commit -m "Auto-Update: $(date)" || echo "Keine Änderungen"
+        git add data/*.json || echo "Keine JSON-Dateien zum Hinzufügen"
+        git commit -m "📊 Auto-Update: $(date -u)" || echo "🟡 Keine Änderungen zu committen"
         git push
