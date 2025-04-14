@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>uebertre1ber ELO Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: #1e1f26;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col text-white bg-[#1e1f26]">
+  <header class="p-6 text-center text-3xl font-bold text-white">uebertre1ber ELO Dashboard</header>
+
+  <main class="flex-grow flex justify-center items-start p-4">
+    <div class="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl shadow-2xl p-6 w-full max-w-6xl overflow-auto">
+      <h2 class="text-2xl font-semibold mb-4 text-white">Leaderboard</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm text-white">
+          <thead>
+            <tr class="border-b border-white/10">
+              <th class="text-left p-2 cursor-pointer">Nickname</th>
+              <th class="text-left p-2 cursor-pointer">ELO</th>
+              <th class="text-left p-2 cursor-pointer">Level</th>
+              <th class="text-left p-2 cursor-pointer">Winrate</th>
+              <th class="text-left p-2 cursor-pointer">Matches</th>
+              <th class="text-left p-2 cursor-pointer">Letztes Match</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- INSERT_ELO_TABLE_HERE -->
+          </tbody>
+        </table>
+      </div>
+      <p class="text-right text-xs mt-4 text-white/70">Zuletzt aktualisiert: <!-- INSERT_LAST_UPDATED --></p>
+    </div>
+  </main>
+
+  <footer class="text-center p-4 text-sm text-white/50">
+    &copy; uebertre1ber Dashboard – Made by <a href="https://www.faceit.com/de/players/sha89" class="underline text-white">sha89</a>
+  </footer>
+  <script>
+    document.querySelectorAll("th").forEach((header, columnIndex) => {
+      header.addEventListener("click", () => {
+        const table = header.closest("table");
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+        const asc = !header.classList.contains("asc");
+  
+        rows.sort((a, b) => {
+          const getText = (row) => row.children[columnIndex].textContent.trim();
+          let aVal = getText(a);
+          let bVal = getText(b);
+  
+          const isDate = /\d{4}-\d{2}-\d{2}/.test(aVal);
+          const isNumber = !isNaN(parseFloat(aVal.replace("%", "")));
+  
+          if (isDate) {
+            aVal = new Date(aVal);
+            bVal = new Date(bVal);
+          } else if (isNumber) {
+            aVal = parseFloat(aVal.replace("%", ""));
+            bVal = parseFloat(bVal.replace("%", ""));
+          }
+  
+          return asc ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
+        });
+  
+        table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
+        header.classList.add(asc ? "asc" : "desc");
+        rows.forEach(row => tbody.appendChild(row));
+      });
+    });
+  </script>  
+</body>
+</html>
