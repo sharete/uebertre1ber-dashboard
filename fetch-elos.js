@@ -7,7 +7,10 @@ const INDEX_FILE = "index.html";
 const TABLE_PLACEHOLDER = "<!-- INSERT_ELO_TABLE_HERE -->";
 
 async function fetchPlayerData(playerId) {
-  const browser = await puppeteer.launch({ headless: "new" });
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });      
   const page = await browser.newPage();
   await page.setExtraHTTPHeaders({
     Authorization: `Bearer ${FACEIT_API_KEY}`,
