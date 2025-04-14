@@ -17,7 +17,7 @@
       color: #ffffff;
     }
     a.nickname-link:hover {
-      color: #38bdf8; /* cyan-400 */
+      color: #38bdf8;
       text-decoration: underline;
       text-shadow: 0 0 6px #38bdf8;
     }
@@ -26,7 +26,17 @@
 <body class="min-h-screen flex flex-col text-white bg-[#1e1f26]">
   <header class="p-6 text-center text-3xl font-bold text-white">uebertre1ber ELO Dashboard</header>
 
-  <main class="flex-grow flex justify-center items-start p-4">
+  <main class="flex-grow flex flex-col items-center p-4">
+    <div class="mb-4 w-full max-w-6xl">
+      <label for="eloRange" class="mr-2 text-white text-sm">Zeitraum:</label>
+      <select id="eloRange" class="bg-white/10 text-white border border-white/20 rounded p-2 text-sm">
+        <option value="daily">Täglich</option>
+        <option value="weekly">Wöchentlich</option>
+        <option value="monthly">Monatlich</option>
+        <option value="yearly">Jährlich</option>
+      </select>
+    </div>
+
     <div class="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl shadow-2xl p-6 w-full max-w-6xl overflow-auto">
       <h2 class="text-2xl font-semibold mb-4 text-white">Leaderboard</h2>
       <div class="overflow-x-auto">
@@ -35,6 +45,7 @@
             <tr class="border-b border-white/10">
               <th class="text-left p-2 cursor-pointer">Nickname</th>
               <th class="text-left p-2 cursor-pointer">ELO</th>
+              <th class="text-left p-2 cursor-pointer">Δ ELO</th>
               <th class="text-left p-2 cursor-pointer">Level</th>
               <th class="text-left p-2 cursor-pointer">Winrate</th>
               <th class="text-left p-2 cursor-pointer">Matches</th>
