@@ -6,6 +6,7 @@ const FACEIT_API_KEY = process.env.FACEIT_API_KEY;
 const PLAYERS_FILE = "players.txt";
 const INDEX_FILE = "index.html";
 const TABLE_PLACEHOLDER = "<!-- INSERT_ELO_TABLE_HERE -->";
+const TIMESTAMP_PLACEHOLDER = "<!-- LAST_UPDATED_TIMESTAMP -->";
 
 async function fetchPlayerData(playerId) {
   const headers = { Authorization: `Bearer ${FACEIT_API_KEY}` };
@@ -57,6 +58,8 @@ async function fetchPlayerData(playerId) {
     console.log(`✅ sha89 hat ${debugSha.elo} ELO | Letztes Match: ${debugSha.lastMatch}`);
   }
 
+  const updatedTime = DateTime.now().setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm");
+
   const html = `
 <div class="table-wrapper">
   <table class="alt">
@@ -87,9 +90,10 @@ async function fetchPlayerData(playerId) {
     </tbody>
   </table>
 </div>
+<p style="text-align:right; font-size: 0.9em;">Zuletzt aktualisiert: ${updatedTime}</p>
 `.trim();
 
   const indexHtml = fs.readFileSync(INDEX_FILE, "utf-8");
-  const updated = indexHtml.replace(/<div class="table-wrapper">[\s\S]*?<\/div>/, html);
+  const updated = indexHtml.replace(/<div class="table-wrapper">[\s\S]*?<\/div>(\n<p.*?<\/p>)?/, html);
   fs.writeFileSync(INDEX_FILE, updated);
 })();
