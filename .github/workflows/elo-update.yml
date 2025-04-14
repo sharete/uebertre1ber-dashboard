@@ -21,9 +21,9 @@ jobs:
       run: chmod +x ./get_elos_from_ids.sh
 
     - name: 📄 Spielerlisten wiederherstellen
-      run: |
-        echo "${{ secrets.PLAYER_IDS_FILE }}" > players.txt
-        echo "${{ secrets.FACEIT_LINKS }}" > faceit_links.txt
+      run: echo "$PLAYER_IDS" > players.txt
+      env:
+        PLAYER_IDS: ${{ secrets.PLAYER_IDS }}
 
     - name: 🧠 FACEIT Script ausführen
       env:
