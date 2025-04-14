@@ -4,7 +4,8 @@ const { DateTime } = require("luxon");
 
 const FACEIT_API_KEY = process.env.FACEIT_API_KEY;
 const PLAYERS_FILE = "players.txt";
-const INDEX_FILE = "index.html";
+const TEMPLATE_FILE = "index.template.html";
+const OUTPUT_FILE = "index.html";
 
 async function fetchPlayerData(playerId) {
   const headers = { Authorization: `Bearer ${FACEIT_API_KEY}` };
@@ -54,12 +55,11 @@ async function fetchPlayerData(playerId) {
     }
   }
 
-  results.sort((a, b) => b.elo - a.elo);
-
-  const debugSha = results.find((r) => r.nickname === "sha89");
-  if (debugSha) {
-    console.log(`✅ sha89 hat ${debugSha.elo} ELO | Letztes Match: ${debugSha.lastMatch}`);
+  if (results.length === 0) {
+    console.warn("⚠️ Keine Spieler wurden gefunden oder geladen.");
   }
+
+  results.sort((a, b) => b.elo - a.elo);
 
   const updatedTime = DateTime.now().setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm");
 
@@ -77,10 +77,11 @@ async function fetchPlayerData(playerId) {
     )
     .join("\n");
 
-  const indexHtml = fs.readFileSync(INDEX_FILE, "utf-8");
-  const updatedHtml = indexHtml
+  const templateHtml = fs.readFileSync(TEMPLATE_FILE, "utf-8");
+  const updatedHtml = templateHtml
     .replace("<!-- INSERT_ELO_TABLE_HERE -->", tableBody)
     .replace("<!-- INSERT_LAST_UPDATED -->", updatedTime);
 
-  fs.writeFileSync(INDEX_FILE, updatedHtml);
+  fs.writeFileSync(OUTPUT_FILE, updatedHtml);
+  console.log(`✅ Dashboard aktualisiert: ${OUTPUT_FILE}`);
 })();
