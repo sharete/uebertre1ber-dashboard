@@ -16,8 +16,14 @@ async function fetchPlayerData(playerId) {
   const matchRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/history?game=cs2&limit=1`, { headers });
   const matchJson = await matchRes.json();
 
+  const stats = playerJson.games?.cs2?.statistics || {};
   const elo = playerJson.games?.cs2?.faceit_elo ?? null;
   const nickname = playerJson.nickname;
+  const faceitUrl = playerJson.faceit_url.replace("{lang}", "de");
+  const level = playerJson.games?.cs2?.skill_level ?? null;
+  const kd = stats["K/D Ratio"] ?? "—";
+  const winrate = stats["Win Rate %"] ?? "—";
+  const matches = stats["Matches"] ?? "—";
 
   const lastMatchTimestamp = matchJson.items?.[0]?.finished_at;
   const lastMatchFormatted = lastMatchTimestamp
@@ -26,7 +32,7 @@ async function fetchPlayerData(playerId) {
         .toFormat("yyyy-MM-dd HH:mm")
     : "—";
 
-  return { nickname, elo, lastMatch: lastMatchFormatted, faceitUrl: playerJson.faceit_url.replace("{lang}", "de") };
+  return { nickname, elo, lastMatch: lastMatchFormatted, faceitUrl, level, kd, winrate, matches };
 }
 
 (async () => {
@@ -53,17 +59,31 @@ async function fetchPlayerData(playerId) {
   const html = `
 <div class="table-wrapper">
   <table class="alt">
-    <thead><tr><th>Nickname</th><th>ELO</th><th>Letztes Match</th></tr></thead>
+    <thead>
+      <tr>
+        <th>Nickname</th>
+        <th>ELO</th>
+        <th>Level</th>
+        <th>K/D</th>
+        <th>Winrate</th>
+        <th>Matches</th>
+        <th>Letztes Match</th>
+      </tr>
+    </thead>
     <tbody>
       ${results
         .map(
-            ({ nickname, elo, lastMatch, faceitUrl }) =>
-              `<tr>
-                <td><a href="${faceitUrl}" target="_blank">${nickname}</a></td>
-                <td>${elo}</td>
-                <td>${lastMatch}</td>
-              </tr>`
-          )          
+          ({ nickname, elo, level, kd, winrate, matches, lastMatch, faceitUrl }) => `
+          <tr>
+            <td><a href="${faceitUrl}" target="_blank">${nickname}</a></td>
+            <td>${elo}</td>
+            <td><img src="https://cdn.faceit.com/core/img/skill-icons/skill_level_${level}_svg.svg" alt="Level ${level}" width="24" height="24"></td>
+            <td>${kd}</td>
+            <td>${winrate}%</td>
+            <td>${matches}</td>
+            <td>${lastMatch}</td>
+          </tr>`
+        )
         .join("\n")}
     </tbody>
   </table>
@@ -71,9 +91,6 @@ async function fetchPlayerData(playerId) {
 `.trim();
 
   const indexHtml = fs.readFileSync(INDEX_FILE, "utf-8");
-  const updated = indexHtml.replace(
-    /<div class="table-wrapper">[\s\S]*?<\/div>/,
-    html
-  );  
+  const updated = indexHtml.replace(/<div class="table-wrapper">[\s\S]*?<\/div>/, html);
   fs.writeFileSync(INDEX_FILE, updated);
 })();
