@@ -67,6 +67,9 @@ async function fetchPlayerData(playerId) {
 `.trim();
 
   const indexHtml = fs.readFileSync(INDEX_FILE, "utf-8");
-  const updated = indexHtml.replace(TABLE_PLACEHOLDER, `${TABLE_PLACEHOLDER}\n${html}`);
+  const updated = indexHtml.replace(
+    /<div class="table-wrapper">[\s\S]*?<\/div>/,
+    html
+  );  
   fs.writeFileSync(INDEX_FILE, updated);
 })();
