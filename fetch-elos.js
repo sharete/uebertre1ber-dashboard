@@ -6,7 +6,6 @@ const FACEIT_API_KEY = process.env.FACEIT_API_KEY;
 const PLAYERS_FILE = "players.txt";
 const INDEX_FILE = "index.html";
 const TABLE_PLACEHOLDER = "<!-- INSERT_ELO_TABLE_HERE -->";
-const TIMESTAMP_PLACEHOLDER = "<!-- LAST_UPDATED_TIMESTAMP -->";
 
 async function fetchPlayerData(playerId) {
   const headers = { Authorization: `Bearer ${FACEIT_API_KEY}` };
@@ -62,15 +61,15 @@ async function fetchPlayerData(playerId) {
 
   const html = `
 <div class="table-wrapper">
-  <table class="alt">
+  <table class="alt sortable" id="elo-table">
     <thead>
       <tr>
-        <th>Nickname</th>
-        <th>ELO</th>
-        <th>Level</th>
-        <th>Winrate</th>
-        <th>Matches</th>
-        <th>Letztes Match</th>
+        <th data-sort="string">Nickname</th>
+        <th data-sort="number">ELO</th>
+        <th data-sort="number">Level</th>
+        <th data-sort="number">Winrate</th>
+        <th data-sort="number">Matches</th>
+        <th data-sort="date">Letztes Match</th>
       </tr>
     </thead>
     <tbody>
@@ -80,8 +79,8 @@ async function fetchPlayerData(playerId) {
           <tr>
             <td><a href="${faceitUrl}" target="_blank">${nickname}</a></td>
             <td>${elo}</td>
-            <td><img src="icons/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24"></td>
-            <td>${winrate}%</td>
+            <td><img src="icons/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24" title="Level ${level}"></td>
+            <td>${winrate}</td>
             <td>${matches}</td>
             <td>${lastMatch}</td>
           </tr>`
@@ -91,6 +90,43 @@ async function fetchPlayerData(playerId) {
   </table>
 </div>
 <p style="text-align:right; font-size: 0.9em;">Zuletzt aktualisiert: ${updatedTime}</p>
+
+<script>
+  document.querySelectorAll("th").forEach((header, columnIndex) => {
+    header.style.cursor = "pointer";
+    header.addEventListener("click", () => {
+      const table = header.closest("table");
+      const tbody = table.querySelector("tbody");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const type = header.dataset.sort;
+      const asc = !header.classList.contains("asc");
+
+      rows.sort((a, b) => {
+        const getText = (row) => row.children[columnIndex].textContent.trim();
+        let aVal = getText(a);
+        let bVal = getText(b);
+
+        if (type === "number") {
+          aVal = parseFloat(aVal.replace("%", "")) || 0;
+          bVal = parseFloat(bVal.replace("%", "")) || 0;
+        } else if (type === "date") {
+          aVal = new Date(aVal);
+          bVal = new Date(bVal);
+        }
+
+        return asc ? aVal > bVal ? 1 : -1 : aVal < bVal ? 1 : -1;
+      });
+
+      table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
+      header.classList.add(asc ? "asc" : "desc");
+      rows.forEach(row => tbody.appendChild(row));
+    });
+  });
+</script>
+<style>
+  th.asc::after { content: " ▲"; font-size: 0.8em; }
+  th.desc::after { content: " ▼"; font-size: 0.8em; }
+</style>
 `.trim();
 
   const indexHtml = fs.readFileSync(INDEX_FILE, "utf-8");
