@@ -159,14 +159,13 @@
           </tbody>
         </table>
       </div>
-      <p class="text-right text-xs mt-4 text-white/70">Zuletzt aktualisiert: 2025-04-14 23:25</p>
+      <p class="text-right text-xs mt-4 text-white/70">Zuletzt aktualisiert: 2025-04-14 23:33</p>
     </div>
   </main>
 
   <footer class="text-center p-4 text-sm text-white/50">
     &copy; uebertre1ber Dashboard – Made by <a href="https://www.faceit.com/de/players/sha89" class="underline text-white">sha89</a>
   </footer>
-
   <script>
     document.querySelectorAll("th").forEach((header, columnIndex) => {
       header.addEventListener("click", () => {
@@ -174,15 +173,15 @@
         const tbody = table.querySelector("tbody");
         const rows = Array.from(tbody.querySelectorAll("tr"));
         const asc = !header.classList.contains("asc");
-
+  
         rows.sort((a, b) => {
           const getText = (row) => row.children[columnIndex].textContent.trim();
           let aVal = getText(a);
           let bVal = getText(b);
-
-          const isDate = aVal.match(/\d{4}-\d{2}-\d{2}/);
+  
+          const isDate = /\d{4}-\d{2}-\d{2}/.test(aVal);
           const isNumber = !isNaN(parseFloat(aVal.replace("%", "")));
-
+  
           if (isDate) {
             aVal = new Date(aVal);
             bVal = new Date(bVal);
@@ -190,15 +189,15 @@
             aVal = parseFloat(aVal.replace("%", ""));
             bVal = parseFloat(bVal.replace("%", ""));
           }
-
+  
           return asc ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
         });
-
+  
         table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
         header.classList.add(asc ? "asc" : "desc");
         rows.forEach(row => tbody.appendChild(row));
       });
     });
-  </script>
+  </script>  
 </body>
 </html>
