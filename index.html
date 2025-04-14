@@ -155,7 +155,44 @@
     </tbody>
   </table>
 </div>
-<p style="text-align:right; font-size: 0.9em;">Zuletzt aktualisiert: 2025-04-14 22:20</p>
+<p style="text-align:right; font-size: 0.9em;">Zuletzt aktualisiert: 2025-04-14 22:21</p>
+
+<script>
+  document.querySelectorAll("th").forEach((header, columnIndex) => {
+    header.style.cursor = "pointer";
+    header.addEventListener("click", () => {
+      const table = header.closest("table");
+      const tbody = table.querySelector("tbody");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const type = header.dataset.sort;
+      const asc = !header.classList.contains("asc");
+
+      rows.sort((a, b) => {
+        const getText = (row) => row.children[columnIndex].textContent.trim();
+        let aVal = getText(a);
+        let bVal = getText(b);
+
+        if (type === "number") {
+          aVal = parseFloat(aVal.replace("%", "")) || 0;
+          bVal = parseFloat(bVal.replace("%", "")) || 0;
+        } else if (type === "date") {
+          aVal = new Date(aVal);
+          bVal = new Date(bVal);
+        }
+
+        return asc ? aVal > bVal ? 1 : -1 : aVal < bVal ? 1 : -1;
+      });
+
+      table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
+      header.classList.add(asc ? "asc" : "desc");
+      rows.forEach(row => tbody.appendChild(row));
+    });
+  });
+</script>
+<style>
+  th.asc::after { content: " ▲"; font-size: 0.8em; }
+  th.desc::after { content: " ▼"; font-size: 0.8em; }
+</style>
 
 <script>
   document.querySelectorAll("th").forEach((header, columnIndex) => {
