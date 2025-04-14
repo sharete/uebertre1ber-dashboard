@@ -101,23 +101,24 @@ async function fetchPlayerData(playerId) {
   }
 
   const tableBody = results
-    .map(({ nickname, elo, level, winrate, matches, lastMatch, faceitUrl }) => {
-      const diff = getDiff(nickname, elo);
-      const diffHtml = diff === null
-        ? ""
-        : `<span class="${diff >= 0 ? 'text-green-400' : 'text-red-400'} text-xs">(${diff >= 0 ? '+' : ''}${diff})</span>`;
+  .map(({ nickname, elo, level, winrate, matches, lastMatch, faceitUrl }) => {
+    const diff = getDiff(nickname, elo);
+    const diffHtml = diff === null
+      ? "-"
+      : `<span class="${diff >= 0 ? 'text-green-400' : 'text-red-400'} text-xs font-semibold">(${diff >= 0 ? '+' : ''}${diff})</span>`;
 
-      return `
-        <tr>
-          <td class="p-2"><a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a></td>
-          <td class="p-2">${elo} ${diffHtml}</td>
-          <td class="p-2"><img src="icons/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24" title="Level ${level}"></td>
-          <td class="p-2">${winrate}</td>
-          <td class="p-2">${matches}</td>
-          <td class="p-2">${lastMatch}</td>
-        </tr>`;
-    })
-    .join("\n");
+    return `
+      <tr>
+        <td class="p-2"><a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a></td>
+        <td class="p-2">${elo}</td>
+        <td class="p-2">${diffHtml}</td>
+        <td class="p-2"><img src="icons/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24" title="Level ${level}"></td>
+        <td class="p-2">${winrate}</td>
+        <td class="p-2">${matches}</td>
+        <td class="p-2">${lastMatch}</td>
+      </tr>`;
+  })
+  .join("\n");
 
   const templateHtml = fs.readFileSync(TEMPLATE_FILE, "utf-8");
   const updatedHtml = templateHtml
