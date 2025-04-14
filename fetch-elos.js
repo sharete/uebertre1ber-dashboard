@@ -17,6 +17,13 @@ const RANGE_FILES = {
   latest: "elo-latest.json"
 };
 
+const RANGE_DATES = {
+  daily: DateTime.now().minus({ days: 1 }),
+  weekly: DateTime.now().startOf("week"),
+  monthly: DateTime.now().startOf("month"),
+  yearly: DateTime.fromISO("2025-01-01")
+};
+
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR);
 }
@@ -93,7 +100,7 @@ async function fetchPlayerData(playerId) {
   const latestSnapshot = results.map(({ nickname, elo }) => ({ nickname, elo }));
   writeJson(RANGE_FILES.latest, latestSnapshot);
 
-  const comparisonRange = "daily"; // Standardmäßig für Anzeige verwenden
+  const comparisonRange = "daily";
   const previousSnapshot = readJson(RANGE_FILES[comparisonRange]);
 
   function getDiff(nickname, currentElo) {
@@ -129,9 +136,10 @@ async function fetchPlayerData(playerId) {
   fs.writeFileSync(OUTPUT_FILE, updatedHtml);
   console.log(`✅ Dashboard aktualisiert: ${OUTPUT_FILE}`);
 
-  const today = DateTime.now().toISODate();
+  const now = DateTime.now();
 
-  ["daily", "weekly", "monthly", "yearly"].forEach(range => {
+  for (const range of ["daily", "weekly", "monthly", "yearly"]) {
+    const targetDate = RANGE_DATES[range];
     const metaFile = path.join(DATA_DIR, `elo-${range}-meta.json`);
     let lastUpdated = null;
     try {
@@ -141,14 +149,14 @@ async function fetchPlayerData(playerId) {
       lastUpdated = null;
     }
 
-    if (lastUpdated !== today) {
+    if (!lastUpdated || DateTime.fromISO(lastUpdated) < targetDate) {
       writeJson(RANGE_FILES[range], latestSnapshot);
-      fs.writeFileSync(metaFile, JSON.stringify({ lastUpdated: today }, null, 2));
+      fs.writeFileSync(metaFile, JSON.stringify({ lastUpdated: now.toISODate() }, null, 2));
       console.log(`✅ ${RANGE_FILES[range]} wurde aktualisiert.`);
     } else {
       console.log(`ℹ️ ${RANGE_FILES[range]} ist bereits aktuell.`);
     }
-  });
+  }
 
   console.log("📊 Anzahl Spieler:", results.length);
   console.log("📂 Arbeitsverzeichnis:", __dirname);
