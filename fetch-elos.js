@@ -10,15 +10,12 @@ const TABLE_PLACEHOLDER = "<!-- INSERT_ELO_TABLE_HERE -->";
 async function fetchPlayerData(playerId) {
   const headers = { Authorization: `Bearer ${FACEIT_API_KEY}` };
 
-  // Spielerprofil
   const profileRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}`, { headers });
   const profile = await profileRes.json();
 
-  // Letztes Match
   const matchRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/history?game=cs2&limit=1`, { headers });
   const matchJson = await matchRes.json();
 
-  // Stats
   const statsRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/stats/cs2`, { headers });
   const statsJson = await statsRes.json();
   const lifetime = statsJson.lifetime || {};
@@ -28,8 +25,7 @@ async function fetchPlayerData(playerId) {
   const faceitUrl = profile.faceit_url.replace("{lang}", "de");
   const level = profile.games?.cs2?.skill_level ?? null;
 
-  const kd = lifetime["K/D Ratio"] ? `K/D ${parseFloat(lifetime["K/D Ratio"]).toFixed(2).replace('.', ',')}` : "—";
-  const winrate = lifetime["Win Rate %"] ? `${lifetime["Win Rate %"]}%` : "—";
+  const winrate = lifetime["Win Rate %"] ?? "—";
   const matches = lifetime["Matches"] ?? "—";
 
   const lastMatchTimestamp = matchJson.items?.[0]?.finished_at;
@@ -37,7 +33,7 @@ async function fetchPlayerData(playerId) {
     ? DateTime.fromSeconds(lastMatchTimestamp).setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm")
     : "—";
 
-  return { nickname, elo, lastMatch: lastMatchFormatted, faceitUrl, level, kd, winrate, matches };
+  return { nickname, elo, lastMatch: lastMatchFormatted, faceitUrl, level, winrate, matches };
 }
 
 (async () => {
@@ -69,7 +65,6 @@ async function fetchPlayerData(playerId) {
         <th>Nickname</th>
         <th>ELO</th>
         <th>Level</th>
-        <th>K/D</th>
         <th>Winrate</th>
         <th>Matches</th>
         <th>Letztes Match</th>
@@ -78,13 +73,12 @@ async function fetchPlayerData(playerId) {
     <tbody>
       ${results
         .map(
-          ({ nickname, elo, level, kd, winrate, matches, lastMatch, faceitUrl }) => `
+          ({ nickname, elo, level, winrate, matches, lastMatch, faceitUrl }) => `
           <tr>
             <td><a href="${faceitUrl}" target="_blank">${nickname}</a></td>
             <td>${elo}</td>
-            <td><img src="https://faceit-stats.me/img/levels/${level}.svg" alt="Level ${level}" width="24" height="24"></td>
-            <td>${kd}</td>
-            <td>${winrate}</td>
+            <td><img src="icons/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24"></td>
+            <td>${winrate}%</td>
             <td>${matches}</td>
             <td>${lastMatch}</td>
           </tr>`
