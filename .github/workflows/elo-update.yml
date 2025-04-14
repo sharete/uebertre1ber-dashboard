@@ -2,31 +2,33 @@ name: FACEIT ELO Auto Update
 
 on:
   schedule:
-    - cron: "*/30 * * * *"  # alle 30 Minuten automatisch
+  - cron: "*/30 * * * *" # alle 30 Minuten automatisch
+  workflow_dispatch:
+
 
 jobs:
   update:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Repo auschecken
-        uses: actions/checkout@v3
+    - name: 📥 Repo auschecken
+      uses: actions/checkout@v3
 
-      - name: 🛠️ jq installieren
-        run: sudo apt-get update && sudo apt-get install -y jq
+    - name: 🛠️ jq installieren
+      run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: 🟢 Ausführrechte setzen
-        run: chmod +x ./get_elos_from_ids.sh
+    - name: 🟢 Ausführrechte setzen
+      run: chmod +x ./get_elos_from_ids.sh
 
-      - name: 🧠 FACEIT Script ausführen
-        env:
-          FACEIT_API_KEY: ${{ secrets.FACEIT_API_KEY }}
-        run: ./get_elos_from_ids.sh
+    - name: 🧠 FACEIT Script ausführen
+      env:
+        FACEIT_API_KEY: ${{ secrets.FACEIT_API_KEY }}
+      run: ./get_elos_from_ids.sh
 
-      - name: 🔁 Änderungen committen und pushen
-        run: |
-          git config user.name "faceit-bot"
-          git config user.email "faceit-bot@localhost"
-          git add index.html
-          git commit -m "Auto-Update: $(date)" || echo "Keine Änderungen"
-          git push
+    - name: 🔁 Änderungen committen und pushen
+      run: |
+        git config user.name "faceit-bot"
+        git config user.email "faceit-bot@localhost"
+        git add index.html
+        git commit -m "Auto-Update: $(date)" || echo "Keine Änderungen"
+        git push
