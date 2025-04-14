@@ -102,23 +102,29 @@ async function fetchPlayerData(playerId) {
       const asc = !header.classList.contains("asc");
 
       rows.sort((a, b) => {
-        const getText = (row) => row.children[columnIndex].textContent.trim();
-        let aVal = getText(a);
-        let bVal = getText(b);
+        const getCell = (row) => row.children[columnIndex].textContent.trim();
+
+        let aVal = getCell(a);
+        let bVal = getCell(b);
 
         if (type === "number") {
           aVal = parseFloat(aVal.replace("%", "")) || 0;
           bVal = parseFloat(bVal.replace("%", "")) || 0;
+          return asc ? aVal - bVal : bVal - aVal;
         } else if (type === "date") {
-          aVal = new Date(aVal);
-          bVal = new Date(bVal);
+          return asc
+            ? new Date(aVal) - new Date(bVal)
+            : new Date(bVal) - new Date(aVal);
+        } else {
+          aVal = aVal.toLowerCase();
+          bVal = bVal.toLowerCase();
+          return asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
         }
-
-        return asc ? aVal > bVal ? 1 : -1 : aVal < bVal ? 1 : -1;
       });
 
       table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
       header.classList.add(asc ? "asc" : "desc");
+
       rows.forEach(row => tbody.appendChild(row));
     });
   });
