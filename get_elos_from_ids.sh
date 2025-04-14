@@ -13,8 +13,10 @@ while read -r line; do
   nickname=$(echo "$line" | cut -d'#' -f2 | xargs)
 
   # Spieler-Daten abrufen
-  player_data=$(curl -s -H "Authorization: Bearer $API_KEY" \
+  player_data=$(curl -sL -H "Authorization: Bearer $API_KEY" \
+    -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36" \
     "https://open.faceit.com/data/v4/players/$player_id")
+
 
   # DEBUG: Ausgabe der Rohantwort für den Spieler
   echo "DEBUG: Response für Spieler $player_id ($nickname): $player_data" >&2
@@ -29,9 +31,10 @@ while read -r line; do
   elo=$(echo "$player_data" | jq -r '.games.cs2.faceit_elo')
 
   # Letztes Match-Datum abrufen
-  matches=$(curl -s -H "Authorization: Bearer $API_KEY" \
+  matches=$(curl -sL -H "Authorization: Bearer $API_KEY" \
+    -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36" \
     "https://open.faceit.com/data/v4/players/$player_id/history?game=cs2&limit=1")
-  last_match_timestamp=$(echo "$matches" | jq -r '.items[0].started_at')
+
 
   if [[ "$last_match_timestamp" != "null" && "$last_match_timestamp" != "" ]]; then
     last_match_date=$(date -d @"$last_match_timestamp" "+%Y-%m-%d %H:%M")
