@@ -64,15 +64,6 @@
           </tr>
 
           <tr>
-            <td><a href="https://www.faceit.com/de/players/rolanHEHE" target="_blank">rolanHEHE</a></td>
-            <td>2730</td>
-            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-            <td>52</td>
-            <td>5331</td>
-            <td>2025-04-14 22:12</td>
-          </tr>
-
-          <tr>
             <td><a href="https://www.faceit.com/de/players/WalkingFast" target="_blank">WalkingFast</a></td>
             <td>2728</td>
             <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -82,30 +73,39 @@
           </tr>
 
           <tr>
+            <td><a href="https://www.faceit.com/de/players/rolanHEHE" target="_blank">rolanHEHE</a></td>
+            <td>2705</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>5332</td>
+            <td>2025-04-14 22:51</td>
+          </tr>
+
+          <tr>
             <td><a href="https://www.faceit.com/de/players/GIANN11" target="_blank">GIANN11</a></td>
-            <td>2710</td>
+            <td>2685</td>
             <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
             <td>50</td>
-            <td>7143</td>
-            <td>2025-04-14 22:12</td>
+            <td>7144</td>
+            <td>2025-04-14 22:51</td>
           </tr>
 
           <tr>
             <td><a href="https://www.faceit.com/de/players/Saphyy" target="_blank">Saphyy</a></td>
-            <td>2626</td>
+            <td>2601</td>
             <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
             <td>52</td>
-            <td>2649</td>
-            <td>2025-04-14 22:12</td>
+            <td>2650</td>
+            <td>2025-04-14 22:51</td>
           </tr>
 
           <tr>
             <td><a href="https://www.faceit.com/de/players/SaN" target="_blank">SaN</a></td>
-            <td>2619</td>
+            <td>2594</td>
             <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
             <td>49</td>
-            <td>7324</td>
-            <td>2025-04-14 22:12</td>
+            <td>7325</td>
+            <td>2025-04-14 22:51</td>
           </tr>
 
           <tr>
@@ -127,21 +127,21 @@
           </tr>
 
           <tr>
-            <td><a href="https://www.faceit.com/de/players/Vik" target="_blank">Vik</a></td>
-            <td>2083</td>
-            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-            <td>52</td>
-            <td>1758</td>
-            <td>2025-04-14 22:12</td>
-          </tr>
-
-          <tr>
             <td><a href="https://www.faceit.com/de/players/-SMN-" target="_blank">-SMN-</a></td>
             <td>2076</td>
             <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
             <td>51</td>
             <td>3083</td>
             <td>2025-04-13 00:23</td>
+          </tr>
+
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/Vik" target="_blank">Vik</a></td>
+            <td>2058</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>1759</td>
+            <td>2025-04-14 22:51</td>
           </tr>
 
           <tr>
@@ -155,7 +155,44 @@
     </tbody>
   </table>
 </div>
-<p style="text-align:right; font-size: 0.9em;">Zuletzt aktualisiert: 2025-04-14 22:41</p>
+<p style="text-align:right; font-size: 0.9em;">Zuletzt aktualisiert: 2025-04-14 23:18</p>
+
+<script>
+  document.querySelectorAll("th").forEach((header, columnIndex) => {
+    header.style.cursor = "pointer";
+    header.addEventListener("click", () => {
+      const table = header.closest("table");
+      const tbody = table.querySelector("tbody");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const type = header.dataset.sort;
+      const asc = !header.classList.contains("asc");
+
+      rows.sort((a, b) => {
+        const getText = (row) => row.children[columnIndex].textContent.trim();
+        let aVal = getText(a);
+        let bVal = getText(b);
+
+        if (type === "number") {
+          aVal = parseFloat(aVal.replace("%", "")) || 0;
+          bVal = parseFloat(bVal.replace("%", "")) || 0;
+        } else if (type === "date") {
+          aVal = new Date(aVal);
+          bVal = new Date(bVal);
+        }
+
+        return asc ? aVal > bVal ? 1 : -1 : aVal < bVal ? 1 : -1;
+      });
+
+      table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
+      header.classList.add(asc ? "asc" : "desc");
+      rows.forEach(row => tbody.appendChild(row));
+    });
+  });
+</script>
+<style>
+  th.asc::after { content: " ▲"; font-size: 0.8em; }
+  th.desc::after { content: " ▼"; font-size: 0.8em; }
+</style>
 
 <script>
   document.querySelectorAll("th").forEach((header, columnIndex) => {
