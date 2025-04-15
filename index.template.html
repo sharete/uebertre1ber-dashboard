@@ -92,5 +92,38 @@
 
     updateEloDiff("daily");
   </script>
+  <script>
+    document.querySelectorAll("th").forEach((header, columnIndex) => {
+      header.addEventListener("click", () => {
+        const table = header.closest("table");
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+        const asc = !header.classList.contains("asc");
+  
+        rows.sort((a, b) => {
+          const getText = (row) => row.children[columnIndex].textContent.trim();
+          let aVal = getText(a);
+          let bVal = getText(b);
+  
+          const isDate = /\d{4}-\d{2}-\d{2}/.test(aVal);
+          const isNumber = !isNaN(parseFloat(aVal.replace(/[%+()]/g, "")));
+  
+          if (isDate) {
+            aVal = new Date(aVal);
+            bVal = new Date(bVal);
+          } else if (isNumber) {
+            aVal = parseFloat(aVal.replace(/[%+()]/g, ""));
+            bVal = parseFloat(bVal.replace(/[%+()]/g, ""));
+          }
+  
+          return asc ? aVal - bVal : bVal - aVal;
+        });
+  
+        table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
+        header.classList.add(asc ? "asc" : "desc");
+        rows.forEach(row => tbody.appendChild(row));
+      });
+    });
+  </script>  
 </body>
 </html>
