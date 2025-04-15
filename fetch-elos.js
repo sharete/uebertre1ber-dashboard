@@ -17,13 +17,6 @@ const RANGE_FILES = {
   latest: "elo-latest.json"
 };
 
-const RANGE_DATES = {
-  daily: DateTime.now().minus({ days: 1 }),
-  weekly: DateTime.now().startOf("week"),
-  monthly: DateTime.now().startOf("month"),
-  yearly: DateTime.fromISO("2025-01-01")
-};
-
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR);
 }
@@ -124,6 +117,22 @@ async function fetchPlayerData(playerId) {
   return { nickname, elo, lastMatch: lastMatchFormatted, faceitUrl, level, winrate, matches, recentStats };
 }
 
+function getPeriodStart(range) {
+  const now = DateTime.now().setZone("Europe/Berlin");
+  switch (range) {
+    case "daily":
+      return now.startOf("day");
+    case "weekly":
+      return now.startOf("week");
+    case "monthly":
+      return now.startOf("month");
+    case "yearly":
+      return now.startOf("year");
+    default:
+      return now;
+  }
+}
+
 (async () => {
   if (!FACEIT_API_KEY) {
     console.error("❌ FACEIT_API_KEY fehlt!");
@@ -187,16 +196,34 @@ async function fetchPlayerData(playerId) {
   fs.writeFileSync(OUTPUT_FILE, updatedHtml);
   console.log(`✅ Dashboard aktualisiert: ${OUTPUT_FILE}`);
 
-  const now = DateTime.now();
-
   for (const range of ["daily", "weekly", "monthly", "yearly"]) {
-    const filePath = path.join(DATA_DIR, RANGE_FILES[range]);
-    if (!fs.existsSync(filePath)) {
-      writeJson(RANGE_FILES[range], latestSnapshot);
-      fs.writeFileSync(path.join(DATA_DIR, `elo-${range}-meta.json`), JSON.stringify({ lastUpdated: now.toISODate() }, null, 2));
-      console.log(`✅ ${RANGE_FILES[range]} wurde einmalig erstellt.`);
+    const snapshotPath = path.join(DATA_DIR, RANGE_FILES[range]);
+    const metaPath = path.join(DATA_DIR, `elo-${range}-meta.json`);
+    const currentPeriodStart = getPeriodStart(range);
+
+    let shouldUpdate = false;
+
+    if (fs.existsSync(metaPath)) {
+      try {
+        const meta = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
+        const lastUpdated = DateTime.fromISO(meta.lastUpdated, { zone: "Europe/Berlin" });
+
+        if (lastUpdated < currentPeriodStart) {
+          shouldUpdate = true;
+        }
+      } catch {
+        shouldUpdate = true;
+      }
     } else {
-      console.log(`ℹ️ ${RANGE_FILES[range]} existiert bereits und wird nicht überschrieben.`);
+      shouldUpdate = true;
+    }
+
+    if (shouldUpdate) {
+      writeJson(RANGE_FILES[range], latestSnapshot);
+      fs.writeFileSync(metaPath, JSON.stringify({ lastUpdated: currentPeriodStart.toISODate() }, null, 2));
+      console.log(`✅ ${RANGE_FILES[range]} wurde aktualisiert.`);
+    } else {
+      console.log(`ℹ️ ${RANGE_FILES[range]} ist aktuell, kein Update nötig.`);
     }
   }
 

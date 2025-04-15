@@ -70,6 +70,7 @@
         <option value="monthly">Monatlich</option>
         <option value="yearly">Jährlich</option>
       </select>
+      <p id="snapshotInfo" class="mt-2 text-xs text-white/70"></p>
     </div>
 
     <div class="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl shadow-2xl p-6 w-full max-w-6xl overflow-auto">
@@ -119,6 +120,16 @@
           cell.innerHTML = `<span class="text-xs ${diff >= 0 ? 'text-green-400' : 'text-red-400'}">(${diff >= 0 ? '+' : ''}${diff})</span>`;
         }
       });
+
+      try {
+        const metaRes = await fetch(`data/elo-${range}-meta.json`);
+        const meta = await metaRes.json();
+        const snapshotInfo = document.getElementById("snapshotInfo");
+        snapshotInfo.textContent = `Δ ELO basiert auf Snapshot vom: ${meta.lastUpdated}`;
+      } catch (e) {
+        document.getElementById("snapshotInfo").textContent = '';
+        console.warn("❌ Keine Snapshot-Metadaten gefunden.");
+      }
     }
 
     document.getElementById("eloRange").addEventListener("change", e => {
@@ -141,7 +152,7 @@
           let aVal = getText(a);
           let bVal = getText(b);
 
-          const isDate = /\d{4}-\d{2}-\d{2}/.test(aVal);
+          const isDate = /\\d{4}-\\d{2}-\\d{2}/.test(aVal);
           const isNumber = !isNaN(parseFloat(aVal.replace(/[%+()]/g, "")));
 
           if (isDate) {
