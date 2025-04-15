@@ -59,7 +59,11 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col text-white bg-[#1e1f26]">
-  <header class="p-6 text-center text-3xl font-bold text-white">uebertre1ber ELO Dashboard</header>
+  <!-- HEADER MIT LOGO -->
+  <header class="p-6 flex items-center justify-center flex-wrap gap-4 text-center">
+    <img src="icons/levels/logo.png" alt="uebertre1ber Logo" class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl shadow-md" />
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white">uebertre1ber ELO Dashboard</h1>
+  </header>
 
   <main class="flex-grow flex flex-col items-center p-4">
     <div class="mb-4 w-full max-w-6xl">
@@ -152,7 +156,7 @@
           let aVal = getText(a);
           let bVal = getText(b);
 
-          const isDate = /\\d{4}-\\d{2}-\\d{2}/.test(aVal);
+          const isDate = /\d{4}-\d{2}-\d{2}/.test(aVal);
           const isNumber = !isNaN(parseFloat(aVal.replace(/[%+()]/g, "")));
 
           if (isDate) {
