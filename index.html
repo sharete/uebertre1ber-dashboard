@@ -11,15 +11,50 @@
       background: #1e1f26;
       font-family: 'Inter', sans-serif;
     }
-    a.nickname-link {
+
+    .nickname-link {
       text-decoration: none;
       transition: all 0.2s ease;
       color: #ffffff;
+      position: relative;
+      display: inline-block;
     }
-    a.nickname-link:hover {
+
+    .nickname-link:hover {
       color: #38bdf8;
       text-decoration: underline;
       text-shadow: 0 0 6px #38bdf8;
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip-content {
+      visibility: hidden;
+      opacity: 0;
+      background-color: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      position: absolute;
+      z-index: 10;
+      top: 125%;
+      left: 0;
+      font-size: 0.75rem;
+      line-height: 1.25rem;
+      white-space: normal;
+      width: max-content;
+      max-width: 320px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      pointer-events: none;
+    }
+
+    .tooltip:hover .tooltip-content {
+      visibility: visible;
+      opacity: 1;
     }
   </style>
 </head>
@@ -55,12 +90,14 @@
           <tbody>
             
         <tr data-nickname="noxq" data-elo="3078">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/noxq" target="_blank" class="nickname-link">noxq</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills438 / Assists138 / Deaths441 – K/D 0.99 – ADR 73.1 – HS% 60%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/noxq" target="_blank" class="nickname-link">noxq</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 438 / Assists 138 / Deaths 441<br/>
+               K/D 0.99 – ADR 73.1 – HS% 60%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">3078</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -70,12 +107,14 @@
         </tr>
 
         <tr data-nickname="any" data-elo="2989">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/any" target="_blank" class="nickname-link">any</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills582 / Assists145 / Deaths474 – K/D 1.23 – ADR 93.3 – HS% 52%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/any" target="_blank" class="nickname-link">any</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 582 / Assists 145 / Deaths 474<br/>
+               K/D 1.23 – ADR 93.3 – HS% 52%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">2989</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -85,12 +124,14 @@
         </tr>
 
         <tr data-nickname="SEYED" data-elo="2930">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/SEYED" target="_blank" class="nickname-link">SEYED</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills546 / Assists136 / Deaths489 – K/D 1.12 – ADR 83.4 – HS% 57%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/SEYED" target="_blank" class="nickname-link">SEYED</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 546 / Assists 136 / Deaths 489<br/>
+               K/D 1.12 – ADR 83.4 – HS% 57%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">2930</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -100,12 +141,14 @@
         </tr>
 
         <tr data-nickname="knuuuuub" data-elo="2834">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/knuuuuub" target="_blank" class="nickname-link">knuuuuub</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills399 / Assists143 / Deaths447 – K/D 0.89 – ADR 70.3 – HS% 50%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/knuuuuub" target="_blank" class="nickname-link">knuuuuub</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 399 / Assists 143 / Deaths 447<br/>
+               K/D 0.89 – ADR 70.3 – HS% 50%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">2834</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -115,12 +158,14 @@
         </tr>
 
         <tr data-nickname="WalkingFast" data-elo="2728">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/WalkingFast" target="_blank" class="nickname-link">WalkingFast</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills431 / Assists109 / Deaths429 – K/D 1.00 – ADR 58.1 – HS% 58%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/WalkingFast" target="_blank" class="nickname-link">WalkingFast</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 431 / Assists 109 / Deaths 429<br/>
+               K/D 1.00 – ADR 58.1 – HS% 58%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">2728</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -130,12 +175,14 @@
         </tr>
 
         <tr data-nickname="rolanHEHE" data-elo="2705">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/rolanHEHE" target="_blank" class="nickname-link">rolanHEHE</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills559 / Assists156 / Deaths495 – K/D 1.13 – ADR 88.7 – HS% 46%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/rolanHEHE" target="_blank" class="nickname-link">rolanHEHE</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 559 / Assists 156 / Deaths 495<br/>
+               K/D 1.13 – ADR 88.7 – HS% 46%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">2705</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -145,12 +192,14 @@
         </tr>
 
         <tr data-nickname="GIANN11" data-elo="2659">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/GIANN11" target="_blank" class="nickname-link">GIANN11</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills485 / Assists186 / Deaths496 – K/D 0.98 – ADR 77.9 – HS% 49%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/GIANN11" target="_blank" class="nickname-link">GIANN11</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 485 / Assists 186 / Deaths 496<br/>
+               K/D 0.98 – ADR 77.9 – HS% 49%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">2659</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -160,12 +209,14 @@
         </tr>
 
         <tr data-nickname="Saphyy" data-elo="2601">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/Saphyy" target="_blank" class="nickname-link">Saphyy</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills511 / Assists148 / Deaths470 – K/D 1.09 – ADR 79.0 – HS% 53%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/Saphyy" target="_blank" class="nickname-link">Saphyy</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 511 / Assists 148 / Deaths 470<br/>
+               K/D 1.09 – ADR 79.0 – HS% 53%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">2601</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -175,12 +226,14 @@
         </tr>
 
         <tr data-nickname="SaN" data-elo="2568">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/SaN" target="_blank" class="nickname-link">SaN</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills466 / Assists128 / Deaths481 – K/D 0.97 – ADR 75.6 – HS% 52%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/SaN" target="_blank" class="nickname-link">SaN</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 466 / Assists 128 / Deaths 481<br/>
+               K/D 0.97 – ADR 75.6 – HS% 52%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">2568</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -190,12 +243,14 @@
         </tr>
 
         <tr data-nickname="KyP" data-elo="2363">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/KyP" target="_blank" class="nickname-link">KyP</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills529 / Assists142 / Deaths470 – K/D 1.13 – ADR 89.1 – HS% 48%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/KyP" target="_blank" class="nickname-link">KyP</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 529 / Assists 142 / Deaths 470<br/>
+               K/D 1.13 – ADR 89.1 – HS% 48%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">2363</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -205,12 +260,14 @@
         </tr>
 
         <tr data-nickname="sha89" data-elo="2352">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/sha89" target="_blank" class="nickname-link">sha89</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills401 / Assists139 / Deaths446 – K/D 0.90 – ADR 70.1 – HS% 49%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/sha89" target="_blank" class="nickname-link">sha89</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 401 / Assists 139 / Deaths 446<br/>
+               K/D 0.90 – ADR 70.1 – HS% 49%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">2352</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -220,12 +277,14 @@
         </tr>
 
         <tr data-nickname="-SMN-" data-elo="2050">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/-SMN-" target="_blank" class="nickname-link">-SMN-</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills406 / Assists152 / Deaths456 – K/D 0.89 – ADR 71.2 – HS% 50%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/-SMN-" target="_blank" class="nickname-link">-SMN-</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 406 / Assists 152 / Deaths 456<br/>
+               K/D 0.89 – ADR 71.2 – HS% 50%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">2050</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -235,12 +294,14 @@
         </tr>
 
         <tr data-nickname="Vik" data-elo="2032">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/Vik" target="_blank" class="nickname-link">Vik</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills376 / Assists178 / Deaths518 – K/D 0.73 – ADR 61.9 – HS% 55%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/Vik" target="_blank" class="nickname-link">Vik</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 376 / Assists 178 / Deaths 518<br/>
+               K/D 0.73 – ADR 61.9 – HS% 55%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">2032</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
@@ -250,12 +311,14 @@
         </tr>
 
         <tr data-nickname="straccione" data-elo="911">
-          <td class="p-2">
-            <div class="group">
-              <a href="https://www.faceit.com/de/players/straccione" target="_blank" class="nickname-link">straccione</a>
-              <div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills455 / Assists113 / Deaths466 – K/D 0.98 – ADR 1.6 – HS% 51%</div>
-            </div>
-          </td>
+          <td class="p-2"><div class="tooltip">
+             <a href="https://www.faceit.com/de/players/straccione" target="_blank" class="nickname-link">straccione</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills 455 / Assists 113 / Deaths 466<br/>
+               K/D 0.98 – ADR 1.6 – HS% 51%
+             </div>
+           </div></td>
           <td class="p-2 elo-now">911</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_4_icon.png" alt="Level 4" width="24" height="24" title="Level 4"></td>
@@ -266,7 +329,7 @@
           </tbody>
         </table>
       </div>
-      <p class="text-right text-xs mt-4 text-white/70">Zuletzt aktualisiert: 2025-04-15 03:21</p>
+      <p class="text-right text-xs mt-4 text-white/70">Zuletzt aktualisiert: 2025-04-15 03:35</p>
     </div>
   </main>
 
@@ -284,12 +347,12 @@
         const nickname = row.dataset.nickname;
         const nowElo = parseInt(row.dataset.elo);
         const prevElo = lookup[nickname];
-        const diff = prevElo != null ? nowElo - prevElo : null;
         const cell = row.querySelector(".elo-diff");
 
-        if (diff === null) {
+        if (prevElo == null) {
           cell.textContent = "—";
         } else {
+          const diff = nowElo - prevElo;
           cell.innerHTML = `<span class="text-xs ${diff >= 0 ? 'text-green-400' : 'text-red-400'}">(${diff >= 0 ? '+' : ''}${diff})</span>`;
         }
       });
@@ -301,6 +364,7 @@
 
     updateEloDiff("daily");
   </script>
+
   <script>
     document.querySelectorAll("th").forEach((header, columnIndex) => {
       header.addEventListener("click", () => {
@@ -308,15 +372,15 @@
         const tbody = table.querySelector("tbody");
         const rows = Array.from(tbody.querySelectorAll("tr"));
         const asc = !header.classList.contains("asc");
-  
+
         rows.sort((a, b) => {
           const getText = (row) => row.children[columnIndex].textContent.trim();
           let aVal = getText(a);
           let bVal = getText(b);
-  
+
           const isDate = /\d{4}-\d{2}-\d{2}/.test(aVal);
           const isNumber = !isNaN(parseFloat(aVal.replace(/[%+()]/g, "")));
-  
+
           if (isDate) {
             aVal = new Date(aVal);
             bVal = new Date(bVal);
@@ -324,15 +388,15 @@
             aVal = parseFloat(aVal.replace(/[%+()]/g, ""));
             bVal = parseFloat(bVal.replace(/[%+()]/g, ""));
           }
-  
+
           return asc ? aVal - bVal : bVal - aVal;
         });
-  
+
         table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
         header.classList.add(asc ? "asc" : "desc");
         rows.forEach(row => tbody.appendChild(row));
       });
     });
-  </script>  
+  </script>
 </body>
 </html>
