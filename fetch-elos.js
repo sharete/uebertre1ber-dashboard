@@ -52,7 +52,7 @@ async function fetchMatchStats(matchId, playerId, headers) {
   const players = matchData.rounds[0].teams.flatMap(team => team.players);
 
   const statsById = {};
-  players.forEach(p => statsById[p.player_id] = p.stats);
+  players.forEach(p => statsById[p.player_id] = p.player_stats);
   matchCache[matchId] = statsById;
 
   return statsById[playerId] || null;
