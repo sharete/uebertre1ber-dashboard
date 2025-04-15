@@ -37,7 +37,17 @@ function writeJson(file, data) {
 
 const matchCache = {};
 
-async function fetchMatchStats(matchId, playerId, headers) {
+function getHeaders() {
+  return {
+    Authorization: `Bearer ${FACEIT_API_KEY}`,
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    Accept: "application/json"
+  };
+}
+
+async function fetchMatchStats(matchId, playerId) {
+  const headers = getHeaders();
   if (matchCache[matchId]) return matchCache[matchId][playerId] || null;
 
   const matchRes = await fetch(`https://open.faceit.com/data/v4/matches/${matchId}/stats`, { headers });
@@ -45,21 +55,30 @@ async function fetchMatchStats(matchId, playerId, headers) {
   const players = matchData.rounds[0].teams.flatMap(team => team.players);
 
   const statsById = {};
-  players.forEach(p => statsById[p.player_id] = p.player_stats);
+  players.forEach(p => (statsById[p.player_id] = p.player_stats));
   matchCache[matchId] = statsById;
 
   return statsById[playerId] || null;
 }
 
-async function fetchRecentStats(playerId, headers) {
-  const matchRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/history?game=cs2&limit=30`, { headers });
+async function fetchRecentStats(playerId) {
+  const headers = getHeaders();
+  const matchRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/history?game=cs2&limit=30`, {
+    headers
+  });
   const matchJson = await matchRes.json();
   const matchIds = matchJson.items.map(m => m.match_id);
 
-  let totalKills = 0, totalDeaths = 0, totalAssists = 0, totalAdr = 0, totalHs = 0, totalRounds = 0, matchCount = 0;
+  let totalKills = 0,
+    totalDeaths = 0,
+    totalAssists = 0,
+    totalAdr = 0,
+    totalHs = 0,
+    totalRounds = 0,
+    matchCount = 0;
 
   for (const matchId of matchIds) {
-    const stats = await fetchMatchStats(matchId, playerId, headers);
+    const stats = await fetchMatchStats(matchId, playerId);
     if (!stats) continue;
     totalKills += parseInt(stats.Kills || 0);
     totalDeaths += parseInt(stats.Deaths || 0);
@@ -87,12 +106,14 @@ async function fetchRecentStats(playerId, headers) {
 }
 
 async function fetchPlayerData(playerId) {
-  const headers = { Authorization: `Bearer ${FACEIT_API_KEY}` };
+  const headers = getHeaders();
 
   const profileRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}`, { headers });
   const profile = await profileRes.json();
 
-  const matchRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/history?game=cs2&limit=1`, { headers });
+  const matchRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/history?game=cs2&limit=1`, {
+    headers
+  });
   const matchJson = await matchRes.json();
 
   const statsRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/stats/cs2`, { headers });
@@ -112,7 +133,7 @@ async function fetchPlayerData(playerId) {
     ? DateTime.fromSeconds(lastMatchTimestamp).setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm")
     : "—";
 
-  const recentStats = await fetchRecentStats(playerId, headers);
+  const recentStats = await fetchRecentStats(playerId);
 
   return { nickname, elo, lastMatch: lastMatchFormatted, faceitUrl, level, winrate, matches, recentStats };
 }
@@ -143,7 +164,7 @@ function getPeriodStart(range) {
   const results = [];
 
   for (const line of lines) {
-    const [playerId, , nickname] = line.split(/#|\/\//).map((x) => x.trim());
+    const [playerId, , nickname] = line.split(/#|\/\//).map(x => x.trim());
     try {
       const data = await fetchPlayerData(playerId);
       if (data.elo) results.push(data);
