@@ -42,6 +42,46 @@ function writeJson(file, data) {
   console.log(`✅ Datei geschrieben: ${file} (${data.length} Einträge)`);
 }
 
+async function fetchMatchStats(matchId, nickname, headers) {
+  const matchRes = await fetch(`https://open.faceit.com/data/v4/matches/${matchId}/stats`, { headers });
+  const matchData = await matchRes.json();
+  const players = matchData.rounds[0].teams.flatMap(team => team.players);
+  return players.find(p => p.nickname.toLowerCase() === nickname.toLowerCase())?.stats || null;
+}
+
+async function fetchRecentStats(playerId, nickname, headers) {
+  const matchRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/history?game=cs2&limit=30`, { headers });
+  const matchJson = await matchRes.json();
+  const matchIds = matchJson.items.map(m => m.match_id);
+
+  let totalKills = 0, totalDeaths = 0, totalAssists = 0, totalAdr = 0, totalHs = 0, totalRounds = 0, matchCount = 0;
+
+  for (const matchId of matchIds) {
+    const stats = await fetchMatchStats(matchId, nickname, headers);
+    if (!stats) continue;
+    totalKills += parseInt(stats.Kills || 0);
+    totalDeaths += parseInt(stats.Deaths || 0);
+    totalAssists += parseInt(stats.Assists || 0);
+    totalAdr += parseFloat(stats.ADR || 0);
+    totalHs += parseInt(stats.Headshots || 0);
+    totalRounds += parseInt(stats['Rounds'] || 0);
+    matchCount++;
+  }
+
+  const kd = totalDeaths ? (totalKills / totalDeaths).toFixed(2) : "0.00";
+  const kr = totalRounds ? (totalKills / totalRounds).toFixed(2) : "0.00";
+  const adr = matchCount ? (totalAdr / matchCount).toFixed(1) : "0.0";
+  const hsPercent = totalKills ? ((totalHs / totalKills) * 100).toFixed(0) + "%" : "0%";
+
+  return {
+    kad: `${totalKills} / ${totalAssists} / ${totalDeaths}`,
+    kd,
+    kr,
+    adr,
+    hsPercent
+  };
+}
+
 async function fetchPlayerData(playerId) {
   const headers = { Authorization: `Bearer ${FACEIT_API_KEY}` };
 
@@ -68,7 +108,9 @@ async function fetchPlayerData(playerId) {
     ? DateTime.fromSeconds(lastMatchTimestamp).setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm")
     : "—";
 
-  return { nickname, elo, lastMatch: lastMatchFormatted, faceitUrl, level, winrate, matches };
+  const recentStats = await fetchRecentStats(playerId, nickname, headers);
+
+  return { nickname, elo, lastMatch: lastMatchFormatted, faceitUrl, level, winrate, matches, recentStats };
 }
 
 (async () => {
@@ -101,10 +143,17 @@ async function fetchPlayerData(playerId) {
   writeJson(RANGE_FILES.latest, latestSnapshot);
 
   const tableBody = results
-    .map(({ nickname, elo, level, winrate, matches, lastMatch, faceitUrl }) => {
+    .map(({ nickname, elo, level, winrate, matches, lastMatch, faceitUrl, recentStats }) => {
+      const statsLine = recentStats
+        ? `<div class="text-xs text-white/70 leading-tight mt-1">${recentStats.kad} – K/D ${recentStats.kd} – K/R ${recentStats.kr} – ADR ${recentStats.adr} – HS% ${recentStats.hsPercent}</div>`
+        : "";
+
       return `
         <tr data-nickname="${nickname}" data-elo="${elo}">
-          <td class="p-2"><a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a></td>
+          <td class="p-2">
+            <a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a>
+            ${statsLine}
+          </td>
           <td class="p-2 elo-now">${elo}</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24" title="Level ${level}"></td>
