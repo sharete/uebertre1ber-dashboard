@@ -73,21 +73,21 @@ async function fetchRecentStats(playerId, headers) {
     totalAssists += parseInt(stats.Assists || 0);
     totalAdr += parseFloat(stats.ADR || 0);
     totalHs += parseInt(stats.Headshots || 0);
-    totalRounds += parseInt(stats['Rounds'] || 0);
+    totalRounds += parseInt(stats.Rounds || 0);
     matchCount++;
   }
 
   const kd = totalDeaths ? (totalKills / totalDeaths).toFixed(2) : "0.00";
-  const kr = totalRounds ? (totalKills / totalRounds).toFixed(2) : "0.00";
   const adr = matchCount ? (totalAdr / matchCount).toFixed(1) : "0.0";
   const hsPercent = totalKills ? ((totalHs / totalKills) * 100).toFixed(0) + "%" : "0%";
 
-  console.log(`📊 STATS für ${playerId}: ${totalKills}/${totalAssists}/${totalDeaths} – K/D ${kd}, K/R ${kr}, ADR ${adr}, HS% ${hsPercent}`);
+  console.log(`📊 STATS für ${playerId}: ${totalKills}/${totalAssists}/${totalDeaths} – K/D ${kd}, ADR ${adr}, HS% ${hsPercent}`);
 
   return {
-    kad: `${totalKills} / ${totalAssists} / ${totalDeaths}`,
+    kills: totalKills,
+    deaths: totalDeaths,
+    assists: totalAssists,
     kd,
-    kr,
     adr,
     hsPercent
   };
@@ -156,14 +156,16 @@ async function fetchPlayerData(playerId) {
   const tableBody = results
     .map(({ nickname, elo, level, winrate, matches, lastMatch, faceitUrl, recentStats }) => {
       const statsLine = recentStats
-        ? `<div class="text-xs text-white/70 leading-tight mt-1">${recentStats.kad} – K/D ${recentStats.kd} – K/R ${recentStats.kr} – ADR ${recentStats.adr} – HS% ${recentStats.hsPercent}</div>`
+        ? `<div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills${recentStats.kills} / Assists${recentStats.assists} / Deaths${recentStats.deaths} – K/D ${recentStats.kd} – ADR ${recentStats.adr} – HS% ${recentStats.hsPercent}</div>`
         : "";
 
       return `
         <tr data-nickname="${nickname}" data-elo="${elo}">
           <td class="p-2">
-            <a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a>
-            ${statsLine}
+            <div class="group">
+              <a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a>
+              ${statsLine}
+            </div>
           </td>
           <td class="p-2 elo-now">${elo}</td>
           <td class="p-2 elo-diff">-</td>
