@@ -85,8 +85,8 @@ async function fetchRecentStats(playerId, headers) {
 
   return {
     kills: totalKills,
-    deaths: totalDeaths,
     assists: totalAssists,
+    deaths: totalDeaths,
     kd,
     adr,
     hsPercent
@@ -156,17 +156,19 @@ async function fetchPlayerData(playerId) {
   const tableBody = results
     .map(({ nickname, elo, level, winrate, matches, lastMatch, faceitUrl, recentStats }) => {
       const statsLine = recentStats
-        ? `<div class="text-xs text-white/70 leading-tight mt-1 hidden group-hover:block">Letzten 30 Matches: Kills${recentStats.kills} / Assists${recentStats.assists} / Deaths${recentStats.deaths} – K/D ${recentStats.kd} – ADR ${recentStats.adr} – HS% ${recentStats.hsPercent}</div>`
-        : "";
+        ? `<div class="tooltip">
+             <a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a>
+             <div class="tooltip-content">
+               Letzten 30 Matches:<br/>
+               Kills ${recentStats.kills} / Assists ${recentStats.assists} / Deaths ${recentStats.deaths}<br/>
+               K/D ${recentStats.kd} – ADR ${recentStats.adr} – HS% ${recentStats.hsPercent}
+             </div>
+           </div>`
+        : `<a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a>`;
 
       return `
         <tr data-nickname="${nickname}" data-elo="${elo}">
-          <td class="p-2">
-            <div class="group">
-              <a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a>
-              ${statsLine}
-            </div>
-          </td>
+          <td class="p-2">${statsLine}</td>
           <td class="p-2 elo-now">${elo}</td>
           <td class="p-2 elo-diff">-</td>
           <td class="p-2"><img src="icons/levels/level_${level}_icon.png" alt="Level ${level}" width="24" height="24" title="Level ${level}"></td>

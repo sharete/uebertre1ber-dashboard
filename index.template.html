@@ -11,15 +11,50 @@
       background: #1e1f26;
       font-family: 'Inter', sans-serif;
     }
-    a.nickname-link {
+
+    .nickname-link {
       text-decoration: none;
       transition: all 0.2s ease;
       color: #ffffff;
+      position: relative;
+      display: inline-block;
     }
-    a.nickname-link:hover {
+
+    .nickname-link:hover {
       color: #38bdf8;
       text-decoration: underline;
       text-shadow: 0 0 6px #38bdf8;
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip-content {
+      visibility: hidden;
+      opacity: 0;
+      background-color: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      position: absolute;
+      z-index: 10;
+      top: 125%;
+      left: 0;
+      font-size: 0.75rem;
+      line-height: 1.25rem;
+      white-space: normal;
+      width: max-content;
+      max-width: 320px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      pointer-events: none;
+    }
+
+    .tooltip:hover .tooltip-content {
+      visibility: visible;
+      opacity: 1;
     }
   </style>
 </head>
@@ -75,12 +110,12 @@
         const nickname = row.dataset.nickname;
         const nowElo = parseInt(row.dataset.elo);
         const prevElo = lookup[nickname];
-        const diff = prevElo != null ? nowElo - prevElo : null;
         const cell = row.querySelector(".elo-diff");
 
-        if (diff === null) {
+        if (prevElo == null) {
           cell.textContent = "—";
         } else {
+          const diff = nowElo - prevElo;
           cell.innerHTML = `<span class="text-xs ${diff >= 0 ? 'text-green-400' : 'text-red-400'}">(${diff >= 0 ? '+' : ''}${diff})</span>`;
         }
       });
@@ -92,6 +127,7 @@
 
     updateEloDiff("daily");
   </script>
+
   <script>
     document.querySelectorAll("th").forEach((header, columnIndex) => {
       header.addEventListener("click", () => {
@@ -99,15 +135,15 @@
         const tbody = table.querySelector("tbody");
         const rows = Array.from(tbody.querySelectorAll("tr"));
         const asc = !header.classList.contains("asc");
-  
+
         rows.sort((a, b) => {
           const getText = (row) => row.children[columnIndex].textContent.trim();
           let aVal = getText(a);
           let bVal = getText(b);
-  
+
           const isDate = /\d{4}-\d{2}-\d{2}/.test(aVal);
           const isNumber = !isNaN(parseFloat(aVal.replace(/[%+()]/g, "")));
-  
+
           if (isDate) {
             aVal = new Date(aVal);
             bVal = new Date(bVal);
@@ -115,15 +151,15 @@
             aVal = parseFloat(aVal.replace(/[%+()]/g, ""));
             bVal = parseFloat(bVal.replace(/[%+()]/g, ""));
           }
-  
+
           return asc ? aVal - bVal : bVal - aVal;
         });
-  
+
         table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
         header.classList.add(asc ? "asc" : "desc");
         rows.forEach(row => tbody.appendChild(row));
       });
     });
-  </script>  
+  </script>
 </body>
 </html>
