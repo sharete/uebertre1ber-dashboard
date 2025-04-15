@@ -42,14 +42,23 @@ function writeJson(file, data) {
   console.log(`✅ Datei geschrieben: ${file} (${data.length} Einträge)`);
 }
 
-async function fetchMatchStats(matchId, nickname, headers) {
+const matchCache = {};
+
+async function fetchMatchStats(matchId, playerId, headers) {
+  if (matchCache[matchId]) return matchCache[matchId][playerId] || null;
+
   const matchRes = await fetch(`https://open.faceit.com/data/v4/matches/${matchId}/stats`, { headers });
   const matchData = await matchRes.json();
   const players = matchData.rounds[0].teams.flatMap(team => team.players);
-  return players.find(p => p.nickname.toLowerCase() === nickname.toLowerCase())?.stats || null;
+
+  const statsById = {};
+  players.forEach(p => statsById[p.player_id] = p.stats);
+  matchCache[matchId] = statsById;
+
+  return statsById[playerId] || null;
 }
 
-async function fetchRecentStats(playerId, nickname, headers) {
+async function fetchRecentStats(playerId, headers) {
   const matchRes = await fetch(`https://open.faceit.com/data/v4/players/${playerId}/history?game=cs2&limit=30`, { headers });
   const matchJson = await matchRes.json();
   const matchIds = matchJson.items.map(m => m.match_id);
@@ -57,7 +66,7 @@ async function fetchRecentStats(playerId, nickname, headers) {
   let totalKills = 0, totalDeaths = 0, totalAssists = 0, totalAdr = 0, totalHs = 0, totalRounds = 0, matchCount = 0;
 
   for (const matchId of matchIds) {
-    const stats = await fetchMatchStats(matchId, nickname, headers);
+    const stats = await fetchMatchStats(matchId, playerId, headers);
     if (!stats) continue;
     totalKills += parseInt(stats.Kills || 0);
     totalDeaths += parseInt(stats.Deaths || 0);
@@ -72,6 +81,8 @@ async function fetchRecentStats(playerId, nickname, headers) {
   const kr = totalRounds ? (totalKills / totalRounds).toFixed(2) : "0.00";
   const adr = matchCount ? (totalAdr / matchCount).toFixed(1) : "0.0";
   const hsPercent = totalKills ? ((totalHs / totalKills) * 100).toFixed(0) + "%" : "0%";
+
+  console.log(`📊 STATS für ${playerId}: ${totalKills}/${totalAssists}/${totalDeaths} – K/D ${kd}, K/R ${kr}, ADR ${adr}, HS% ${hsPercent}`);
 
   return {
     kad: `${totalKills} / ${totalAssists} / ${totalDeaths}`,
@@ -108,7 +119,7 @@ async function fetchPlayerData(playerId) {
     ? DateTime.fromSeconds(lastMatchTimestamp).setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm")
     : "—";
 
-  const recentStats = await fetchRecentStats(playerId, nickname, headers);
+  const recentStats = await fetchRecentStats(playerId, headers);
 
   return { nickname, elo, lastMatch: lastMatchFormatted, faceitUrl, level, winrate, matches, recentStats };
 }
