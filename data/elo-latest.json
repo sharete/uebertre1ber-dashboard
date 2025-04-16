@@ -1,5 +1,9 @@
 [
   {
+    "nickname": "noxq",
+    "elo": 3078
+  },
+  {
     "nickname": "any",
     "elo": 2970
   },
@@ -12,12 +16,24 @@
     "elo": 2866
   },
   {
+    "nickname": "WalkingFast",
+    "elo": 2728
+  },
+  {
     "nickname": "rolanHEHE",
     "elo": 2705
   },
   {
     "nickname": "GIANN11",
     "elo": 2659
+  },
+  {
+    "nickname": "TIMZNq",
+    "elo": 2592
+  },
+  {
+    "nickname": "Saphyy",
+    "elo": 2550
   },
   {
     "nickname": "SaN",
@@ -38,5 +54,9 @@
   {
     "nickname": "Vik",
     "elo": 2024
+  },
+  {
+    "nickname": "straccione",
+    "elo": 911
   }
 ]
