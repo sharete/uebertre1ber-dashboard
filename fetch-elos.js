@@ -206,7 +206,7 @@ function getPeriodStart(range) {
     .map(l => l.split(/#|\/\//)[0].trim())
     .filter(Boolean);
 
-  const limit = pLimit(5); // Max. 5 gleichzeitige Anfragen
+  const limit = await pLimit(5); // Max. 5 gleichzeitige Anfragen
   const results = (
     await Promise.all(lines.map(id =>
       limit(async () => {
