@@ -8,7 +8,8 @@ const PLAYERS_FILE   = "players.txt";
 const TEMPLATE_FILE  = "index.template.html";
 const OUTPUT_FILE    = "index.html";
 const DATA_DIR       = path.join(__dirname, "data");
-const API_BASE       = "https://api.faceit.com/data/v4";
+// wieder korrekt:
+const API_BASE       = "https://open.faceit.com/data/v4";
 
 const RANGE_FILES = {
   daily:   "elo-daily.json",
@@ -17,8 +18,6 @@ const RANGE_FILES = {
   yearly:  "elo-yearly.json",
   latest:  "elo-latest.json"
 };
-
-// Helpers
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
 
@@ -37,7 +36,6 @@ function getHeaders() {
   };
 }
 
-// safeJson: read text and parse JSON, return null on any error
 async function safeJson(res) {
   try {
     const text = await res.text();
@@ -47,7 +45,6 @@ async function safeJson(res) {
   }
 }
 
-// Fetch match stats, cache by matchId
 const matchCache = {};
 async function fetchMatchStats(matchId, playerId) {
   if (matchCache[matchId]) {
@@ -57,25 +54,25 @@ async function fetchMatchStats(matchId, playerId) {
   if (!res.ok) return null;
   const data = await safeJson(res);
   if (!data?.rounds) return null;
-  const players = data.rounds[0].teams.flatMap(t => t.players);
+  const players  = data.rounds[0].teams.flatMap(t => t.players);
   const mapStats = Object.fromEntries(players.map(p => [p.player_id, p.player_stats]));
   matchCache[matchId] = mapStats;
   return mapStats[playerId] || null;
 }
 
-// Fetch recent 30 matches stats in parallel
 async function fetchRecentStats(playerId) {
-  const res = await fetch(`${API_BASE}/players/${playerId}/history?game=cs2&limit=30`, { headers: getHeaders() });
+  const res  = await fetch(
+    `${API_BASE}/players/${playerId}/history?game=cs2&limit=30`,
+    { headers: getHeaders() }
+  );
   const hist = await safeJson(res) || { items: [] };
   const items = hist.items || [];
 
-  // parallelize match-stats
   const statsArr = await Promise.all(
     items.map(m => fetchMatchStats(m.match_id, playerId).catch(() => null))
   );
 
-  // aggregate
-  let kills = 0, deaths = 0, assists = 0, adrTotal = 0, hs = 0, count = 0;
+  let kills=0, deaths=0, assists=0, adrTotal=0, hs=0, count=0;
   for (const s of statsArr) {
     if (!s) continue;
     kills    += +s.Kills     || 0;
@@ -96,13 +93,14 @@ async function fetchRecentStats(playerId) {
   };
 }
 
-// Fetch teammate stats: who you played with most & winrate
 async function fetchTeammateStats(playerId) {
-  const res = await fetch(`${API_BASE}/players/${playerId}/history?game=cs2&limit=30`, { headers: getHeaders() });
+  const res  = await fetch(
+    `${API_BASE}/players/${playerId}/history?game=cs2&limit=30`,
+    { headers: getHeaders() }
+  );
   const hist = await safeJson(res) || { items: [] };
   const items = hist.items || [];
 
-  // parallel fetch match details
   const matchesArr = await Promise.all(
     items.map(m =>
       fetch(`${API_BASE}/matches/${m.match_id}`, { headers: getHeaders() })
@@ -114,9 +112,9 @@ async function fetchTeammateStats(playerId) {
   const countMap = {}, winMap = {};
   for (const sumJson of matchesArr) {
     if (!sumJson?.teams) continue;
-    const score1 = sumJson.results?.["1"] || 0;
-    const score2 = sumJson.results?.["2"] || 0;
-    const winner = score1 > score2 ? "1" : score2 > score1 ? "2" : null;
+    const s1     = sumJson.results?.["1"] || 0;
+    const s2     = sumJson.results?.["2"] || 0;
+    const winner = s1 > s2 ? "1" : s2 > s1 ? "2" : null;
 
     for (const side of Object.keys(sumJson.teams)) {
       const team    = sumJson.teams[side];
@@ -144,10 +142,8 @@ async function fetchTeammateStats(playerId) {
     .sort((a,b) => b.count - a.count);
 }
 
-// Fetch full player data
 async function fetchPlayerData(playerId) {
   const headers = getHeaders();
-  // profile, history(limit 1), stats in parallel
   const [pr, hr, sr] = await Promise.all([
     fetch(`${API_BASE}/players/${playerId}`, { headers }),
     fetch(`${API_BASE}/players/${playerId}/history?game=cs2&limit=1`, { headers }),
@@ -155,8 +151,8 @@ async function fetchPlayerData(playerId) {
   ]);
 
   const profile = await safeJson(pr) || {};
-  const history = await safeJson(hr)   || { items: [] };
-  const stats   = await safeJson(sr)   || {};
+  const history = await safeJson(hr) || { items: [] };
+  const stats   = await safeJson(sr) || {};
 
   const elo      = profile.games?.cs2?.faceit_elo || null;
   const nickname = profile.nickname || "—";
@@ -164,7 +160,7 @@ async function fetchPlayerData(playerId) {
   const level    = profile.games?.cs2?.skill_level || null;
   const lifetime = stats.lifetime || {};
 
-  const lastTs = history.items?.[0]?.finished_at;
+  const lastTs    = history.items?.[0]?.finished_at;
   const lastMatch = lastTs
     ? DateTime.fromSeconds(lastTs).setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm")
     : "—";
@@ -199,7 +195,6 @@ async function fetchPlayerData(playerId) {
   };
 }
 
-// Determine period boundaries
 function getPeriodStart(range) {
   const now = DateTime.now().setZone("Europe/Berlin");
   switch(range) {
@@ -211,7 +206,6 @@ function getPeriodStart(range) {
   }
 }
 
-// Main
 (async () => {
   if (!FACEIT_API_KEY) {
     console.error("❌ FACEIT_API_KEY fehlt!");
@@ -238,11 +232,9 @@ function getPeriodStart(range) {
 
   results.sort((a,b) => b.elo - a.elo);
 
-  // write latest snapshot
   const latest = results.map(r => ({ playerId: r.playerId, elo: r.elo }));
   writeJson(RANGE_FILES.latest, latest);
 
-  // build HTML rows
   const updatedTime = DateTime.now().setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm");
   const rows = results.map(p => {
     const {
@@ -284,12 +276,10 @@ function getPeriodStart(range) {
   );
   console.log(`✅ Dashboard aktualisiert: ${OUTPUT_FILE}`);
 
-  // snapshots for other ranges
   for (const range of ["daily","weekly","monthly","yearly"]) {
     const metaPath = path.join(DATA_DIR, `elo-${range}-meta.json`);
     const start    = getPeriodStart(range);
     let doUpdate   = true;
-
     if (fs.existsSync(metaPath)) {
       try {
         const m = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
@@ -298,12 +288,9 @@ function getPeriodStart(range) {
         }
       } catch {}
     }
-
     if (doUpdate) {
       writeJson(RANGE_FILES[range], latest);
-      fs.writeFileSync(metaPath,
-        JSON.stringify({ lastUpdated: start.toISODate() }, null, 2)
-      );
+      fs.writeFileSync(metaPath, JSON.stringify({ lastUpdated: start.toISODate() }, null, 2));
       console.log(`✅ ${RANGE_FILES[range]} wurde aktualisiert.`);
     }
   }
