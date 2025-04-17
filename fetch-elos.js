@@ -71,7 +71,7 @@ async function fetchMatchStats(matchId, playerId) {
 }
 
 async function fetchRecentStats(playerId) {
-  const res = await fetch(
+  const res  = await fetch(
     `${API_BASE}/players/${playerId}/history?game=cs2&limit=30`,
     { headers: getHeaders() }
   );
@@ -102,29 +102,37 @@ async function fetchRecentStats(playerId) {
 }
 
 async function fetchTeammateStats(playerId) {
-  const res  = await fetch(
+  const res = await fetch(
     `${API_BASE}/players/${playerId}/history?game=cs2&limit=30`,
     { headers: getHeaders() }
   );
   const hist = await safeJson(res) || { items: [] };
 
-  const countMap = {}, winMap = {};
+  const countMap = {}, winMap = {}, infoMap = {};
   for (const m of hist.items) {
     const teams  = m.teams;
     const winner = m.results?.winner; // "faction1" oder "faction2"
     if (!teams || !winner) continue;
 
-    // finde das Team, in dem unser Spieler war
+    // finde dein Team
     for (const [side, team] of Object.entries(teams)) {
       const members = team.players || [];
       if (!members.some(p => p.player_id === playerId)) continue;
 
-      // zähle alle anderen als Teammates
       for (const p of members) {
         if (p.player_id === playerId) continue;
+        // Zähle Auftritte
         countMap[p.player_id] = (countMap[p.player_id] || 0) + 1;
+        // Zähle Wins
         if (side === winner) {
           winMap[p.player_id] = (winMap[p.player_id] || 0) + 1;
+        }
+        // Speichere Name & URL (erstmalig)
+        if (!infoMap[p.player_id]) {
+          infoMap[p.player_id] = {
+            nickname: p.nickname,
+            url:      p.faceit_url.replace("{lang}", "de")
+          };
         }
       }
       break;
@@ -132,12 +140,19 @@ async function fetchTeammateStats(playerId) {
   }
 
   return Object.entries(countMap)
-    .map(([id, cnt]) => ({
-      playerId: id,
-      count:    cnt,
-      wins:     winMap[id] || 0,
-      winrate:  Math.round(((winMap[id]||0)/cnt)*100) + "%"
-    }))
+    .map(([id, cnt]) => {
+      const { nickname, url } = infoMap[id] || {};
+      const wins = winMap[id] || 0;
+      return {
+        playerId: id,
+        nickname: nickname || "—",
+        url:      url      || "#",
+        count:    cnt,
+        wins,
+        winrate:  cnt ? `${Math.round(wins/cnt*100)}%` : "—"
+      };
+    })
+    .filter(p => p.nickname && p.nickname !== "—")
     .sort((a, b) => b.count - a.count);
 }
 
@@ -154,36 +169,25 @@ async function fetchPlayerData(playerId) {
   const stats   = await safeJson(sr) || {};
 
   const elo      = profile.games?.cs2?.faceit_elo || null;
-  const nickname = profile.nickname || "—";
+  const nickname = profile.nickname     || "—";
   const url      = (profile.faceit_url || "").replace("{lang}", "de");
   const level    = profile.games?.cs2?.skill_level || null;
   const lifetime = stats.lifetime || {};
 
   const lastTs    = history.items[0]?.finished_at;
   const lastMatch = lastTs
-    ? DateTime.fromSeconds(lastTs).setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm")
+    ? DateTime.fromSeconds(lastTs)
+        .setZone("Europe/Berlin")
+        .toFormat("yyyy-MM-dd HH:mm")
     : "—";
 
   const recentStats   = await fetchRecentStats(playerId);
   const teammateStats = await fetchTeammateStats(playerId);
   const topMate       = teammateStats[0] || {};
 
-  let partnerNickname = "—",
-      partnerUrl      = "#",
-      partnerWinrate  = "—";
-
-  if (topMate.playerId) {
-    partnerWinrate = topMate.winrate;
-    const pj = await fetch(
-      `${API_BASE}/players/${topMate.playerId}`,
-      { headers }
-    )
-      .then(r => r.ok ? safeJson(r) : null)
-      .catch(() => null) || {};
-
-    partnerNickname = pj.nickname || "—";
-    partnerUrl      = (pj.faceit_url || "").replace("{lang}", "de");
-  }
+  const partnerNickname = topMate.nickname || "—";
+  const partnerUrl      = topMate.url      || "#";
+  const partnerWinrate  = topMate.winrate  || "—";
 
   return {
     playerId,
@@ -242,17 +246,20 @@ function getPeriodStart(range) {
   const latest = results.map(r => ({ playerId: r.playerId, elo: r.elo }));
   writeJson(RANGE_FILES.latest, latest);
 
-  const updatedTime = DateTime.now().setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm");
+  const updatedTime = DateTime.now()
+    .setZone("Europe/Berlin")
+    .toFormat("yyyy-MM-dd HH:mm");
+
   const rows = results.map(p => {
     const {
-      playerId, nickname, elo, level,
-      winrate, matches, lastMatch,
-      faceitUrl, recentStats,
-      partnerNickname, partnerUrl, partnerWinrate
+      playerId, elo, level,
+      recentStats,
+      partnerNickname, partnerUrl, partnerWinrate,
+      winrate, matches, lastMatch
     } = p;
 
     const tooltip = `<div class="tooltip">
-      <a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a>
+      <a href="${p.faceitUrl}" target="_blank" class="nickname-link">${p.nickname}</a>
       <div class="tooltip-content">
         Letzten 30 Matches:<br/>
         Kills ${recentStats.kills} / Assists ${recentStats.assists} / Deaths ${recentStats.deaths}<br/>
@@ -272,11 +279,7 @@ function getPeriodStart(range) {
         </td>
         <td class="p-2">${partnerWinrate}</td>
         <td class="p-2">
-          <img
-            src="icons/levels/level_${level}_icon.png"
-            width="24" height="24"
-            title="Level ${level}"
-          >
+          <img src="icons/levels/level_${level}_icon.png" width="24" height="24" title="Level ${level}">
         </td>
         <td class="p-2">${winrate}</td>
         <td class="p-2">${matches}</td>
