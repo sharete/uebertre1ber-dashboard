@@ -71,7 +71,7 @@ async function fetchMatchStats(matchId, playerId) {
 }
 
 async function fetchRecentStats(playerId) {
-  const res  = await fetch(
+  const res = await fetch(
     `${API_BASE}/players/${playerId}/history?game=cs2&limit=30`,
     { headers: getHeaders() }
   );
@@ -102,36 +102,36 @@ async function fetchRecentStats(playerId) {
 }
 
 async function fetchTeammateStats(playerId) {
-  const res = await fetch(
+  const res  = await fetch(
     `${API_BASE}/players/${playerId}/history?game=cs2&limit=30`,
     { headers: getHeaders() }
   );
   const hist = await safeJson(res) || { items: [] };
 
+  console.log(`\n🔍 [${playerId}] History loaded, ${hist.items.length} matches`);
+
   const countMap = {}, winMap = {}, infoMap = {};
   for (const m of hist.items) {
+    console.log(`  └─ Match ${m.match_id}: teams=${Object.keys(m.teams).join(', ')}, winner=${m.results?.winner}`);
     const teams  = m.teams;
-    const winner = m.results?.winner; // "faction1" oder "faction2"
+    const winner = m.results?.winner;
     if (!teams || !winner) continue;
 
-    // finde dein Team
     for (const [side, team] of Object.entries(teams)) {
       const members = team.players || [];
       if (!members.some(p => p.player_id === playerId)) continue;
 
+      console.log(`     → found on side=${side}, members=[${members.map(p => p.nickname).join(', ')}]`);
       for (const p of members) {
         if (p.player_id === playerId) continue;
-        // Zähle Auftritte
         countMap[p.player_id] = (countMap[p.player_id] || 0) + 1;
-        // Zähle Wins
         if (side === winner) {
           winMap[p.player_id] = (winMap[p.player_id] || 0) + 1;
         }
-        // Speichere Name & URL (erstmalig)
         if (!infoMap[p.player_id]) {
           infoMap[p.player_id] = {
             nickname: p.nickname,
-            url:      p.faceit_url.replace("{lang}", "de")
+            url:      (p.faceit_url || "").replace("{lang}", "de")
           };
         }
       }
@@ -139,7 +139,11 @@ async function fetchTeammateStats(playerId) {
     }
   }
 
-  return Object.entries(countMap)
+  console.log(`  ➤ [${playerId}] countMap=`, countMap);
+  console.log(`  ➤ [${playerId}] winMap=  `, winMap);
+  console.log(`  ➤ [${playerId}] infoMap= `, infoMap);
+
+  const result = Object.entries(countMap)
     .map(([id, cnt]) => {
       const { nickname, url } = infoMap[id] || {};
       const wins = winMap[id] || 0;
@@ -149,11 +153,14 @@ async function fetchTeammateStats(playerId) {
         url:      url      || "#",
         count:    cnt,
         wins,
-        winrate:  cnt ? `${Math.round(wins/cnt*100)}%` : "—"
+        winrate:  cnt ? `${Math.round(wins / cnt * 100)}%` : "—"
       };
     })
     .filter(p => p.nickname && p.nickname !== "—")
     .sort((a, b) => b.count - a.count);
+
+  console.log(`  ➤ [${playerId}] TeammateStats final:`, result);
+  return result;
 }
 
 async function fetchPlayerData(playerId) {
@@ -172,22 +179,18 @@ async function fetchPlayerData(playerId) {
   const nickname = profile.nickname     || "—";
   const url      = (profile.faceit_url || "").replace("{lang}", "de");
   const level    = profile.games?.cs2?.skill_level || null;
-  const lifetime = stats.lifetime || {};
+  const lifetime = stats.lifetime           || {};
 
   const lastTs    = history.items[0]?.finished_at;
   const lastMatch = lastTs
-    ? DateTime.fromSeconds(lastTs)
-        .setZone("Europe/Berlin")
-        .toFormat("yyyy-MM-dd HH:mm")
+    ? DateTime.fromSeconds(lastTs).setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm")
     : "—";
 
   const recentStats   = await fetchRecentStats(playerId);
   const teammateStats = await fetchTeammateStats(playerId);
   const topMate       = teammateStats[0] || {};
 
-  const partnerNickname = topMate.nickname || "—";
-  const partnerUrl      = topMate.url      || "#";
-  const partnerWinrate  = topMate.winrate  || "—";
+  console.log(`\n👤 [${playerId}] topMate=`, topMate);
 
   return {
     playerId,
@@ -199,15 +202,15 @@ async function fetchPlayerData(playerId) {
     winrate:         lifetime["Win Rate %"] || "—",
     matches:         lifetime["Matches"]    || "—",
     recentStats,
-    partnerNickname,
-    partnerUrl,
-    partnerWinrate
+    partnerNickname: topMate.nickname || "—",
+    partnerUrl:      topMate.url      || "#",
+    partnerWinrate:  topMate.winrate || "—"
   };
 }
 
 function getPeriodStart(range) {
   const now = DateTime.now().setZone("Europe/Berlin");
-  switch(range) {
+  switch (range) {
     case "daily":   return now.startOf("day");
     case "weekly":  return now.startOf("week");
     case "monthly": return now.startOf("month");
@@ -242,14 +245,11 @@ function getPeriodStart(range) {
 
   results.sort((a, b) => b.elo - a.elo);
 
-  // latest snapshot
+  // Latest snapshot
   const latest = results.map(r => ({ playerId: r.playerId, elo: r.elo }));
   writeJson(RANGE_FILES.latest, latest);
 
-  const updatedTime = DateTime.now()
-    .setZone("Europe/Berlin")
-    .toFormat("yyyy-MM-dd HH:mm");
-
+  const updatedTime = DateTime.now().setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm");
   const rows = results.map(p => {
     const {
       playerId, elo, level,
