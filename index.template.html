@@ -1,182 +1,208 @@
-<!DOCTYPE html>
-<html lang="de">
+<!DOCTYPE HTML>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>uebertre1ber ELO Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-    body {
-      background: #1e1f26;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .nickname-link {
-      text-decoration: none;
-      transition: all 0.2s ease;
-      color: #ffffff;
-      position: relative;
-      display: inline-block;
-    }
-
-    .nickname-link:hover {
-      color: #38bdf8;
-      text-decoration: underline;
-      text-shadow: 0 0 6px #38bdf8;
-    }
-
-    .tooltip {
-      position: relative;
-      display: inline-block;
-    }
-
-    .tooltip-content {
-      visibility: hidden;
-      opacity: 0;
-      background-color: rgba(0, 0, 0, 0.9);
-      color: white;
-      padding: 0.5rem 0.75rem;
-      border-radius: 0.5rem;
-      position: absolute;
-      z-index: 10;
-      top: 125%;
-      left: 0;
-      font-size: 0.75rem;
-      line-height: 1.25rem;
-      white-space: normal;
-      width: max-content;
-      max-width: 320px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-      pointer-events: none;
-    }
-
-    .tooltip:hover .tooltip-content {
-      visibility: visible;
-      opacity: 1;
-    }
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="https://html5up.net/uploads/demos/hyperspace/assets/css/main.css" />
+  <style>body{padding:2em} h2{margin-top:1em}</style>
 </head>
-<body class="min-h-screen flex flex-col text-white bg-[#1e1f26]">
-  <!-- HEADER MIT LOGO -->
-  <header class="flex justify-center pt-2 pb-0">
-    <img src="icons/levels/uebertreiber_logo.png" alt="uebertre1ber Logo" class="w-40 h-auto sm:w-52 md:w-64 xl:w-72" />
-   <!-- <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
-      uebertre1ber ELO Dashboard
-    </h1>-->
-  </header>  
+<body>
+<header id="header"><a href="#" class="title">uebertre1ber Dashboard</a></header>
+<section id="main" class="wrapper">
+  <div class="inner">
+    <h2>uebertre1ber ELO Leaderboard</h2>
+    <!-- INSERT_LAST_UPDATED -->
+<div class="table-wrapper">
+  <table class="alt sortable" id="elo-table">
+    <thead>
+      <tr>
+        <th data-sort="string">Nickname</th>
+        <th data-sort="number">ELO</th>
+        <th data-sort="number">Level</th>
+        <th data-sort="number">Winrate</th>
+        <th data-sort="number">Matches</th>
+        <th data-sort="date">Letztes Match</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/noxq" target="_blank">noxq</a></td>
+            <td>3078</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>51</td>
+            <td>3608</td>
+            <td>2025-04-11 22:39</td>
+          </tr>
 
-  <main class="flex-grow flex flex-col items-center p-4">
-    <div class="mb-4 w-full max-w-6xl">
-      <label for="eloRange" class="mr-2 text-white text-sm">Zeitraum:</label>
-      <select id="eloRange" class="bg-zinc-800 text-white border border-white/20 rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <option value="daily">Täglich</option>
-        <option value="weekly">Wöchentlich</option>
-        <option value="monthly">Monatlich</option>
-        <option value="yearly">Jährlich</option>
-      </select>
-      <p id="snapshotInfo" class="mt-2 text-xs text-white/70"></p>
-    </div>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/any" target="_blank">any</a></td>
+            <td>2989</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>53</td>
+            <td>2252</td>
+            <td>2025-04-13 22:35</td>
+          </tr>
 
-    <div class="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl shadow-2xl p-6 w-full max-w-6xl overflow-auto">
-      <h2 class="text-2xl font-semibold mb-4 text-white">Leaderboard</h2>
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm text-white">
-          <thead>
-            <tr class="border-b border-white/10">
-              <th class="text-left p-2 cursor-pointer">Nickname</th>
-              <th class="text-left p-2 cursor-pointer">ELO</th>
-              <th class="text-left p-2 cursor-pointer">Δ ELO</th>
-              <th class="text-left p-2 cursor-pointer">Level</th>
-              <th class="text-left p-2 cursor-pointer">Winrate</th>
-              <th class="text-left p-2 cursor-pointer">Matches</th>
-              <th class="text-left p-2 cursor-pointer">Letztes Match</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- INSERT_ELO_TABLE_HERE -->
-          </tbody>
-        </table>
-      </div>
-      <p class="text-right text-xs mt-4 text-white/70">Zuletzt aktualisiert: <!-- INSERT_LAST_UPDATED --></p>
-    </div>
-  </main>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/SEYED" target="_blank">SEYED</a></td>
+            <td>2956</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>5484</td>
+            <td>2025-04-14 01:27</td>
+          </tr>
 
-  <footer class="text-center p-4 text-sm text-white/50">
-    &copy; uebertre1ber Dashboard – Made by <a href="https://www.faceit.com/de/players/sha89" class="hover:underline">sha89</a>
-  </footer>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/knuuuuub" target="_blank">knuuuuub</a></td>
+            <td>2804</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>1499</td>
+            <td>2025-04-14 20:37</td>
+          </tr>
 
-  <script>
-    async function updateEloDiff(range) {
-      const res = await fetch(`data/elo-${range}.json`);
-      const snapshot = await res.json();
-      const lookup = Object.fromEntries(snapshot.map(p => [p.nickname, p.elo]));
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/rolanHEHE" target="_blank">rolanHEHE</a></td>
+            <td>2754</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>5330</td>
+            <td>2025-04-14 21:37</td>
+          </tr>
 
-      document.querySelectorAll("tbody tr").forEach(row => {
-        const nickname = row.dataset.nickname;
-        const nowElo = parseInt(row.dataset.elo);
-        const prevElo = lookup[nickname];
-        const cell = row.querySelector(".elo-diff");
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/GIANN11" target="_blank">GIANN11</a></td>
+            <td>2734</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>50</td>
+            <td>7142</td>
+            <td>2025-04-14 20:28</td>
+          </tr>
 
-        if (prevElo == null) {
-          cell.textContent = "—";
-        } else {
-          const diff = nowElo - prevElo;
-          cell.innerHTML = `<span class="text-xs ${diff >= 0 ? 'text-green-400' : 'text-red-400'}">(${diff >= 0 ? '+' : ''}${diff})</span>`;
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/WalkingFast" target="_blank">WalkingFast</a></td>
+            <td>2728</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>54</td>
+            <td>1192</td>
+            <td>2025-04-09 22:47</td>
+          </tr>
+
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/Saphyy" target="_blank">Saphyy</a></td>
+            <td>2650</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>2648</td>
+            <td>2025-04-14 21:37</td>
+          </tr>
+
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/SaN" target="_blank">SaN</a></td>
+            <td>2643</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>49</td>
+            <td>7323</td>
+            <td>2025-04-14 21:37</td>
+          </tr>
+
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/KyP" target="_blank">KyP</a></td>
+            <td>2363</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>51</td>
+            <td>2820</td>
+            <td>2025-04-03 22:41</td>
+          </tr>
+
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/sha89" target="_blank">sha89</a></td>
+            <td>2352</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>1619</td>
+            <td>2025-04-14 21:37</td>
+          </tr>
+
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/Vik" target="_blank">Vik</a></td>
+            <td>2107</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>1757</td>
+            <td>2025-04-14 21:37</td>
+          </tr>
+
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/-SMN-" target="_blank">-SMN-</a></td>
+            <td>2076</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>51</td>
+            <td>3083</td>
+            <td>2025-04-13 00:23</td>
+          </tr>
+
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/straccione" target="_blank">straccione</a></td>
+            <td>911</td>
+            <td><img src="icons/levels/level_4_icon.png" alt="Level 4" width="24" height="24" title="Level 4"></td>
+            <td>50</td>
+            <td>584</td>
+            <td>2025-04-09 22:47</td>
+          </tr>
+    </tbody>
+  </table>
+</div>
+<p style="text-align:right; font-size: 0.9em;">Zuletzt aktualisiert: 2025-04-14 21:48</p>
+
+<script>
+  document.querySelectorAll("th").forEach((header, columnIndex) => {
+    header.style.cursor = "pointer";
+    header.addEventListener("click", () => {
+      const table = header.closest("table");
+      const tbody = table.querySelector("tbody");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const type = header.dataset.sort;
+      const asc = !header.classList.contains("asc");
+
+      rows.sort((a, b) => {
+        const getText = (row) => row.children[columnIndex].textContent.trim();
+        let aVal = getText(a);
+        let bVal = getText(b);
+
+        if (type === "number") {
+          aVal = parseFloat(aVal.replace("%", "")) || 0;
+          bVal = parseFloat(bVal.replace("%", "")) || 0;
+        } else if (type === "date") {
+          aVal = new Date(aVal);
+          bVal = new Date(bVal);
         }
+
+        return asc ? aVal > bVal ? 1 : -1 : aVal < bVal ? 1 : -1;
       });
 
-      try {
-        const metaRes = await fetch(`data/elo-${range}-meta.json`);
-        const meta = await metaRes.json();
-        const snapshotInfo = document.getElementById("snapshotInfo");
-        snapshotInfo.textContent = `Δ ELO basiert auf Snapshot vom: ${meta.lastUpdated}`;
-      } catch (e) {
-        document.getElementById("snapshotInfo").textContent = '';
-        console.warn("❌ Keine Snapshot-Metadaten gefunden.");
-      }
-    }
-
-    document.getElementById("eloRange").addEventListener("change", e => {
-      updateEloDiff(e.target.value);
+      table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
+      header.classList.add(asc ? "asc" : "desc");
+      rows.forEach(row => tbody.appendChild(row));
     });
+  });
+</script>
+<style>
+  th.asc::after { content: " ▲"; font-size: 0.8em; }
+  th.desc::after { content: " ▼"; font-size: 0.8em; }
+</style>
 
-    updateEloDiff("daily");
-  </script>
-
-  <script>
-    document.querySelectorAll("th").forEach((header, columnIndex) => {
-      header.addEventListener("click", () => {
-        const table = header.closest("table");
-        const tbody = table.querySelector("tbody");
-        const rows = Array.from(tbody.querySelectorAll("tr"));
-        const asc = !header.classList.contains("asc");
-
-        rows.sort((a, b) => {
-          const getText = (row) => row.children[columnIndex].textContent.trim();
-          let aVal = getText(a);
-          let bVal = getText(b);
-
-          const isDate = /\d{4}-\d{2}-\d{2}/.test(aVal);
-          const isNumber = !isNaN(parseFloat(aVal.replace(/[%+()]/g, "")));
-
-          if (isDate) {
-            aVal = new Date(aVal);
-            bVal = new Date(bVal);
-          } else if (isNumber) {
-            aVal = parseFloat(aVal.replace(/[%+()]/g, ""));
-            bVal = parseFloat(bVal.replace(/[%+()]/g, ""));
-          }
-
-          return asc ? aVal - bVal : bVal - aVal;
-        });
-
-        table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
-        header.classList.add(asc ? "asc" : "desc");
-        rows.forEach(row => tbody.appendChild(row));
-      });
-    });
-  </script>
+  </div>
+</section>
+<footer id="footer">
+  <div class="inner">
+    <ul class="menu">
+      <li>&copy; uebertre1ber Dashboard</li>
+      <li>Made by: <a href="https://www.faceit.com/de/players/sha89?nickname=sha89">Sharam</a></li>
+    </ul>
+  </div>
+</footer>
 </body>
 </html>
