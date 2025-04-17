@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 const { DateTime } = require("luxon");
-const pLimit = require("p-limit");
+const pLimit = (...args) => import("p-limit").then(mod => mod.default(...args));
 
 const FACEIT_API_KEY = process.env.FACEIT_API_KEY;
 const PLAYERS_FILE = "players.txt";
