@@ -108,14 +108,20 @@ async function fetchTeammateStats(playerId) {
   );
   const hist = await safeJson(res) || { items: [] };
 
+  console.log(`\n🔍 [${playerId}] History loaded, ${hist.items.length} matches`);
+
   const countMap = {}, winMap = {}, infoMap = {};
   for (const m of hist.items) {
+    console.log(`  └─ Match ${m.match_id}: teams=${Object.keys(m.teams).join(', ')}, winner=${m.results?.winner}`);
     const teams  = m.teams;
     const winner = m.results?.winner;
     if (!teams || !winner) continue;
+
     for (const [side, team] of Object.entries(teams)) {
       const members = team.players || [];
       if (!members.some(p => p.player_id === playerId)) continue;
+
+      console.log(`     → found on side=${side}, members=[${members.map(p => p.nickname).join(', ')}]`);
       for (const p of members) {
         if (p.player_id === playerId) continue;
         countMap[p.player_id] = (countMap[p.player_id] || 0) + 1;
@@ -133,7 +139,11 @@ async function fetchTeammateStats(playerId) {
     }
   }
 
-  return Object.entries(countMap)
+  console.log(`  ➤ [${playerId}] countMap=`, countMap);
+  console.log(`  ➤ [${playerId}] winMap=  `, winMap);
+  console.log(`  ➤ [${playerId}] infoMap= `, infoMap);
+
+  const result = Object.entries(countMap)
     .map(([id, cnt]) => {
       const { nickname, url } = infoMap[id] || {};
       const wins = winMap[id] || 0;
@@ -146,7 +156,11 @@ async function fetchTeammateStats(playerId) {
         winrate:  cnt ? `${Math.round(wins/cnt*100)}%` : "—"
       };
     })
+    .filter(p => p.nickname && p.nickname !== "—")
     .sort((a, b) => b.count - a.count);
+
+  console.log(`  ➤ [${playerId}] TeammateStats final:`, result);
+  return result;
 }
 
 async function fetchPlayerData(playerId) {
@@ -176,10 +190,12 @@ async function fetchPlayerData(playerId) {
   const teammateStats = await fetchTeammateStats(playerId);
   const topMate       = teammateStats[0] || {};
 
+  console.log(`\n👤 [${playerId}] topMate=`, topMate);
+
   // Mate mit den meisten Verlusten
-  const lossMate = teammateStats.reduce((a, b) => {
-    const aLoss = (a.count||0) - (a.wins||0);
-    const bLoss = (b.count   ) - (b.wins   );
+  const lossMate = teammateStats.reduce((a,b) => {
+    const aLoss = (a.count||0)-(a.wins||0);
+    const bLoss = (b.count   )-(b.wins   );
     return bLoss > aLoss ? b : a;
   }, {});
 
