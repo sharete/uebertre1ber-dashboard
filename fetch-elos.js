@@ -1,4 +1,6 @@
-const fs = require("fs");
+// fetch-elos.js
+
+const fs   = require("fs");
 const path = require("path");
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 const { DateTime } = require("luxon");
@@ -8,7 +10,6 @@ const PLAYERS_FILE   = "players.txt";
 const TEMPLATE_FILE  = "index.template.html";
 const OUTPUT_FILE    = "index.html";
 const DATA_DIR       = path.join(__dirname, "data");
-// wieder korrekt:
 const API_BASE       = "https://open.faceit.com/data/v4";
 
 const RANGE_FILES = {
@@ -38,17 +39,19 @@ function getHeaders() {
 
 async function safeJson(res) {
   try {
-    const text = await res.text();
-    return JSON.parse(text);
+    const txt = await res.text();
+    return JSON.parse(txt);
   } catch {
     return null;
   }
 }
 
-const matchCache = {};
 async function fetchMatchStats(matchId, playerId) {
-  if (matchCache[matchId]) {
-    return matchCache[matchId][playerId] || null;
+  // bleibt unverändert
+  if (!fetchMatchStats.cache) fetchMatchStats.cache = {};
+  const cache = fetchMatchStats.cache;
+  if (cache[matchId]) {
+    return cache[matchId][playerId] || null;
   }
   const res = await fetch(`${API_BASE}/matches/${matchId}/stats`, { headers: getHeaders() });
   if (!res.ok) return null;
@@ -56,7 +59,7 @@ async function fetchMatchStats(matchId, playerId) {
   if (!data?.rounds) return null;
   const players  = data.rounds[0].teams.flatMap(t => t.players);
   const mapStats = Object.fromEntries(players.map(p => [p.player_id, p.player_stats]));
-  matchCache[matchId] = mapStats;
+  cache[matchId] = mapStats;
   return mapStats[playerId] || null;
 }
 
@@ -101,24 +104,16 @@ async function fetchTeammateStats(playerId) {
   const hist = await safeJson(res) || { items: [] };
   const items = hist.items || [];
 
-  const matchesArr = await Promise.all(
-    items.map(m =>
-      fetch(`${API_BASE}/matches/${m.match_id}`, { headers: getHeaders() })
-        .then(r => r.ok ? safeJson(r) : null)
-        .catch(() => null)
-    )
-  );
-
   const countMap = {}, winMap = {};
-  for (const sumJson of matchesArr) {
-    if (!sumJson?.teams) continue;
-    const s1     = sumJson.results?.["1"] || 0;
-    const s2     = sumJson.results?.["2"] || 0;
-    const winner = s1 > s2 ? "1" : s2 > s1 ? "2" : null;
 
-    for (const side of Object.keys(sumJson.teams)) {
-      const team    = sumJson.teams[side];
-      const members = team.players ?? team.roster?.members ?? [];
+  for (const m of items) {
+    const teams  = m.teams;
+    const winner = m.results?.winner; // "faction1" oder "faction2"
+    if (!teams || !winner) continue;
+
+    // finde dein Team
+    for (const [side, team] of Object.entries(teams)) {
+      const members = team.players || [];
       if (!members.some(p => p.player_id === playerId)) continue;
 
       for (const p of members) {
@@ -139,15 +134,15 @@ async function fetchTeammateStats(playerId) {
       wins:     winMap[id] || 0,
       winrate:  Math.round(((winMap[id]||0)/cnt)*100) + "%"
     }))
-    .sort((a,b) => b.count - a.count);
+    .sort((a, b) => b.count - a.count);
 }
 
 async function fetchPlayerData(playerId) {
   const headers = getHeaders();
   const [pr, hr, sr] = await Promise.all([
-    fetch(`${API_BASE}/players/${playerId}`, { headers }),
+    fetch(`${API_BASE}/players/${playerId}`,               { headers }),
     fetch(`${API_BASE}/players/${playerId}/history?game=cs2&limit=1`, { headers }),
-    fetch(`${API_BASE}/players/${playerId}/stats/cs2`, { headers })
+    fetch(`${API_BASE}/players/${playerId}/stats/cs2`,    { headers })
   ]);
 
   const profile = await safeJson(pr) || {};
@@ -156,7 +151,7 @@ async function fetchPlayerData(playerId) {
 
   const elo      = profile.games?.cs2?.faceit_elo || null;
   const nickname = profile.nickname || "—";
-  const url      = (profile.faceit_url || "").replace("{lang}","de");
+  const url      = (profile.faceit_url || "").replace("{lang}", "de");
   const level    = profile.games?.cs2?.skill_level || null;
   const lifetime = stats.lifetime || {};
 
@@ -167,7 +162,7 @@ async function fetchPlayerData(playerId) {
 
   const recentStats   = await fetchRecentStats(playerId);
   const teammateStats = await fetchTeammateStats(playerId);
-  const topMate      = teammateStats[0] || {};
+  const topMate       = teammateStats[0] || {};
 
   let partnerNickname = "—", partnerUrl = "#", partnerWinrate = "—";
   if (topMate.playerId) {
@@ -176,7 +171,7 @@ async function fetchPlayerData(playerId) {
       .then(r => r.ok ? safeJson(r) : null)
       .catch(() => null) || {};
     partnerNickname = pj.nickname || "—";
-    partnerUrl      = (pj.faceit_url || "").replace("{lang}","de");
+    partnerUrl      = (pj.faceit_url || "").replace("{lang}", "de");
   }
 
   return {
@@ -230,8 +225,9 @@ function getPeriodStart(range) {
     }))
   ).filter(Boolean);
 
-  results.sort((a,b) => b.elo - a.elo);
+  results.sort((a, b) => b.elo - a.elo);
 
+  // latest snapshot
   const latest = results.map(r => ({ playerId: r.playerId, elo: r.elo }));
   writeJson(RANGE_FILES.latest, latest);
 
@@ -243,6 +239,7 @@ function getPeriodStart(range) {
       faceitUrl, recentStats,
       partnerNickname, partnerUrl, partnerWinrate
     } = p;
+
     const tooltip = `<div class="tooltip">
       <a href="${faceitUrl}" target="_blank" class="nickname-link">${nickname}</a>
       <div class="tooltip-content">
@@ -283,7 +280,7 @@ function getPeriodStart(range) {
     if (fs.existsSync(metaPath)) {
       try {
         const m = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
-        if (DateTime.fromISO(m.lastUpdated, { zone:"Europe/Berlin" }) >= start) {
+        if (DateTime.fromISO(m.lastUpdated, { zone: "Europe/Berlin" }) >= start) {
           doUpdate = false;
         }
       } catch {}
