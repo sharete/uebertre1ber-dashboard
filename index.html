@@ -1,436 +1,208 @@
-<!DOCTYPE html>
-<html lang="de">
+<!DOCTYPE HTML>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>uebertre1ber ELO Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-    body {
-      background: #1e1f26;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .nickname-link {
-      text-decoration: none;
-      transition: all 0.2s ease;
-      color: #ffffff;
-      position: relative;
-      display: inline-block;
-    }
-
-    .nickname-link:hover {
-      color: #38bdf8;
-      text-decoration: underline;
-      text-shadow: 0 0 6px #38bdf8;
-    }
-
-    .tooltip {
-      position: relative;
-      display: inline-block;
-    }
-
-    .tooltip-content {
-      visibility: hidden;
-      opacity: 0;
-      background-color: rgba(0, 0, 0, 0.9);
-      color: white;
-      padding: 0.5rem 0.75rem;
-      border-radius: 0.5rem;
-      position: absolute;
-      z-index: 10;
-      top: 125%;
-      left: 0;
-      font-size: 0.75rem;
-      line-height: 1.25rem;
-      white-space: normal;
-      width: max-content;
-      max-width: 320px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-      pointer-events: none;
-    }
-
-    .tooltip:hover .tooltip-content {
-      visibility: visible;
-      opacity: 1;
-    }
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="https://html5up.net/uploads/demos/hyperspace/assets/css/main.css" />
+  <style>body{padding:2em} h2{margin-top:1em}</style>
 </head>
-<body class="min-h-screen flex flex-col text-white bg-[#1e1f26]">
-  <!-- HEADER MIT LOGO -->
-  <header class="flex justify-center pt-2 pb-0">
-    <img src="icons/levels/uebertreiber_logo.png" alt="uebertre1ber Logo" class="w-40 h-auto sm:w-52 md:w-64 xl:w-72" />
-   <!-- <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
-      uebertre1ber ELO Dashboard
-    </h1>-->
-  </header>  
+<body>
+<header id="header"><a href="#" class="title">uebertre1ber Dashboard</a></header>
+<section id="main" class="wrapper">
+  <div class="inner">
+    <h2>uebertre1ber ELO Leaderboard</h2>
+    2025-04-17 02:11
+<div class="table-wrapper">
+  <table class="alt sortable" id="elo-table">
+    <thead>
+      <tr>
+        <th data-sort="string">Nickname</th>
+        <th data-sort="number">ELO</th>
+        <th data-sort="number">Level</th>
+        <th data-sort="number">Winrate</th>
+        <th data-sort="number">Matches</th>
+        <th data-sort="date">Letztes Match</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/noxq" target="_blank">noxq</a></td>
+            <td>3078</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>51</td>
+            <td>3608</td>
+            <td>2025-04-11 22:39</td>
+          </tr>
 
-  <main class="flex-grow flex flex-col items-center p-4">
-    <div class="mb-4 w-full max-w-6xl">
-      <label for="eloRange" class="mr-2 text-white text-sm">Zeitraum:</label>
-      <select id="eloRange" class="bg-zinc-800 text-white border border-white/20 rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <option value="daily">Täglich</option>
-        <option value="weekly">Wöchentlich</option>
-        <option value="monthly">Monatlich</option>
-        <option value="yearly">Jährlich</option>
-      </select>
-      <p id="snapshotInfo" class="mt-2 text-xs text-white/70"></p>
-    </div>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/any" target="_blank">any</a></td>
+            <td>2989</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>53</td>
+            <td>2252</td>
+            <td>2025-04-13 22:35</td>
+          </tr>
 
-    <div class="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl shadow-2xl p-6 w-full max-w-6xl overflow-auto">
-      <h2 class="text-2xl font-semibold mb-4 text-white">Leaderboard</h2>
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm text-white">
-          <thead>
-            <tr class="border-b border-white/10">
-              <th class="text-left p-2 cursor-pointer">Nickname</th>
-              <th class="text-left p-2 cursor-pointer">ELO</th>
-              <th class="text-left p-2 cursor-pointer">Δ ELO</th>
-              <th class="text-left p-2 cursor-pointer">Level</th>
-              <th class="text-left p-2 cursor-pointer">Winrate</th>
-              <th class="text-left p-2 cursor-pointer">Matches</th>
-              <th class="text-left p-2 cursor-pointer">Letztes Match</th>
-            </tr>
-          </thead>
-          <tbody>
-            
-        <tr data-nickname="noxq" data-elo="3078">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/noxq" target="_blank" class="nickname-link">noxq</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 438 / Assists 138 / Deaths 441<br/>
-               K/D 0.99 – ADR 73.1 – HS% 60%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">3078</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-          <td class="p-2">51</td>
-          <td class="p-2">3608</td>
-          <td class="p-2">2025-04-11 22:39</td>
-        </tr>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/SEYED" target="_blank">SEYED</a></td>
+            <td>2956</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>5484</td>
+            <td>2025-04-14 01:27</td>
+          </tr>
 
-        <tr data-nickname="any" data-elo="2923">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/any" target="_blank" class="nickname-link">any</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 566 / Assists 155 / Deaths 441<br/>
-               K/D 1.28 – ADR 96.2 – HS% 49%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">2923</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-          <td class="p-2">53</td>
-          <td class="p-2">2260</td>
-          <td class="p-2">2025-04-17 00:42</td>
-        </tr>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/knuuuuub" target="_blank">knuuuuub</a></td>
+            <td>2804</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>1499</td>
+            <td>2025-04-14 20:37</td>
+          </tr>
 
-        <tr data-nickname="SEYED" data-elo="2916">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/SEYED" target="_blank" class="nickname-link">SEYED</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 551 / Assists 136 / Deaths 488<br/>
-               K/D 1.13 – ADR 83.9 – HS% 56%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">2916</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-          <td class="p-2">52</td>
-          <td class="p-2">5486</td>
-          <td class="p-2">2025-04-17 00:42</td>
-        </tr>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/rolanHEHE" target="_blank">rolanHEHE</a></td>
+            <td>2754</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>5330</td>
+            <td>2025-04-14 21:37</td>
+          </tr>
 
-        <tr data-nickname="-tieN" data-elo="2896">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/-tieN" target="_blank" class="nickname-link">-tieN</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 399 / Assists 138 / Deaths 474<br/>
-               K/D 0.84 – ADR 68.7 – HS% 53%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">2896</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-          <td class="p-2">52</td>
-          <td class="p-2">1512</td>
-          <td class="p-2">2025-04-17 01:09</td>
-        </tr>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/GIANN11" target="_blank">GIANN11</a></td>
+            <td>2734</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>50</td>
+            <td>7142</td>
+            <td>2025-04-14 20:28</td>
+          </tr>
 
-        <tr data-nickname="WalkingFast" data-elo="2728">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/WalkingFast" target="_blank" class="nickname-link">WalkingFast</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 431 / Assists 109 / Deaths 429<br/>
-               K/D 1.00 – ADR 58.1 – HS% 58%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">2728</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-          <td class="p-2">54</td>
-          <td class="p-2">1192</td>
-          <td class="p-2">2025-04-09 22:47</td>
-        </tr>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/WalkingFast" target="_blank">WalkingFast</a></td>
+            <td>2728</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>54</td>
+            <td>1192</td>
+            <td>2025-04-09 22:47</td>
+          </tr>
 
-        <tr data-nickname="GIANN11" data-elo="2659">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/GIANN11" target="_blank" class="nickname-link">GIANN11</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 482 / Assists 191 / Deaths 514<br/>
-               K/D 0.94 – ADR 76.1 – HS% 50%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">2659</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-          <td class="p-2">50</td>
-          <td class="p-2">7147</td>
-          <td class="p-2">2025-04-15 19:07</td>
-        </tr>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/Saphyy" target="_blank">Saphyy</a></td>
+            <td>2650</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>2648</td>
+            <td>2025-04-14 21:37</td>
+          </tr>
 
-        <tr data-nickname="rolanHEHE" data-elo="2646">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/rolanHEHE" target="_blank" class="nickname-link">rolanHEHE</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 532 / Assists 149 / Deaths 482<br/>
-               K/D 1.10 – ADR 85.8 – HS% 48%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">2646</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-          <td class="p-2">52</td>
-          <td class="p-2">5336</td>
-          <td class="p-2">2025-04-16 23:10</td>
-        </tr>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/SaN" target="_blank">SaN</a></td>
+            <td>2643</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>49</td>
+            <td>7323</td>
+            <td>2025-04-14 21:37</td>
+          </tr>
 
-        <tr data-nickname="TIMZNq" data-elo="2592">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/TIMZNq" target="_blank" class="nickname-link">TIMZNq</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 477 / Assists 148 / Deaths 457<br/>
-               K/D 1.04 – ADR 36.1 – HS% 47%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">2592</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-          <td class="p-2">51</td>
-          <td class="p-2">3630</td>
-          <td class="p-2">2024-08-24 00:29</td>
-        </tr>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/KyP" target="_blank">KyP</a></td>
+            <td>2363</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>51</td>
+            <td>2820</td>
+            <td>2025-04-03 22:41</td>
+          </tr>
 
-        <tr data-nickname="Saphyy" data-elo="2542">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/Saphyy" target="_blank" class="nickname-link">Saphyy</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 506 / Assists 145 / Deaths 471<br/>
-               K/D 1.07 – ADR 79.6 – HS% 51%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">2542</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-          <td class="p-2">52</td>
-          <td class="p-2">2654</td>
-          <td class="p-2">2025-04-16 21:54</td>
-        </tr>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/sha89" target="_blank">sha89</a></td>
+            <td>2352</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>1619</td>
+            <td>2025-04-14 21:37</td>
+          </tr>
 
-        <tr data-nickname="SaN" data-elo="2524">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/SaN" target="_blank" class="nickname-link">SaN</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 478 / Assists 129 / Deaths 491<br/>
-               K/D 0.97 – ADR 77.4 – HS% 50%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">2524</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-          <td class="p-2">49</td>
-          <td class="p-2">7331</td>
-          <td class="p-2">2025-04-16 23:49</td>
-        </tr>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/Vik" target="_blank">Vik</a></td>
+            <td>2107</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>52</td>
+            <td>1757</td>
+            <td>2025-04-14 21:37</td>
+          </tr>
 
-        <tr data-nickname="KyP" data-elo="2363">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/KyP" target="_blank" class="nickname-link">KyP</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 529 / Assists 142 / Deaths 470<br/>
-               K/D 1.13 – ADR 89.1 – HS% 48%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">2363</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-          <td class="p-2">51</td>
-          <td class="p-2">2820</td>
-          <td class="p-2">2025-04-03 22:41</td>
-        </tr>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/-SMN-" target="_blank">-SMN-</a></td>
+            <td>2076</td>
+            <td><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
+            <td>51</td>
+            <td>3083</td>
+            <td>2025-04-13 00:23</td>
+          </tr>
 
-        <tr data-nickname="sha89" data-elo="2263">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/sha89" target="_blank" class="nickname-link">sha89</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 389 / Assists 136 / Deaths 442<br/>
-               K/D 0.88 – ADR 68.6 – HS% 48%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">2263</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-          <td class="p-2">51</td>
-          <td class="p-2">1628</td>
-          <td class="p-2">2025-04-17 00:42</td>
-        </tr>
+          <tr>
+            <td><a href="https://www.faceit.com/de/players/straccione" target="_blank">straccione</a></td>
+            <td>911</td>
+            <td><img src="icons/levels/level_4_icon.png" alt="Level 4" width="24" height="24" title="Level 4"></td>
+            <td>50</td>
+            <td>584</td>
+            <td>2025-04-09 22:47</td>
+          </tr>
+    </tbody>
+  </table>
+</div>
+<p style="text-align:right; font-size: 0.9em;">Zuletzt aktualisiert: 2025-04-14 21:48</p>
 
-        <tr data-nickname="-SMN-" data-elo="2035">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/-SMN-" target="_blank" class="nickname-link">-SMN-</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 417 / Assists 154 / Deaths 456<br/>
-               K/D 0.91 – ADR 72.5 – HS% 48%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">2035</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_10_icon.png" alt="Level 10" width="24" height="24" title="Level 10"></td>
-          <td class="p-2">51</td>
-          <td class="p-2">3090</td>
-          <td class="p-2">2025-04-17 00:42</td>
-        </tr>
+<script>
+  document.querySelectorAll("th").forEach((header, columnIndex) => {
+    header.style.cursor = "pointer";
+    header.addEventListener("click", () => {
+      const table = header.closest("table");
+      const tbody = table.querySelector("tbody");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const type = header.dataset.sort;
+      const asc = !header.classList.contains("asc");
 
-        <tr data-nickname="Vik" data-elo="1968">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/Vik" target="_blank" class="nickname-link">Vik</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 383 / Assists 181 / Deaths 508<br/>
-               K/D 0.75 – ADR 63.8 – HS% 54%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">1968</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_9_icon.png" alt="Level 9" width="24" height="24" title="Level 9"></td>
-          <td class="p-2">52</td>
-          <td class="p-2">1768</td>
-          <td class="p-2">2025-04-17 00:42</td>
-        </tr>
+      rows.sort((a, b) => {
+        const getText = (row) => row.children[columnIndex].textContent.trim();
+        let aVal = getText(a);
+        let bVal = getText(b);
 
-        <tr data-nickname="straccione" data-elo="911">
-          <td class="p-2"><div class="tooltip">
-             <a href="https://www.faceit.com/de/players/straccione" target="_blank" class="nickname-link">straccione</a>
-             <div class="tooltip-content">
-               Letzten 30 Matches:<br/>
-               Kills 455 / Assists 113 / Deaths 466<br/>
-               K/D 0.98 – ADR 1.6 – HS% 51%
-             </div>
-           </div></td>
-          <td class="p-2 elo-now">911</td>
-          <td class="p-2 elo-diff">-</td>
-          <td class="p-2"><img src="icons/levels/level_4_icon.png" alt="Level 4" width="24" height="24" title="Level 4"></td>
-          <td class="p-2">50</td>
-          <td class="p-2">584</td>
-          <td class="p-2">2025-04-09 22:47</td>
-        </tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="text-right text-xs mt-4 text-white/70">Zuletzt aktualisiert: 2025-04-17 01:43</p>
-    </div>
-  </main>
-
-  <footer class="text-center p-4 text-sm text-white/50">
-    &copy; uebertre1ber Dashboard – Made by <a href="https://www.faceit.com/de/players/sha89" class="hover:underline">sha89</a>
-  </footer>
-
-  <script>
-    async function updateEloDiff(range) {
-      const res = await fetch(`data/elo-${range}.json`);
-      const snapshot = await res.json();
-      const lookup = Object.fromEntries(snapshot.map(p => [p.nickname, p.elo]));
-
-      document.querySelectorAll("tbody tr").forEach(row => {
-        const nickname = row.dataset.nickname;
-        const nowElo = parseInt(row.dataset.elo);
-        const prevElo = lookup[nickname];
-        const cell = row.querySelector(".elo-diff");
-
-        if (prevElo == null) {
-          cell.textContent = "—";
-        } else {
-          const diff = nowElo - prevElo;
-          cell.innerHTML = `<span class="text-xs ${diff >= 0 ? 'text-green-400' : 'text-red-400'}">(${diff >= 0 ? '+' : ''}${diff})</span>`;
+        if (type === "number") {
+          aVal = parseFloat(aVal.replace("%", "")) || 0;
+          bVal = parseFloat(bVal.replace("%", "")) || 0;
+        } else if (type === "date") {
+          aVal = new Date(aVal);
+          bVal = new Date(bVal);
         }
+
+        return asc ? aVal > bVal ? 1 : -1 : aVal < bVal ? 1 : -1;
       });
 
-      try {
-        const metaRes = await fetch(`data/elo-${range}-meta.json`);
-        const meta = await metaRes.json();
-        const snapshotInfo = document.getElementById("snapshotInfo");
-        snapshotInfo.textContent = `Δ ELO basiert auf Snapshot vom: ${meta.lastUpdated}`;
-      } catch (e) {
-        document.getElementById("snapshotInfo").textContent = '';
-        console.warn("❌ Keine Snapshot-Metadaten gefunden.");
-      }
-    }
-
-    document.getElementById("eloRange").addEventListener("change", e => {
-      updateEloDiff(e.target.value);
+      table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
+      header.classList.add(asc ? "asc" : "desc");
+      rows.forEach(row => tbody.appendChild(row));
     });
+  });
+</script>
+<style>
+  th.asc::after { content: " ▲"; font-size: 0.8em; }
+  th.desc::after { content: " ▼"; font-size: 0.8em; }
+</style>
 
-    updateEloDiff("daily");
-  </script>
-
-  <script>
-    document.querySelectorAll("th").forEach((header, columnIndex) => {
-      header.addEventListener("click", () => {
-        const table = header.closest("table");
-        const tbody = table.querySelector("tbody");
-        const rows = Array.from(tbody.querySelectorAll("tr"));
-        const asc = !header.classList.contains("asc");
-
-        rows.sort((a, b) => {
-          const getText = (row) => row.children[columnIndex].textContent.trim();
-          let aVal = getText(a);
-          let bVal = getText(b);
-
-          const isDate = /\d{4}-\d{2}-\d{2}/.test(aVal);
-          const isNumber = !isNaN(parseFloat(aVal.replace(/[%+()]/g, "")));
-
-          if (isDate) {
-            aVal = new Date(aVal);
-            bVal = new Date(bVal);
-          } else if (isNumber) {
-            aVal = parseFloat(aVal.replace(/[%+()]/g, ""));
-            bVal = parseFloat(bVal.replace(/[%+()]/g, ""));
-          }
-
-          return asc ? aVal - bVal : bVal - aVal;
-        });
-
-        table.querySelectorAll("th").forEach(th => th.classList.remove("asc", "desc"));
-        header.classList.add(asc ? "asc" : "desc");
-        rows.forEach(row => tbody.appendChild(row));
-      });
-    });
-  </script>
+  </div>
+</section>
+<footer id="footer">
+  <div class="inner">
+    <ul class="menu">
+      <li>&copy; uebertre1ber Dashboard</li>
+      <li>Made by: <a href="https://www.faceit.com/de/players/sha89?nickname=sha89">Sharam</a></li>
+    </ul>
+  </div>
+</footer>
 </body>
 </html>
