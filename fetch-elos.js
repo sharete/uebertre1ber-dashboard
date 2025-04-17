@@ -23,7 +23,10 @@ const RANGE_FILES = {
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
 
 function writeJson(file, data) {
-  fs.writeFileSync(path.join(DATA_DIR, file), JSON.stringify(data, null, 2));
+  fs.writeFileSync(
+    path.join(DATA_DIR, file),
+    JSON.stringify(data, null, 2)
+  );
   console.log(`✅ Datei geschrieben: ${file} (${data.length} Einträge)`);
 }
 
@@ -47,32 +50,34 @@ async function safeJson(res) {
 }
 
 async function fetchMatchStats(matchId, playerId) {
-  // bleibt unverändert
   if (!fetchMatchStats.cache) fetchMatchStats.cache = {};
   const cache = fetchMatchStats.cache;
   if (cache[matchId]) {
     return cache[matchId][playerId] || null;
   }
-  const res = await fetch(`${API_BASE}/matches/${matchId}/stats`, { headers: getHeaders() });
+  const res = await fetch(
+    `${API_BASE}/matches/${matchId}/stats`,
+    { headers: getHeaders() }
+  );
   if (!res.ok) return null;
   const data = await safeJson(res);
   if (!data?.rounds) return null;
   const players  = data.rounds[0].teams.flatMap(t => t.players);
-  const mapStats = Object.fromEntries(players.map(p => [p.player_id, p.player_stats]));
+  const mapStats = Object.fromEntries(
+    players.map(p => [p.player_id, p.player_stats])
+  );
   cache[matchId] = mapStats;
   return mapStats[playerId] || null;
 }
 
 async function fetchRecentStats(playerId) {
-  const res  = await fetch(
+  const res = await fetch(
     `${API_BASE}/players/${playerId}/history?game=cs2&limit=30`,
     { headers: getHeaders() }
   );
   const hist = await safeJson(res) || { items: [] };
-  const items = hist.items || [];
-
   const statsArr = await Promise.all(
-    items.map(m => fetchMatchStats(m.match_id, playerId).catch(() => null))
+    hist.items.map(m => fetchMatchStats(m.match_id, playerId).catch(() => null))
   );
 
   let kills=0, deaths=0, assists=0, adrTotal=0, hs=0, count=0;
@@ -102,20 +107,19 @@ async function fetchTeammateStats(playerId) {
     { headers: getHeaders() }
   );
   const hist = await safeJson(res) || { items: [] };
-  const items = hist.items || [];
 
   const countMap = {}, winMap = {};
-
-  for (const m of items) {
+  for (const m of hist.items) {
     const teams  = m.teams;
     const winner = m.results?.winner; // "faction1" oder "faction2"
     if (!teams || !winner) continue;
 
-    // finde dein Team
+    // finde das Team, in dem unser Spieler war
     for (const [side, team] of Object.entries(teams)) {
       const members = team.players || [];
       if (!members.some(p => p.player_id === playerId)) continue;
 
+      // zähle alle anderen als Teammates
       for (const p of members) {
         if (p.player_id === playerId) continue;
         countMap[p.player_id] = (countMap[p.player_id] || 0) + 1;
@@ -155,7 +159,7 @@ async function fetchPlayerData(playerId) {
   const level    = profile.games?.cs2?.skill_level || null;
   const lifetime = stats.lifetime || {};
 
-  const lastTs    = history.items?.[0]?.finished_at;
+  const lastTs    = history.items[0]?.finished_at;
   const lastMatch = lastTs
     ? DateTime.fromSeconds(lastTs).setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm")
     : "—";
@@ -164,12 +168,19 @@ async function fetchPlayerData(playerId) {
   const teammateStats = await fetchTeammateStats(playerId);
   const topMate       = teammateStats[0] || {};
 
-  let partnerNickname = "—", partnerUrl = "#", partnerWinrate = "—";
+  let partnerNickname = "—",
+      partnerUrl      = "#",
+      partnerWinrate  = "—";
+
   if (topMate.playerId) {
     partnerWinrate = topMate.winrate;
-    const pj = await fetch(`${API_BASE}/players/${topMate.playerId}`, { headers })
+    const pj = await fetch(
+      `${API_BASE}/players/${topMate.playerId}`,
+      { headers }
+    )
       .then(r => r.ok ? safeJson(r) : null)
       .catch(() => null) || {};
+
     partnerNickname = pj.nickname || "—";
     partnerUrl      = (pj.faceit_url || "").replace("{lang}", "de");
   }
@@ -247,22 +258,30 @@ function getPeriodStart(range) {
         Kills ${recentStats.kills} / Assists ${recentStats.assists} / Deaths ${recentStats.deaths}<br/>
         K/D ${recentStats.kd} – ADR ${recentStats.adr} – HS% ${recentStats.hsPercent}
       </div>
-    </div>`;
+    </div>`.trim();
 
     return `
       <tr data-player-id="${playerId}" data-elo="${elo}">
         <td class="p-2">${tooltip}</td>
         <td class="p-2 elo-now">${elo}</td>
         <td class="p-2 elo-diff">-</td>
-        <td class="p-2">${partnerNickname !== "—"
-          ? `<a href="${partnerUrl}" target="_blank" class="nickname-link">${partnerNickname}</a>`
-          : "—"}</td>
+        <td class="p-2">
+          ${partnerNickname !== "—"
+            ? `<a href="${partnerUrl}" target="_blank" class="nickname-link">${partnerNickname}</a>`
+            : "—"}
+        </td>
         <td class="p-2">${partnerWinrate}</td>
-        <td class="p-2"><img src="icons/levels/level_${level}_icon.png" width="24" height="24" title="Level ${level}"></td>
+        <td class="p-2">
+          <img
+            src="icons/levels/level_${level}_icon.png"
+            width="24" height="24"
+            title="Level ${level}"
+          >
+        </td>
         <td class="p-2">${winrate}</td>
         <td class="p-2">${matches}</td>
         <td class="p-2">${lastMatch}</td>
-      </tr>`;
+      </tr>`.trim();
   }).join("\n");
 
   const template = fs.readFileSync(TEMPLATE_FILE, "utf-8");
@@ -287,7 +306,10 @@ function getPeriodStart(range) {
     }
     if (doUpdate) {
       writeJson(RANGE_FILES[range], latest);
-      fs.writeFileSync(metaPath, JSON.stringify({ lastUpdated: start.toISODate() }, null, 2));
+      fs.writeFileSync(
+        metaPath,
+        JSON.stringify({ lastUpdated: start.toISODate() }, null, 2)
+      );
       console.log(`✅ ${RANGE_FILES[range]} wurde aktualisiert.`);
     }
   }
