@@ -153,7 +153,7 @@ async function fetchTeammateStats(playerId) {
         url:      url      || "#",
         count:    cnt,
         wins,
-        winrate:  cnt ? `${Math.round(wins/cnt*100)}%` : "—"
+        winrate:  cnt ? `${Math.round(wins / cnt * 100)}%` : "—"
       };
     })
     .filter(p => p.nickname && p.nickname !== "—")
@@ -192,16 +192,6 @@ async function fetchPlayerData(playerId) {
 
   console.log(`\n👤 [${playerId}] topMate=`, topMate);
 
-  // Mate mit den meisten Verlusten
-  const lossMate = teammateStats.reduce((a,b) => {
-    const aLoss = (a.count||0)-(a.wins||0);
-    const bLoss = (b.count   )-(b.wins   );
-    return bLoss > aLoss ? b : a;
-  }, {});
-
-  const lossPartnerNickname = lossMate.nickname || "—";
-  const lossPartnerUrl      = lossMate.url      || "#";
-
   return {
     playerId,
     nickname,
@@ -214,9 +204,7 @@ async function fetchPlayerData(playerId) {
     recentStats,
     partnerNickname: topMate.nickname || "—",
     partnerUrl:      topMate.url      || "#",
-    partnerWinrate:  topMate.winrate || "—",
-    lossPartnerNickname,
-    lossPartnerUrl
+    partnerWinrate:  topMate.winrate || "—"
   };
 }
 
@@ -267,7 +255,6 @@ function getPeriodStart(range) {
       playerId, elo, level,
       recentStats,
       partnerNickname, partnerUrl, partnerWinrate,
-      lossPartnerNickname, lossPartnerUrl,
       winrate, matches, lastMatch
     } = p;
 
@@ -291,11 +278,6 @@ function getPeriodStart(range) {
             : "—"}
         </td>
         <td class="p-2">${partnerWinrate}</td>
-        <td class="p-2">
-          ${lossPartnerNickname !== "—"
-            ? `<a href="${lossPartnerUrl}" target="_blank" class="nickname-link">${lossPartnerNickname}</a>`
-            : "—"}
-        </td>
         <td class="p-2">
           <img src="icons/levels/level_${level}_icon.png" width="24" height="24" title="Level ${level}">
         </td>
