@@ -10,18 +10,8 @@
     body { background: #1e1f26; font-family: 'Inter', sans-serif; }
     .nickname-link { text-decoration: none; transition: all .2s ease; color: #fff; position: relative; display: inline-block; }
     .nickname-link:hover { color: #38bdf8; text-decoration: underline; text-shadow: 0 0 6px #38bdf8; }
-    .tooltip { position: relative; display: inline-block; }
-    .tooltip-content {
-      visibility: hidden; opacity: 0;
-      background: rgba(0,0,0,0.9); color: #fff;
-      padding: .5rem .75rem; border-radius: .5rem;
-      position: absolute; z-index: 10; top:125%; left:0;
-      font-size:.75rem; line-height:1.25rem; white-space: normal; max-width:320px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.4);
-      transition: opacity .3s ease, visibility .3s ease;
-      pointer-events: none;
-    }
-    .tooltip:hover .tooltip-content { visibility: visible; opacity: 1; }
+    .toggle-details { font-weight: bold; }
+    .toggle-details:hover { color: #38bdf8; cursor: pointer; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col text-white bg-[#1e1f26]">
@@ -50,8 +40,6 @@
               <th class="text-left p-2 cursor-pointer">Nickname</th>
               <th class="text-left p-2 cursor-pointer">ELO</th>
               <th class="text-left p-2 cursor-pointer">Δ ELO</th>
-              <th class="text-left p-2 cursor-pointer">Häufigster Mitspieler (letzten 30 Matches)</th>
-              <th class="text-left p-2 cursor-pointer">Winrate mit häufigster Mitspieler (letzten 30 Matches)</th>
               <th class="text-left p-2 cursor-pointer">Level</th>
               <th class="text-left p-2 cursor-pointer">Winrate</th>
               <th class="text-left p-2 cursor-pointer">Matches</th>
@@ -79,7 +67,7 @@
       const snap = await fetch(`data/elo-${range}.json`).then(r => r.json());
       const lookup = Object.fromEntries(snap.map(p => [p.playerId, p.elo]));
 
-      document.querySelectorAll("tbody tr").forEach(row => {
+      document.querySelectorAll("tbody tr.player-row").forEach(row => {
         const pid = row.dataset.playerId;
         const now = +row.dataset.elo;
         const prev = lookup[pid];
@@ -103,11 +91,10 @@
     document.getElementById("eloRange").addEventListener("change", e => updateEloDiff(e.target.value));
     updateEloDiff("daily");
 
-    // Tabellen-Sortierung
     document.querySelectorAll("th").forEach((header, colIdx) => {
       header.addEventListener("click", () => {
         const table = header.closest("table");
-        const rows = Array.from(table.querySelectorAll("tbody tr"));
+        const rows = Array.from(table.querySelectorAll("tbody tr.player-row"));
         const asc = !header.classList.contains("asc");
         rows.sort((a,b) => {
           let aVal = a.children[colIdx].textContent.trim();
@@ -126,6 +113,19 @@
         header.classList.add(asc?"asc":"desc");
         rows.forEach(r => table.querySelector("tbody").appendChild(r));
       });
+    });
+
+    document.addEventListener("click", e => {
+      const toggle = e.target.closest(".toggle-details");
+      if (toggle) {
+        const row = toggle.closest("tr");
+        const playerId = row.dataset.playerId;
+        const detailRow = document.querySelector(`tr.details-row[data-player-id='${playerId}']`);
+        if (detailRow) {
+          detailRow.classList.toggle("hidden");
+          toggle.textContent = detailRow.classList.contains("hidden") ? "▸" : "▾";
+        }
+      }
     });
   </script>
 </body>
