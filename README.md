@@ -2,8 +2,6 @@
 
 Ein automatisiertes FACEIT-Dashboard, das Statistiken wie ELO-Entwicklung, Match-Performance und Spieleranalysen übersichtlich darstellt. Ideal für Spielergruppen, Teams oder Streamer, die ihre Leistung langfristig verfolgen möchten.
 
-![Dashboard Vorschau](icons/preview.png)
-
 ## 🚀 Features
 
 - 📊 **Live ELO-Tracking** (alle 30 Minuten via GitHub Actions)
