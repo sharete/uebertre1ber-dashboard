@@ -4,12 +4,12 @@
     "elo": 2895
   },
   {
-    "playerId": "d6a56381-6904-47e4-ad74-8a9e64782b87",
-    "elo": 2860
-  },
-  {
     "playerId": "b24b225e-3796-4283-a5e4-a351bbf82295",
     "elo": 2850
+  },
+  {
+    "playerId": "d6a56381-6904-47e4-ad74-8a9e64782b87",
+    "elo": 2832
   },
   {
     "playerId": "f7414b6d-c590-4851-b2dc-ea9ead5fa994",
@@ -29,7 +29,7 @@
   },
   {
     "playerId": "73062f0c-1841-48cc-8e9b-3c5c8338f480",
-    "elo": 2450
+    "elo": 2422
   },
   {
     "playerId": "122290aa-caaf-4cc1-bf81-2a5b5a258cd3",
