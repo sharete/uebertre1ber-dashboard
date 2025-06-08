@@ -13,7 +13,7 @@
   },
   {
     "playerId": "f7414b6d-c590-4851-b2dc-ea9ead5fa994",
-    "elo": 2709
+    "elo": 2739
   },
   {
     "playerId": "76881899-1224-4acb-bd84-09b7b8e97f9c",
@@ -21,11 +21,15 @@
   },
   {
     "playerId": "fa6a9645-ef71-4566-8166-da700758a8a0",
-    "elo": 2683
+    "elo": 2664
   },
   {
     "playerId": "ff7a4321-10c3-4a11-83f0-5e590866ef3f",
-    "elo": 2636
+    "elo": 2617
+  },
+  {
+    "playerId": "ecf3dbf9-e632-4756-a401-0ecb32335aa3",
+    "elo": 2592
   },
   {
     "playerId": "122290aa-caaf-4cc1-bf81-2a5b5a258cd3",
@@ -33,11 +37,11 @@
   },
   {
     "playerId": "336c5c35-534c-488d-b786-31ad68c83e9e",
-    "elo": 2386
+    "elo": 2367
   },
   {
     "playerId": "73062f0c-1841-48cc-8e9b-3c5c8338f480",
-    "elo": 2335
+    "elo": 2316
   },
   {
     "playerId": "54b112de-02cf-4b57-b480-bb23fd6bed0c",
