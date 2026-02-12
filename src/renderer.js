@@ -94,7 +94,8 @@ class Renderer {
     data-matches="${parseInt(p.matches.toString().replace(/,/g, '')) || 0}"
     data-level="${p.level}"
     data-last="${p.lastMatch}"
-    data-last-ts="${p.lastMatchTs || 0}">
+    data-last-ts="${p.lastMatchTs || 0}"
+    data-kd="${parseFloat(recent.kd) || 0}">
   <td class="p-4">
     <div class="flex items-center gap-3">
         <div class="w-1 h-8 bg-faceit rounded-full opacity-0 group-hover:opacity-100 transition-opacity absolute left-2"></div>

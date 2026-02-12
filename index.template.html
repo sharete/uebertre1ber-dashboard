@@ -412,6 +412,7 @@
         const details = document.querySelector(`.details-row[data-player-id="${pid}"]`);
         if (details && !match) details.classList.add('hidden');
       });
+      buildMobileCards();
     });
 
     // --- Time Filter ---
@@ -531,6 +532,7 @@
           document.getElementById('hero-mvp-diff').className = "font-mono text-sm text-gray-500";
         }
 
+        buildMobileCards();
       } catch (e) { console.error(e); }
     }
 
@@ -552,6 +554,7 @@
         const details = document.querySelector(`.details-row[data-player-id="${pid}"]`);
         if (details) container.appendChild(details);
       });
+      buildMobileCards();
 
       updateViewHeaders();
     }
@@ -756,35 +759,118 @@
       const container = document.querySelector('.mobile-cards');
       if (!container) return;
       container.innerHTML = '';
+
       const rows = Array.from(document.querySelectorAll('.player-row'));
+
       rows.forEach(row => {
+        // Skip if row is hidden (search filter)
+        if (row.style.display === 'none') return;
+
+        const pid = row.dataset.playerId;
         const name = row.querySelector('.nickname-link')?.textContent || '—';
         const elo = row.dataset.elo;
         const level = row.dataset.level;
         const winrate = row.dataset.winrate;
+        const matches = row.dataset.matches;
         const diff = row.dataset.diff || '0';
         const diffNum = parseInt(diff);
         const diffColor = diffNum > 0 ? 'text-green-400' : (diffNum < 0 ? 'text-red-400' : 'text-gray-500');
         const diffSign = diffNum > 0 ? '+' : '';
+        const levelIcon = `icons/levels/level_${level}_icon.png`;
 
         const card = document.createElement('div');
-        card.className = 'glass-card p-4 rounded-xl';
+        card.className = 'glass-card p-4 rounded-xl cursor-pointer transition-all active:scale-[0.98]';
+        card.onclick = (e) => toggleMobileDetails(pid, card);
+
+        // Find the history data from the desktop details row
+        const desktopDetailRow = document.querySelector(`tr.details-row[data-player-id="${pid}"]`);
+        const historyData = desktopDetailRow ? desktopDetailRow.querySelector('canvas')?.dataset.history : '[]';
+
         card.innerHTML = `
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-3">
-              <img src="icons/levels/level_${level}_icon.png" width="24" height="24" class="level-badge">
+              <img src="${levelIcon}" width="32" height="32" class="level-badge shadow-lg">
               <div>
-                <p class="font-bold text-white text-sm">${name}</p>
-                <p class="font-mono text-neon-blue text-lg font-bold">${elo}</p>
+                <p class="font-bold text-white text-base">${name}</p>
+                <p class="font-mono text-neon-blue text-xl font-bold tracking-tight">${elo}</p>
               </div>
             </div>
             <div class="text-right">
-              <p class="font-mono font-bold ${diffColor}">${diffSign}${diff}</p>
-              <p class="text-[10px] text-white/30">WR: ${winrate}%</p>
+              <div class="inline-flex items-center justify-center px-2 py-1 rounded bg-white/5 border border-white/5 mb-1">
+                <p class="font-mono font-bold ${diffColor} text-sm">${diffSign}${diff}</p>
+              </div>
+              <p class="text-[10px] text-white/40 font-mono uppercase tracking-wider">${matches} Games • ${winrate}% WR</p>
             </div>
-          </div>`;
+          </div>
+          
+          <!-- Details (Hidden by default) -->
+          <div class="mobile-details hidden mt-4 border-t border-white/5 pt-4" data-player-id="${pid}">
+             <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="bg-black/20 p-2 rounded-lg text-center">
+                   <p class="text-[10px] text-white/30 uppercase">K/D</p>
+                   <p class="font-mono text-neon-blue font-bold text-sm">${row.dataset.kd || '-'}</p>
+                </div>
+                <div class="bg-black/20 p-2 rounded-lg text-center">
+                   <p class="text-[10px] text-white/30 uppercase">Avg ElO</p>
+                   <p class="font-mono text-orange-400 font-bold text-sm">~${elo}</p>
+                </div>
+                 <div class="bg-black/20 p-2 rounded-lg text-center">
+                   <p class="text-[10px] text-white/30 uppercase">Streak</p>
+                   <p class="font-mono text-green-400 font-bold text-sm">Soon</p>
+                </div>
+             </div>
+             <div class="h-40 w-full relative">
+                <canvas data-history='${historyData}'></canvas>
+             </div>
+          </div>
+        `;
         container.appendChild(card);
       });
+    }
+
+    function toggleMobileDetails(pid, card) {
+      const details = card.querySelector('.mobile-details');
+      if (!details) return;
+
+      details.classList.toggle('hidden');
+      const isHidden = details.classList.contains('hidden');
+
+      if (!isHidden) {
+        // Init chart if needed
+        const canvas = details.querySelector('canvas');
+        if (canvas && !canvas.chart) {
+          const hist = JSON.parse(canvas.dataset.history || "[]");
+          if (hist.length) {
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+            gradient.addColorStop(0, 'rgba(0, 242, 255, 0.2)');
+            gradient.addColorStop(1, 'rgba(0, 242, 255, 0)');
+
+            canvas.chart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: hist.map(h => new Date(h.date * 1000).toLocaleDateString()),
+                datasets: [{
+                  data: hist.map(h => h.elo),
+                  borderColor: '#00f2ff',
+                  backgroundColor: gradient,
+                  borderWidth: 2,
+                  pointRadius: 0,
+                  pointHoverRadius: 4,
+                  fill: true,
+                  tension: 0.4
+                }]
+              },
+              options: {
+                responsive: true, maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: { legend: { display: false }, tooltip: { enabled: true, intersect: false, mode: 'index' } },
+                scales: { x: { display: false }, y: { display: true, grid: { color: 'rgba(255,255,255,0.05)' } } }
+              }
+            });
+          }
+        }
+      }
     }
 
     // --- Startup ---
