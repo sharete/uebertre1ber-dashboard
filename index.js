@@ -226,6 +226,21 @@ function calculateAwards(results) {
             console.log(`✅ ${RANGE_FILES[range]} updated.`);
         }
 
+        // Backfill new players missing from this snapshot
+        const existingIds = new Set(dataForRange.map(d => d.playerId));
+        let backfilled = 0;
+        for (const p of results) {
+            if (!existingIds.has(p.playerId)) {
+                const threshold = getPeriodStart(range);
+                const eloAtStart = findEloAt(p, threshold);
+                dataForRange.push({ playerId: p.playerId, elo: eloAtStart });
+                backfilled++;
+            }
+        }
+        if (backfilled > 0) {
+            writeJson(RANGE_FILES[range], dataForRange);
+        }
+
         snapshotData[range] = dataForRange;
     }
 
