@@ -101,12 +101,24 @@ async function removePlayer(nickname) {
     const existing = readPlayers();
     const lower = nickname.toLowerCase();
 
-    // Find by comment (nickname) or by UUID
-    const idx = existing.findIndex(
+    // 1. Try local match by comment or UUID
+    let idx = existing.findIndex(
         (p) =>
             p.comment.toLowerCase() === lower ||
             p.id.toLowerCase() === lower
     );
+
+    // 2. If not found locally, try resolving via API (handles renamed players)
+    if (idx === -1 && API_KEY) {
+        console.log(`🔍 Lokal nicht gefunden, suche "${nickname}" auf FACEIT...`);
+        const player = await fetchPlayer(nickname);
+        if (player && player.player_id) {
+            idx = existing.findIndex((p) => p.id === player.player_id);
+            if (idx !== -1) {
+                console.log(`✅ Gefunden! Spieler hat sich umbenannt: ${existing[idx].comment} → ${player.nickname}`);
+            }
+        }
+    }
 
     if (idx === -1) {
         console.error(`❌ Spieler "${nickname}" nicht im Dashboard gefunden.`);
@@ -123,7 +135,7 @@ async function removePlayer(nickname) {
     console.log(`   → Verbleibend: ${existing.length} Spieler`);
 }
 
-function listPlayers() {
+async function listPlayers(sync = false) {
     const players = readPlayers();
 
     if (players.length === 0) {
@@ -131,7 +143,37 @@ function listPlayers() {
         return;
     }
 
-    console.log(`\n📋 Dashboard Spieler (${players.length}):\n`);
+    // Sync nicknames via API if requested
+    if (sync) {
+        if (!API_KEY) {
+            console.error("❌ FACEIT_API_KEY wird für --sync benötigt!");
+            process.exit(1);
+        }
+        console.log(`🔄 Synchronisiere Nicknames für ${players.length} Spieler...\n`);
+        let updated = 0;
+        for (const p of players) {
+            try {
+                const url = `${API_BASE}/players/${p.id}`;
+                const res = await fetch(url, { headers: getHeaders() });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.nickname && data.nickname !== p.comment) {
+                        console.log(`   🔄 ${p.comment} → ${data.nickname}`);
+                        p.comment = data.nickname;
+                        updated++;
+                    }
+                }
+            } catch { /* skip */ }
+        }
+        if (updated > 0) {
+            writePlayers(players);
+            console.log(`\n✅ ${updated} Nickname(s) aktualisiert!\n`);
+        } else {
+            console.log(`   ✅ Alle Nicknames sind aktuell!\n`);
+        }
+    }
+
+    console.log(`📋 Dashboard Spieler (${players.length}):\n`);
     console.log("   #  Nickname            UUID");
     console.log("   ─  ──────────────────  ────────────────────────────────────");
     players.forEach((p, i) => {
@@ -169,7 +211,7 @@ async function main() {
 
         case "list":
         case "ls":
-            listPlayers();
+            await listPlayers(process.argv.includes("--sync"));
             break;
 
         default:
@@ -180,6 +222,7 @@ Befehle:
   node manage-players.js add <nickname>      Spieler hinzufügen
   node manage-players.js remove <nickname>   Spieler entfernen
   node manage-players.js list                Alle Spieler anzeigen
+  node manage-players.js list --sync         Nicknames mit FACEIT abgleichen
 
 Umgebungsvariablen:
   FACEIT_API_KEY    Benötigt für 'add' (FACEIT Data API v4)
