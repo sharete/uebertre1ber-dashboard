@@ -40,7 +40,7 @@ async function processPlayer(playerId) {
     try {
         const [profile, history, playerStats, eloHistoryData] = await Promise.all([
             api.getPlayer(playerId),
-            api.getPlayerHistory(playerId, 30), // Get last 30 matches
+            api.getPlayerHistory(playerId, 30),
             api.getPlayerStats(playerId),
             api.getEloHistory(playerId)
         ]);
@@ -51,7 +51,7 @@ async function processPlayer(playerId) {
         }
 
         const elo = profile.games?.cs2?.faceit_elo || null;
-        if (!elo) return null; // Player has no CS2 ELO
+        if (!elo) return null;
 
         // Fetch match stats for all matches in history
         const matchStatsMap = {};
@@ -60,29 +60,25 @@ async function processPlayer(playerId) {
             if (ms) matchStatsMap[item.match_id] = ms;
         }
 
-        // Calculate stats
+        // Calculate stats (now includes streak, last5, mapPerformance)
         const calculatedStats = stats.calculatePlayerStats(playerId, history.items, matchStatsMap, eloHistoryData);
 
         const lastTs = history.items[0]?.finished_at;
         const lastMatch = lastTs ? DateTime.fromSeconds(lastTs).setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm") : "—";
+        const lastMatchTs = lastTs || 0;
         const url = (profile.faceit_url || "").replace("{lang}", "de");
 
         return {
             playerId: profile.player_id,
             nickname: profile.nickname,
+            avatar: profile.avatar || "",
             elo,
             level: profile.games?.cs2?.skill_level || 0,
             faceitUrl: url,
-            winrate: playerStats.lifetime ? playerStats.lifetime["Win Rate %"] + "%" : "—", // Add % sign if missing pattern in original
-            // Original code: playerStats.lifetime["Win Rate %"] already includes "52", not "52%"? Checked original: it is just number "52" then added later.
-            // Wait, original: `lifetime["Get Win Rate %"] || "—"`
-            // Let's check original `fetch-elos.js`: `lifetime["Win Rate %"]`
-            // And in HTML it is just outputted.
-            // In my renderer I assume it's a string with %. Let's double check.
-            // `lifetime` object usually has "Win Rate %": "52".
-            // So I should append %. 
+            winrate: playerStats.lifetime ? playerStats.lifetime["Win Rate %"] + "%" : "—",
             matches: playerStats.lifetime ? playerStats.lifetime["Matches"] : "—",
             lastMatch,
+            lastMatchTs,
             stats: calculatedStats
         };
 
@@ -92,13 +88,54 @@ async function processPlayer(playerId) {
     }
 }
 
+function calculateAwards(results) {
+    if (results.length === 0) return {};
+
+    let bestKD = { name: "—", value: "0.00" };
+    let bestHS = { name: "—", value: "0%" };
+    let bestADR = { name: "—", value: "0.0" };
+    let mostMatches = { name: "—", value: 0 };
+    let longestStreak = { name: "—", value: 0, type: "win" };
+    let lowestDeaths = { name: "—", value: Infinity };
+
+    for (const p of results) {
+        const r = p.stats.recent;
+
+        if (parseFloat(r.kd) > parseFloat(bestKD.value)) {
+            bestKD = { name: p.nickname, value: r.kd, avatar: p.avatar };
+        }
+        if (parseInt(r.hsPercent) > parseInt(bestHS.value)) {
+            bestHS = { name: p.nickname, value: r.hsPercent, avatar: p.avatar };
+        }
+        if (parseFloat(r.adr) > parseFloat(bestADR.value)) {
+            bestADR = { name: p.nickname, value: r.adr, avatar: p.avatar };
+        }
+        if (r.matches > mostMatches.value) {
+            mostMatches = { name: p.nickname, value: r.matches, avatar: p.avatar };
+        }
+        if (r.deaths < lowestDeaths.value && r.matches > 0) {
+            lowestDeaths = { name: p.nickname, value: r.deaths, avatar: p.avatar };
+        }
+        if (p.stats.streak.type === "win" && p.stats.streak.count > longestStreak.value) {
+            longestStreak = { name: p.nickname, value: p.stats.streak.count, type: "win", avatar: p.avatar };
+        }
+    }
+
+    return {
+        bestKD,
+        bestHS,
+        bestADR,
+        mostMatches,
+        longestStreak,
+        lowestDeaths
+    };
+}
+
 (async () => {
     console.log("🚀 Starting Faceit Dashboard Update...");
 
-    // Init API (limit)
     await api.init();
 
-    // Read players
     const lines = fs.readFileSync(PLAYERS_FILE, "utf-8")
         .trim()
         .split("\n")
@@ -113,47 +150,34 @@ async function processPlayer(playerId) {
         if (p) results.push(p);
     }
 
-    // Sort by ELO
     results.sort((a, b) => b.elo - a.elo);
 
-    // Write latest ELO for diffs
     const latest = results.map(r => ({ playerId: r.playerId, elo: r.elo }));
     writeJson(RANGE_FILES.latest, latest);
 
-    // Update time
     const updatedTime = DateTime.now().setZone("Europe/Berlin").toFormat("yyyy-MM-dd HH:mm");
     const now = DateTime.now().setZone("Europe/Berlin");
 
-    // Helper to find ELO at a specific time in past
     const findEloAt = (player, dateThreshold) => {
         if (!player.stats.eloHistory || player.stats.eloHistory.length === 0) return player.elo;
-
         const history = player.stats.eloHistory;
         const thresholdTs = dateThreshold.toSeconds();
-
-        // Iterate backwards (Assuming Oldest -> Newest)
         for (let i = history.length - 1; i >= 0; i--) {
             if (history[i].date <= thresholdTs) {
                 return history[i].elo;
             }
         }
-
-        if (history.length > 0) {
-            return history[0].elo;
-        }
-
+        if (history.length > 0) return history[0].elo;
         return player.elo;
     };
 
     const snapshotData = {};
 
-    // Rewrite snapshot logic to respect historical backfill
     for (const range of ["daily", "weekly", "monthly", "yearly"]) {
         const metaPath = path.join(DATA_DIR, `elo-${range}-meta.json`);
         let needsUpdate = true;
         let dataForRange = [];
 
-        // Try to load existing data first so we have something to inject even if no update needed
         if (fs.existsSync(path.join(DATA_DIR, RANGE_FILES[range]))) {
             try {
                 dataForRange = JSON.parse(fs.readFileSync(path.join(DATA_DIR, RANGE_FILES[range]), "utf-8"));
@@ -169,15 +193,7 @@ async function processPlayer(playerId) {
                 }
             } catch { }
         } else {
-            // First run: Backfill
             console.log(`ℹ️ First run for ${range}. Backfilling from history...`);
-
-            // User requested Strict Logic:
-            // Daily -> Reset at 00:00 (Today)
-            // Weekly -> Reset at Monday 00:00 (This week)
-            // Monthly -> Reset at 1st of Month 00:00 (This month)
-            // Yearly -> Reset at 01.01. 00:00 (This year)
-
             let threshold;
             if (range === "daily") threshold = now.startOf("day");
             if (range === "weekly") threshold = now.startOf("week");
@@ -185,7 +201,6 @@ async function processPlayer(playerId) {
             if (range === "yearly") threshold = now.startOf("year");
 
             const backfilledData = results.map(p => {
-                // strict mode: if last match was BEFORE threshold, then diff should be 0 (so snapshot = current elo)
                 const history = p.stats.eloHistory;
                 if (history && history.length > 0) {
                     const lastMatchDate = history[history.length - 1].date;
@@ -193,7 +208,6 @@ async function processPlayer(playerId) {
                         return { playerId: p.playerId, elo: p.elo };
                     }
                 }
-
                 return {
                     playerId: p.playerId,
                     elo: findEloAt(p, threshold)
@@ -215,11 +229,15 @@ async function processPlayer(playerId) {
         snapshotData[range] = dataForRange;
     }
 
-    // Render HTML with injected data
+    // Calculate awards
+    const awards = calculateAwards(results);
+
+    // Render HTML with all data
     renderer.render(TEMPLATE_FILE, OUTPUT_FILE, {
         players: results,
         lastUpdated: updatedTime,
-        historyData: snapshotData
+        historyData: snapshotData,
+        awards
     });
 
     console.log("✨ Done!");

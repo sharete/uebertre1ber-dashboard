@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const CACHE_FILE = path.join(__dirname, '../data/match_cache.json');
+const MAX_AGE_DAYS = 90;
 
 class Cache {
   constructor() {
@@ -29,14 +30,33 @@ class Cache {
 
   set(key, value) {
     this.load();
+    // Attach a timestamp for eviction
+    value.__cachedAt = Date.now();
     this.data[key] = value;
+  }
+
+  evict() {
+    const cutoff = Date.now() - (MAX_AGE_DAYS * 24 * 60 * 60 * 1000);
+    let removed = 0;
+    for (const key of Object.keys(this.data)) {
+      const entry = this.data[key];
+      if (entry && entry.__cachedAt && entry.__cachedAt < cutoff) {
+        delete this.data[key];
+        removed++;
+      }
+    }
+    if (removed > 0) {
+      console.log(`🧹 Cache: evicted ${removed} entries older than ${MAX_AGE_DAYS} days`);
+    }
   }
 
   save() {
     if (!this.loaded) return;
+    this.evict();
     try {
-      fs.writeFileSync(CACHE_FILE, JSON.stringify(this.data, null, 2));
-      console.log(`✅ Cache saved to ${CACHE_FILE}`);
+      fs.writeFileSync(CACHE_FILE, JSON.stringify(this.data));
+      const sizeKB = Math.round(fs.statSync(CACHE_FILE).size / 1024);
+      console.log(`✅ Cache saved (${sizeKB} KB, ${Object.keys(this.data).length} entries)`);
     } catch (e) {
       console.error('Failed to save cache:', e);
     }

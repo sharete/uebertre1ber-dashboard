@@ -1,4 +1,4 @@
-// Use native fetch in Node 25
+// Use native fetch in Node 18+
 const fetch = globalThis.fetch;
 const pLimit = (...args) => import("p-limit").then(mod => mod.default(...args));
 const cache = require('./cache');
@@ -23,17 +23,13 @@ async function retryFetch(url, options = {}, retries = 3, delay = 1000) {
             const res = await fetch(url, options);
             if (res.ok) return res;
 
-            const errorText = await res.text();
-            console.log(`⚠️ API Error ${res.status} for ${url}`); // Debug Log
-            console.log(`Body: ${errorText}`); // Log body!
-
-            if (res.status === 404) return null; // Don't retry 404s
+            if (res.status === 404) return null;
             if (res.status === 401 || res.status === 403) {
                 console.error("❌ Authentication Error! Check your API Key.");
                 return null;
             }
 
-            if (res.status === 429) { // Rate limited
+            if (res.status === 429) {
                 const retryAfter = res.headers.get('Retry-After');
                 const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : delay * (i + 1);
                 console.log(`⏳ Rate limited, waiting ${waitTime}ms...`);
@@ -73,11 +69,8 @@ class FaceitAPI {
     }
 
     async getPlayer(nicknameOrId) {
-        // Try to determine if it's a UUID or nickname
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(nicknameOrId);
         const endpoint = isUUID ? `players/${nicknameOrId}` : `players?nickname=${nicknameOrId}`;
-
-        // console.log(`🔍 Fetching ${endpoint}...`); // Debug Log
         const res = await retryFetch(`${API_BASE}/${endpoint}`, { headers: getHeaders() });
         return safeJson(res);
     }
@@ -93,14 +86,11 @@ class FaceitAPI {
     }
 
     async getEloHistory(playerId) {
-        // Use internal API for ELO history graph
-        // increased size to 100 to allow better backfilling of weekly/monthly stats
         const url = `https://api.faceit.com/stats/v1/stats/time/users/${playerId}/games/cs2?size=100`;
         try {
-            const res = await fetch(url); // No headers needed for public internal API usually, or simple headers
+            const res = await fetch(url);
             if (res.ok) {
                 const data = await res.json();
-                // Data format: [ { date: timestamp, elo: number, ... }, ... ]
                 return data || [];
             }
         } catch (e) {
@@ -121,32 +111,29 @@ class FaceitAPI {
         const data = await safeJson(res);
         if (!data?.rounds) return null;
 
-        // Process and cache the match data
-        // We only need the player stats and the score
-        const players = data.rounds[0].teams.flatMap(t => t.players);
+        const round = data.rounds[0];
+        const players = round.teams.flatMap(t => t.players);
         const mapStats = {};
 
-        const score = data.rounds[0].round_stats["Score"] || "0 / 0";
+        const score = round.round_stats["Score"] || "0 / 0";
         const [a, b] = score.split(" / ").map(Number);
         const roundCount = a + b;
+        const mapName = round.round_stats["Map"] || "Unknown";
 
         for (const p of players) {
             mapStats[p.player_id] = {
                 ...p.player_stats,
                 __rounds: roundCount,
-                nickname: p.nickname // Store nickname for display even if they change it
+                nickname: p.nickname
             };
         }
 
-        cache.set(matchId, mapStats);
-        cache.save(); // Save immediately or debounced
-        return mapStats;
-    }
+        // Store map name at top level so stats.js can access it
+        mapStats.__mapName = mapName;
 
-    async getMatchDetails(matchId) {
-        // Only needed if we want more details like map, winner team etc that are not in /stats
-        // For now getMatchStats seems sufficient for personal stats
-        return this.getMatchStats(matchId);
+        cache.set(matchId, mapStats);
+        cache.save();
+        return mapStats;
     }
 }
 

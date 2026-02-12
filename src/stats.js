@@ -10,6 +10,12 @@ class StatsCalculator {
         const teammateLosses = {};
         const teammateInfo = {};
 
+        // For map performance
+        const mapData = {};
+
+        // For last 5 results & streak
+        const matchResults = []; // ordered newest → oldest
+
         for (const match of history) {
             const matchId = match.match_id;
             const stats = matchStatsMap[matchId];
@@ -28,41 +34,58 @@ class StatsCalculator {
                 count++;
             }
 
-            // Teammate Stats
-            // We need the match details from history to see who was in the team
-            // The /stats endpoint gives us all players in the server, but not grouped by team in the simplified map we cached.
-            // Wait, the history endpoint `teams` object has the lineup.
+            // Map Performance
+            const mapName = stats.__mapName || "Unknown";
+            if (!mapData[mapName]) {
+                mapData[mapName] = { wins: 0, losses: 0, kills: 0, deaths: 0, matches: 0 };
+            }
+
+            // Determine win/loss for this match
             const teams = match.teams;
             const winner = match.results?.winner;
-            if (!teams || !winner) continue;
+            let didWin = false;
 
-            for (const [side, team] of Object.entries(teams)) {
-                const members = team.players || [];
-                // Check if our player is in this team
-                if (!members.some(p => p.player_id === playerId)) continue;
+            if (teams && winner) {
+                for (const [side, team] of Object.entries(teams)) {
+                    const members = team.players || [];
+                    if (!members.some(p => p.player_id === playerId)) continue;
+                    didWin = (side === winner);
 
-                // This is our team
-                const won = (side === winner);
+                    // Teammate Stats
+                    for (const p of members) {
+                        if (p.player_id === playerId) continue;
 
-                for (const p of members) {
-                    if (p.player_id === playerId) continue;
+                        teammateCounts[p.player_id] = (teammateCounts[p.player_id] || 0) + 1;
+                        if (didWin) {
+                            teammateWins[p.player_id] = (teammateWins[p.player_id] || 0) + 1;
+                        } else {
+                            teammateLosses[p.player_id] = (teammateLosses[p.player_id] || 0) + 1;
+                        }
 
-                    teammateCounts[p.player_id] = (teammateCounts[p.player_id] || 0) + 1;
-                    if (won) {
-                        teammateWins[p.player_id] = (teammateWins[p.player_id] || 0) + 1;
-                    } else {
-                        teammateLosses[p.player_id] = (teammateLosses[p.player_id] || 0) + 1;
+                        if (!teammateInfo[p.player_id]) {
+                            teammateInfo[p.player_id] = {
+                                nickname: p.nickname,
+                                url: (p.faceit_url || "").replace("{lang}", "de"),
+                                avatar: p.avatar
+                            };
+                        }
                     }
-
-                    if (!teammateInfo[p.player_id]) {
-                        teammateInfo[p.player_id] = {
-                            nickname: p.nickname,
-                            url: (p.faceit_url || "").replace("{lang}", "de"),
-                            avatar: p.avatar
-                        };
-                    }
+                    break;
                 }
-                break; // Found our team, stop checking
+            }
+
+            // Track match result
+            matchResults.push(didWin ? "W" : "L");
+
+            // Map stats accumulation
+            if (mapName !== "Unknown") {
+                mapData[mapName].matches++;
+                if (didWin) mapData[mapName].wins++;
+                else mapData[mapName].losses++;
+                if (playerStats) {
+                    mapData[mapName].kills += +playerStats.Kills || 0;
+                    mapData[mapName].deaths += +playerStats.Deaths || 0;
+                }
             }
         }
 
@@ -78,9 +101,34 @@ class StatsCalculator {
             matches: count
         };
 
+        // Win/Loss Streak (from most recent match)
+        let streak = { type: "none", count: 0 };
+        if (matchResults.length > 0) {
+            const first = matchResults[0];
+            let streakCount = 0;
+            for (const r of matchResults) {
+                if (r === first) streakCount++;
+                else break;
+            }
+            streak = { type: first === "W" ? "win" : "loss", count: streakCount };
+        }
+
+        // Last 5 results
+        const last5 = matchResults.slice(0, 5);
+
+        // Map Performance (sorted by matches played, descending)
+        const mapPerformance = Object.entries(mapData)
+            .map(([map, d]) => ({
+                map,
+                wins: d.wins,
+                losses: d.losses,
+                matches: d.matches,
+                winrate: d.matches ? Math.round((d.wins / d.matches) * 100) : 0,
+                kd: d.deaths ? (d.kills / d.deaths).toFixed(2) : "0.00"
+            }))
+            .sort((a, b) => b.matches - a.matches);
+
         // ELO History
-        // Use the data fetched from internal API
-        // Format of internal API: [{ date: 17...000, elo: "2500", ... }]
         const eloHistory = (externalEloHistory || [])
             .map(item => ({
                 date: Math.floor(item.date / 1000),
@@ -88,13 +136,6 @@ class StatsCalculator {
             }))
             .filter(item => !isNaN(item.date) && !isNaN(item.elo))
             .reverse();
-        // Actually api.faceit.com/stats/v1/stats/time/users/... returns array.
-        // Let's assume input is correct.
-        // Verify format: data is array of objects.
-
-        // Use external data if available, otherwise empty (fallback failed previously)
-
-
 
         // Aggregate Teammate Stats
         const teammates = Object.entries(teammateCounts).map(([id, cnt]) => {
@@ -116,8 +157,11 @@ class StatsCalculator {
 
         return {
             recent: recentStats,
-            teammates: teammates,
-            eloHistory: eloHistory
+            teammates,
+            eloHistory,
+            streak,
+            last5,
+            mapPerformance
         };
     }
 }
