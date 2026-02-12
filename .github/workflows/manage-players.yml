@@ -1,0 +1,52 @@
+name: 🎮 Manage Players
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Aktion"
+        required: true
+        type: choice
+        options:
+          - add
+          - remove
+      nickname:
+        description: "FACEIT Nickname des Spielers"
+        required: true
+        type: string
+
+jobs:
+  manage:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Repo auschecken
+      uses: actions/checkout@v3
+
+    - name: 🟢 Node.js einrichten
+      uses: actions/setup-node@v3
+      with:
+        node-version: "20"
+
+    - name: 📦 Abhängigkeiten installieren
+      run: npm install
+
+    - name: 🎮 Spieler ${{ inputs.action }}
+      env:
+        FACEIT_API_KEY: ${{ secrets.FACEIT_API_KEY }}
+      run: node manage-players.js ${{ inputs.action }} "${{ inputs.nickname }}"
+
+    - name: 🔁 Änderungen committen und pushen
+      run: |
+        git config user.name "faceit-bot"
+        git config user.email "faceit-bot@localhost"
+        git add players.txt
+        git commit -m "🎮 Spieler ${{ inputs.action }}: ${{ inputs.nickname }}" || echo "🟡 Keine Änderungen"
+        git push
+
+    - name: 🔄 Dashboard-Update triggern
+      if: success()
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh workflow run "FACEIT ELO Auto Update" || echo "⚠️ Trigger fehlgeschlagen"
