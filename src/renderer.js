@@ -63,10 +63,18 @@ class Renderer {
   }
 
   renderPlayer(p) {
-    const { recent, teammates, streak, last5, mapPerformance } = p.stats;
+    const { recent, teammates, streak, last5, mapPerformance, eloHistory } = p.stats;
     const topMates = [...teammates].sort((a, b) => b.count - a.count).slice(0, 5);
     const worstMates = [...teammates].sort((a, b) => b.losses - a.losses).slice(0, 5);
     const bestMates = [...teammates].sort((a, b) => b.wins - a.wins).slice(0, 5);
+
+    // Calculate Peak ELO (max of history + current)
+    const historyMax = eloHistory && eloHistory.length ? Math.max(...eloHistory.map(h => h.elo)) : 0;
+    const peakElo = Math.max(historyMax, parseInt(p.elo));
+
+    // Format Streak
+    const streakStr = streak.count > 0 ? `${streak.count}${streak.type === 'win' ? 'W' : 'L'}` : '—';
+    const streakColor = streak.type === 'win' ? 'text-green-400' : (streak.type === 'loss' ? 'text-red-400' : 'text-gray-500');
 
     // Streak badge
     const streakBadge = streak.count >= 2
@@ -95,7 +103,10 @@ class Renderer {
     data-level="${p.level}"
     data-last="${p.lastMatch}"
     data-last-ts="${p.lastMatchTs || 0}"
-    data-kd="${parseFloat(recent.kd) || 0}">
+    data-kd="${parseFloat(recent.kd) || 0}"
+    data-peak="${peakElo}"
+    data-streak="${streakStr}"
+    data-streak-type="${streak.type}">
   <td class="p-4">
     <div class="flex items-center gap-3">
         <div class="w-1 h-8 bg-faceit rounded-full opacity-0 group-hover:opacity-100 transition-opacity absolute left-2"></div>
