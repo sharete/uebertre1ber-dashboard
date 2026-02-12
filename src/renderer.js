@@ -56,7 +56,7 @@ class Renderer {
       ${card("🎯", "Best K/D", awards.bestKD.name, awards.bestKD.value, "blue")}
       ${card("💥", "Headshot King", awards.bestHS.name, awards.bestHS.value, "yellow")}
       ${card("⚡", "Best ADR", awards.bestADR.name, awards.bestADR.value, "purple")}
-      ${card("🏃", "Grinder", awards.mostMatches.name, `${awards.mostMatches.value} Games`, "green")}
+      ${card("🏆", "Best Winrate", awards.bestWinrate.name, `${awards.bestWinrate.value}%`, "green")}
       ${card("🔥", "Win Streak", awards.longestStreak.name, `${awards.longestStreak.value}W`, "orange")}
       ${card("🛡️", "Survivor", awards.lowestDeaths.name, `${awards.lowestDeaths.value} Deaths`, "cyan")}
     </div>`;

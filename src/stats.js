@@ -90,15 +90,18 @@ class StatsCalculator {
         }
 
         // Aggregate Personal Stats
+        const wins = matchResults.filter(r => r === "W").length;
         const recentStats = {
             kills,
             assists,
             deaths,
+            wins,
             kd: count && deaths ? (kills / deaths).toFixed(2) : "0.00",
             adr: count ? (adrTotal / count).toFixed(1) : "0.0",
             hsPercent: kills ? Math.round((hs / kills) * 100) + "%" : "0%",
             kr: rounds ? (kills / rounds).toFixed(2) : "0.00",
-            matches: count
+            matches: count,
+            winratePct: count ? Math.round((wins / count) * 100) : 0
         };
 
         // Win/Loss Streak (from most recent match)

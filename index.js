@@ -94,7 +94,7 @@ function calculateAwards(results) {
     let bestKD = { name: "—", value: "0.00" };
     let bestHS = { name: "—", value: "0%" };
     let bestADR = { name: "—", value: "0.0" };
-    let mostMatches = { name: "—", value: 0 };
+    let bestWinrate = { name: "—", value: 0 };
     let longestStreak = { name: "—", value: 0, type: "win" };
     let lowestDeaths = { name: "—", value: Infinity };
 
@@ -110,8 +110,8 @@ function calculateAwards(results) {
         if (parseFloat(r.adr) > parseFloat(bestADR.value)) {
             bestADR = { name: p.nickname, value: r.adr, avatar: p.avatar };
         }
-        if (r.matches > mostMatches.value) {
-            mostMatches = { name: p.nickname, value: r.matches, avatar: p.avatar };
+        if (r.winratePct > bestWinrate.value && r.matches > 0) {
+            bestWinrate = { name: p.nickname, value: r.winratePct, avatar: p.avatar };
         }
         if (r.deaths < lowestDeaths.value && r.matches > 0) {
             lowestDeaths = { name: p.nickname, value: r.deaths, avatar: p.avatar };
@@ -125,7 +125,7 @@ function calculateAwards(results) {
         bestKD,
         bestHS,
         bestADR,
-        mostMatches,
+        bestWinrate,
         longestStreak,
         lowestDeaths
     };
