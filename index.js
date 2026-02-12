@@ -226,23 +226,28 @@ function calculateAwards(results) {
             console.log(`✅ ${RANGE_FILES[range]} updated.`);
         }
 
-        // Backfill new players missing from this snapshot
-        const existingIds = new Set(dataForRange.map(d => d.playerId));
-        let backfilled = 0;
+        // Repair & backfill: ensure all players have correct snapshot values
+        const snapshotMap = new Map(dataForRange.map(d => [d.playerId, d]));
+        const threshold = getPeriodStart(range);
+        const thresholdTs = threshold.toSeconds();
+        let changed = false;
+
         for (const p of results) {
-            if (!existingIds.has(p.playerId)) {
-                const threshold = getPeriodStart(range);
-                const thresholdTs = threshold.toSeconds();
-                // If player hasn't played in this period, use current ELO (GAIN = 0)
-                // Only use historical ELO if they actually played during this period
-                const eloAtStart = (p.lastMatchTs && p.lastMatchTs >= thresholdTs)
-                    ? findEloAt(p, threshold)
-                    : p.elo;
-                dataForRange.push({ playerId: p.playerId, elo: eloAtStart });
-                backfilled++;
+            const playedInPeriod = p.lastMatchTs && p.lastMatchTs >= thresholdTs;
+            const correctElo = playedInPeriod ? findEloAt(p, threshold) : p.elo;
+
+            const existing = snapshotMap.get(p.playerId);
+            if (!existing) {
+                // New player — add to snapshot
+                dataForRange.push({ playerId: p.playerId, elo: correctElo });
+                changed = true;
+            } else if (!playedInPeriod && existing.elo !== p.elo) {
+                // Inactive player with stale value — fix to current ELO (GAIN = 0)
+                existing.elo = p.elo;
+                changed = true;
             }
         }
-        if (backfilled > 0) {
+        if (changed) {
             writeJson(RANGE_FILES[range], dataForRange);
         }
 
