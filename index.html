@@ -4131,7 +4131,11 @@
     </section>
 
     <div class="text-center text-xs text-white/20 mt-4 mb-4">
+<<<<<<< Updated upstream
       Last Update: <span class="text-white/40 font-mono">2026-02-13 00:44</span>
+=======
+      Last Update: <span class="text-white/40 font-mono">2026-02-13 00:51</span>
+>>>>>>> Stashed changes
     </div>
 
   </main>
@@ -4164,13 +4168,28 @@
       if (!tsSeconds || tsSeconds === 0) return "—";
       const now = Date.now() / 1000;
       const diff = now - tsSeconds;
+
       if (diff < 60) return "gerade eben";
-      if (diff < 3600) return `vor ${Math.floor(diff / 60)} Min`;
-      if (diff < 86400) return `vor ${Math.floor(diff / 3600)} Std`;
+
+      const mins = Math.floor(diff / 60);
+      if (mins < 60) return `vor ${mins} Min`;
+
+      const hours = Math.floor(diff / 3600);
+      if (hours < 24) return `vor ${hours} Std`;
+
       if (diff < 172800) return "gestern";
-      if (diff < 604800) return `vor ${Math.floor(diff / 86400)} Tagen`;
-      if (diff < 2592000) return `vor ${Math.floor(diff / 604800)} Wochen`;
-      return `vor ${Math.floor(diff / 2592000)} Monaten`;
+
+      const days = Math.floor(diff / 86400);
+      if (days < 7) return `vor ${days} Tagen`;
+
+      const weeks = Math.floor(diff / 604800);
+      if (weeks < 4) return `vor ${weeks} ${weeks === 1 ? 'Woche' : 'Wochen'}`;
+
+      const months = Math.floor(diff / 2592000); // 30 days
+      if (months < 12) return `vor ${months} ${months === 1 ? 'Monat' : 'Monaten'}`;
+
+      const years = Math.floor(diff / 31536000); // 365 days
+      return `vor ${years} ${years === 1 ? 'Jahr' : 'Jahren'}`;
     }
 
     // Apply relative time to all last match cells
