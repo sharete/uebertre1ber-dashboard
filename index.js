@@ -232,7 +232,12 @@ function calculateAwards(results) {
         for (const p of results) {
             if (!existingIds.has(p.playerId)) {
                 const threshold = getPeriodStart(range);
-                const eloAtStart = findEloAt(p, threshold);
+                const thresholdTs = threshold.toSeconds();
+                // If player hasn't played in this period, use current ELO (GAIN = 0)
+                // Only use historical ELO if they actually played during this period
+                const eloAtStart = (p.lastMatchTs && p.lastMatchTs >= thresholdTs)
+                    ? findEloAt(p, threshold)
+                    : p.elo;
                 dataForRange.push({ playerId: p.playerId, elo: eloAtStart });
                 backfilled++;
             }
