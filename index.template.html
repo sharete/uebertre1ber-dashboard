@@ -521,22 +521,14 @@
         document.getElementById('hero-king-name').textContent = kingName;
         document.getElementById('hero-king-elo').textContent = kingElo + " ELO";
 
-        if (bestDiff <= 0) {
-          if (bestDiff < 0) {
-            // Everyone lost – show the person who lost least
-            document.getElementById('hero-mvp-name').textContent = mvpName;
-            document.getElementById('hero-mvp-diff').textContent = bestDiff + " 😅";
-            document.getElementById('hero-mvp-diff').className = "font-mono text-sm text-yellow-400";
-          } else {
-            // Everyone at 0
-            document.getElementById('hero-mvp-name').textContent = "Keiner am Grinden 😴";
-            document.getElementById('hero-mvp-diff').textContent = "±0";
-            document.getElementById('hero-mvp-diff').className = "font-mono text-sm text-gray-500";
-          }
-        } else {
+        if (bestDiff > 0) {
           document.getElementById('hero-mvp-name').textContent = mvpName;
           document.getElementById('hero-mvp-diff').textContent = "+" + bestDiff;
           document.getElementById('hero-mvp-diff').className = "font-mono text-sm text-green-400";
+        } else {
+          document.getElementById('hero-mvp-name').textContent = "Keiner am Grinden 😴";
+          document.getElementById('hero-mvp-diff').textContent = "±0";
+          document.getElementById('hero-mvp-diff').className = "font-mono text-sm text-gray-500";
         }
 
       } catch (e) { console.error(e); }
