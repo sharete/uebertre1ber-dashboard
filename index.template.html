@@ -811,8 +811,8 @@
                    <p class="font-mono text-neon-blue font-bold text-sm">${row.dataset.kd || '-'}</p>
                 </div>
                 <div class="bg-black/20 p-2 rounded-lg text-center">
-                   <p class="text-[10px] text-white/30 uppercase">Peak ELO</p>
-                   <p class="font-mono text-orange-400 font-bold text-sm">${row.dataset.peak || '-'}</p>
+                   <p class="text-[10px] text-white/30 uppercase">Last Match</p>
+                   <p class="font-mono text-white font-bold text-sm text-[11px] leading-6">${relativeTime(parseInt(row.dataset.lastTs))}</p>
                 </div>
                  <div class="bg-black/20 p-2 rounded-lg text-center">
                    <p class="text-[10px] text-white/30 uppercase">Streak</p>
