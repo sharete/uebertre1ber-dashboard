@@ -57,7 +57,25 @@ async function processPlayer(playerId) {
         const matchStatsMap = {};
         for (const item of history.items) {
             const ms = await api.getMatchStats(item.match_id);
-            if (ms) matchStatsMap[item.match_id] = ms;
+            if (ms) {
+                // Debug / Fix Unknown Maps
+                let mapName = ms.rounds && ms.rounds[0] ? ms.rounds[0].round_stats.Map : "Unknown";
+                
+                if (!mapName || mapName === "Unknown") {
+                     // Try fetching full match details
+                     const details = await api.getMatchDetails(item.match_id);
+                     if (details) {
+                         // Check voting -> map -> pick
+                         if (details.voting && details.voting.map && details.voting.map.pick && details.voting.map.pick.length > 0) {
+                             mapName = details.voting.map.pick[0];
+                         }
+                     }
+                }
+                
+                // Inject map name into stats object for stats.js to use
+                ms.__mapName = mapName;
+                matchStatsMap[item.match_id] = ms;
+            }
         }
 
         // Calculate stats (now includes streak, last5, mapPerformance)

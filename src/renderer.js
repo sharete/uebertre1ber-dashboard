@@ -98,7 +98,7 @@ class Renderer {
         if(!borderClass) borderClass = "border-orange-500/30";
     } else {
         // Watermark for others
-        rankBadge = `<div class="absolute top-0 left-2 text-white/10 font-black text-6xl pointer-events-none select-none z-0 tracking-tighter leading-none font-outline-2">#${rank}</div>`;
+        rankBadge = `<div class="absolute top-0 left-2 text-white/20 font-black text-6xl pointer-events-none select-none z-0 tracking-tighter leading-none font-outline-2 drop-shadow-lg">#${rank}</div>`;
     }
 
     // Streak Badge - Accessible Colors
@@ -172,7 +172,7 @@ class Renderer {
         <!-- Header / Main Info -->
         <div class="p-5 flex flex-col gap-4 relative">
             <div class="absolute -top-4 -right-4 p-0 opacity-100 pointer-events-none overflow-visible">
-                 <img src="icons/levels/level_${p.level}_icon.png" class="w-32 h-32 opacity-10 filter blur-[0.5px]">
+                 <img src="icons/levels/level_${p.level}_icon.png" class="w-32 h-32 opacity-40 filter blur-[0.5px]">
             </div>
 
             <div class="flex items-center justify-between relative z-10">

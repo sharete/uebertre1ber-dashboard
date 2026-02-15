@@ -80,6 +80,11 @@ class FaceitAPI {
         return safeJson(res) || { items: [] };
     }
 
+    async getMatchDetails(matchId) {
+        const res = await retryFetch(`${API_BASE}/matches/${matchId}`, { headers: getHeaders() });
+        return safeJson(res);
+    }
+
     async getPlayerStats(playerId) {
         const res = await retryFetch(`${API_BASE}/players/${playerId}/stats/cs2`, { headers: getHeaders() });
         return safeJson(res) || {};
