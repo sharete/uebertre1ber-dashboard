@@ -30,10 +30,11 @@
             'neon-blue': '#00f2ff',
             'neon-purple': '#bd00ff',
             // Accessibility: Blue/Orange Palette
-            'success': '#3b82f6', // blue-500
-            'success-dim': 'rgba(59, 130, 246, 0.1)',
-            'danger': '#f97316', // orange-500
-            'danger-dim': 'rgba(249, 115, 22, 0.1)',
+            // Accessibility: Managed via CSS Variables
+            'success': 'rgb(var(--color-success) / <alpha-value>)',
+            'success-dim': 'rgba(var(--color-success), 0.1)', 
+            'danger': 'rgb(var(--color-danger) / <alpha-value>)',
+            'danger-dim': 'rgba(var(--color-danger), 0.1)',
             
             'glass-border': 'rgba(255, 255, 255, 0.05)',
             'glass-bg': 'rgba(20, 20, 30, 0.4)',
@@ -53,6 +54,18 @@
     }
   </script>
   <style>
+    :root {
+      /* Default: Green (Win) / Red (Loss) */
+      --color-success: 34 197 94; /* green-500 */
+      --color-danger: 239 68 68;  /* red-500 */
+    }
+    
+    .theme-accessible {
+      /* Accessible: Blue (Win) / Orange (Loss) */
+      --color-success: 59 130 246; /* blue-500 */
+      --color-danger: 249 115 22;  /* orange-500 */
+    }
+
     body {
       background-color: #050510;
       background-image:
@@ -98,13 +111,13 @@
 
     /* Dynamic Border Glows - Accessible Blue/Orange */
     .glow-border-green {
-      border-color: rgba(59, 130, 246, 0.5);
-      box-shadow: 0 0 15px rgba(59, 130, 246, 0.2), inset 0 0 20px rgba(59, 130, 246, 0.05);
+      border-color: rgb(var(--color-success) / 0.5);
+      box-shadow: 0 0 15px rgb(var(--color-success) / 0.2), inset 0 0 20px rgb(var(--color-success) / 0.05);
     }
 
     .glow-border-red {
-      border-color: rgba(249, 115, 22, 0.5);
-      box-shadow: 0 0 15px rgba(249, 115, 22, 0.2), inset 0 0 20px rgba(249, 115, 22, 0.05);
+      border-color: rgb(var(--color-danger) / 0.5);
+      box-shadow: 0 0 15px rgb(var(--color-danger) / 0.2), inset 0 0 20px rgb(var(--color-danger) / 0.05);
     }
 
     /* Bento Grid */
@@ -228,6 +241,14 @@
         <button class="time-filter px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 transition-all" data-val="monthly">Monthly</button>
         <button class="time-filter px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 transition-all" data-val="yearly">Yearly</button>
       </div>
+
+      <!-- Theme Toggle -->
+      <button id="themeToggle" class="p-2.5 rounded-xl bg-[#0a0a14]/80 border border-gray-700/50 text-white/50 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm" title="Toggle Colorblind Mode">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+      </button>
     </div>
 
     <!-- Awards Section -->
@@ -381,6 +402,30 @@
         currentRange = btn.dataset.val;
         updateView();
       });
+    });
+
+    // --- Theme Toggle Logic ---
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlEl = document.documentElement;
+    
+    // Load saved preference
+    const savedTheme = localStorage.getItem('accessibility-mode');
+    if (savedTheme === 'true') {
+        htmlEl.classList.add('theme-accessible');
+        themeToggle.classList.add('text-neon-blue');
+    }
+
+    themeToggle.addEventListener('click', () => {
+        const isAccessible = htmlEl.classList.toggle('theme-accessible');
+        localStorage.setItem('accessibility-mode', isAccessible);
+        
+        if(isAccessible) {
+             themeToggle.classList.add('text-neon-blue', 'border-neon-blue/50');
+             themeToggle.classList.remove('text-white/50');
+        } else {
+             themeToggle.classList.remove('text-neon-blue', 'border-neon-blue/50');
+             themeToggle.classList.add('text-white/50');
+        }
     });
 
     // --- Chart Initialization (Progressive Disclosure) ---
