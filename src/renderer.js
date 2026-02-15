@@ -152,7 +152,7 @@ class Renderer {
 </tr>`.trim();
 
     // Map Performance Table
-    const mapRows = (mapPerformance || []).slice(0, 5).map(m => `
+    const mapRows = (mapPerformance || []).map(m => `
       <tr class="border-b border-white/5 last:border-0">
         <td class="py-2 px-3 text-white/80 text-xs font-medium">${m.map}</td>
         <td class="py-2 px-3 text-center text-xs font-mono text-white/50">${m.matches}</td>
@@ -194,7 +194,6 @@ class Renderer {
         <span class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-red-500"></div> D: <b class="text-white">${recent.deaths}</b></span>
         <span class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-yellow-500"></div> ADR: <b class="text-white text-glow-orange">${recent.adr}</b></span>
     </div>
-  </div>
   </div>
   
   <div class="mt-4 bg-[#0a0a14] border border-white/5 p-4 rounded-xl shadow-inner relative overflow-hidden">

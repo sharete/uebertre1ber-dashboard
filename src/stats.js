@@ -95,14 +95,14 @@ class StatsCalculator {
             }
 
             // Map stats accumulation
-            if (mapName !== "Unknown") {
-                mapData[mapName].matches++;
-                if (didWin) mapData[mapName].wins++;
-                else mapData[mapName].losses++;
-                if (playerStats) {
-                    mapData[mapName].kills += +playerStats.Kills || 0;
-                    mapData[mapName].deaths += +playerStats.Deaths || 0;
-                }
+            // We now include "Unknown" maps so the total match count in the table sums up to 30 (or whatever the history limit is)
+            mapData[mapName].matches++;
+            if (didWin) mapData[mapName].wins++;
+            else mapData[mapName].losses++;
+            
+            if (playerStats) {
+                mapData[mapName].kills += +playerStats.Kills || 0;
+                mapData[mapName].deaths += +playerStats.Deaths || 0;
             }
         }
 
