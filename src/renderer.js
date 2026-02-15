@@ -7,15 +7,10 @@ class Renderer {
     // Sort players by default (ELO desc)
     const sortedPlayers = [...players].sort((a, b) => parseInt(b.elo) - parseInt(a.elo));
 
-    const params = {
-        players: sortedPlayers,
-        lastUpdated,
-        historyData,
-        awards
-    };
-
-    const cardsHtml = sortedPlayers.map(p => this.renderPlayerCard(p)).join('\n');
     const awardsHtml = this.renderAwards(awards);
+
+    // Pass awards to render function in case we need to highlight winner
+    const cardsHtml = sortedPlayers.map(p => this.renderPlayerCard(p)).join('\n');
 
     let template = fs.readFileSync(templatePath, 'utf-8');
     
@@ -61,45 +56,66 @@ class Renderer {
         </div>
       </div>`;
 
+    // Colors adjusted for Blue/Orange palette where appropriate
     return `
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 w-full">
-      ${card("🎯", "Best K/D", awards.bestKD.name, awards.bestKD.value, "blue")}
+      ${card("🎯", "Best K/D", awards.bestKD.name, awards.bestKD.value, "success")}
       ${card("💥", "Headshot King", awards.bestHS.name, awards.bestHS.value, "yellow")}
       ${card("⚡", "Best ADR", awards.bestADR.name, awards.bestADR.value, "purple")}
-      ${card("🏆", "Best Winrate", awards.bestWinrate.name, `${awards.bestWinrate.value}%`, "green")}
-      ${card("🔥", "Win Streak", awards.longestStreak.name, `${awards.longestStreak.value}W`, "orange")}
+      ${card("🏆", "Best Winrate", awards.bestWinrate.name, `${awards.bestWinrate.value}%`, "success")}
+      ${card("🔥", "Win Streak", awards.longestStreak.name, `${awards.longestStreak.value}W`, "success")}
       ${card("🛡️", "Survivor", awards.lowestDeaths.name, `${awards.lowestDeaths.value} Deaths`, "cyan")}
     </div>`;
   }
 
   renderPlayerCard(p) {
-    const { recent, teammates, streak, last5, mapPerformance, eloHistory } = p.stats;
+    const { recent, teammates, streak, mapPerformance, eloHistory, matchHistory } = p.stats;
     
     // Formatting Helpers
     const formatNumber = (num) =>  num ? num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0";
     const avatarUrl = p.avatar || "";
     const avatarHtml = avatarUrl 
-        ? `<img src="${avatarUrl}" class="w-12 h-12 rounded-full object-cover border-2 border-white/5 shadow-lg group-hover:border-neon-blue/50 transition-colors" alt="${p.nickname}" loading="lazy" />`
+        ? `<img src="${avatarUrl}" class="w-12 h-12 rounded-full object-cover border-2 border-white/5 shadow-lg group-hover:border-success/50 transition-colors" alt="${p.nickname}" loading="lazy" />`
         : `<div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold text-white/50 border-2 border-white/10">${p.nickname.charAt(0).toUpperCase()}</div>`;
 
-    // Dynamic Border Class (Spatial UI)
+    // Dynamic Border Class (Spatial UI) - Accessible Colors
     let borderClass = "";
     if (streak.count >= 2) {
-        if (streak.type === "win") borderClass = "glow-border-green";
-        else if (streak.type === "loss") borderClass = "glow-border-red";
+        if (streak.type === "win") borderClass = "glow-border-green"; // Maps to Blue in CSS
+        else if (streak.type === "loss") borderClass = "glow-border-red"; // Maps to Orange in CSS
     }
 
-    // Streak Badge
+    // Streak Badge - Accessible Colors
     const streakBadge = streak.count > 0 
         ? (streak.type === 'win' 
-            ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/20 shadow-neon-green">🔥 ${streak.count} Win Streak</span>` 
-            : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/20">💀 ${streak.count} Loss Streak</span>`) 
+            ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-success-dim text-success border border-success/20 shadow-neon-blue">🔥 ${streak.count} Win Streak</span>` 
+            : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-danger-dim text-danger border border-danger/20">💀 ${streak.count} Loss Streak</span>`) 
         : "";
 
-    // Last 5 Matrix
-    const last5Html = last5.map(r => 
-      `<div class="w-1.5 h-6 rounded-full ${r === 'W' ? 'bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.8)]' : 'bg-red-500/50'}"></div>`
-    ).join("");
+    // --- Heatmap Generation (Last 30 Days/Matches) ---
+    // Reverse because matchHistory is Newest -> Oldest, but for heatmap we want Oldest -> Newest (Left to Right)
+    const historyForHeatmap = [...(matchHistory || [])].reverse().slice(-30); 
+    
+    const heatmapCells = historyForHeatmap.map(m => {
+        const kd = parseFloat(m.kd);
+        let colorClass = "bg-white/5"; 
+        
+        // Color coding: Blue (Success) for KD >= 1, Orange (Danger) for KD < 1
+        // Opacity/Intensity based on value
+        if (kd >= 1.5) colorClass = "bg-success"; 
+        else if (kd >= 1.0) colorClass = "bg-success/60";
+        else if (kd >= 0.8) colorClass = "bg-danger/60";
+        else colorClass = "bg-danger";
+
+        const title = `${new Date(m.date * 1000).toLocaleDateString()} - K/D: ${m.kd} (${m.map})`;
+        return `<div class="w-1.5 h-6 rounded-sm ${colorClass} hover:scale-125 transition-transform cursor-help" title="${title}"></div>`;
+    }).join("");
+    
+    // Fill empty slots if less than 30 matches
+    const emptySlots = 30 - historyForHeatmap.length;
+    const emptyCells = Array(Math.max(0, emptySlots)).fill('<div class="w-1.5 h-6 rounded-sm bg-white/5 opacity-20"></div>').join("");
+    
+    const heatmapHtml = emptyCells + heatmapCells;
 
 
     // Internal components for details
@@ -107,18 +123,23 @@ class Renderer {
     const matesList = (list) => list.map(m => `
         <div class="flex justify-between items-center text-xs py-1 border-b border-white/5 last:border-0 hover:bg-white/5 px-1 rounded transition-colors cursor-pointer" onclick="window.open('${m.url}', '_blank')">
             <span class="text-white/70 hover:text-white">${m.nickname}</span>
-            <span class="font-mono text-white/30">${m.count}G <span class="${parseFloat(m.winrate)>=50?'text-green-400':'text-red-400'}">${m.winrate}</span></span>
+            <span class="font-mono text-white/30">${m.count}G <span class="${parseFloat(m.winrate)>=50?'text-success':'text-danger'}">${m.winrate}</span></span>
         </div>`).join("");
 
     const mapRows = (mapPerformance || []).slice(0, 3).map(m => `
       <div class="grid grid-cols-4 text-[10px] py-1 border-b border-white/5 last:border-0">
         <div class="text-white/70 font-medium truncate">${m.map}</div>
         <div class="text-center text-white/30 font-mono">${m.matches}</div>
-        <div class="text-center font-mono ${m.winrate >= 50 ? 'text-green-400' : 'text-red-400'}">${m.winrate}%</div>
-        <div class="text-center font-mono ${parseFloat(m.kd) >= 1 ? 'text-green-400' : 'text-red-400'}">${m.kd}</div>
+        <div class="text-center font-mono ${m.winrate >= 50 ? 'text-success' : 'text-danger'}">${m.winrate}%</div>
+        <div class="text-center font-mono ${parseFloat(m.kd) >= 1 ? 'text-success' : 'text-danger'}">${m.kd}</div>
       </div>`).join("");
 
     const historyJson = JSON.stringify(p.stats.eloHistory || []);
+    
+    // Radar Chart Data Preparation
+    const radarLabels = (mapPerformance || []).slice(0, 5).map(m => m.map);
+    const radarData = (mapPerformance || []).slice(0, 5).map(m => m.winrate);
+    const radarJson = JSON.stringify({ labels: radarLabels, data: radarData });
 
     return `
     <div class="stat-card rounded-2xl p-0 ${borderClass}" 
@@ -157,46 +178,52 @@ class Renderer {
                  </div>
                  <div class="bg-black/20 rounded-lg p-2 text-center border border-white/5 hover:bg-white/5 transition-colors">
                      <div class="text-[10px] uppercase text-white/30 font-bold">Win Rate</div>
-                     <div class="font-mono text-sm ${parseFloat(p.winrate) >= 50 ? 'text-green-400' : 'text-red-400'}">${p.winrate}</div>
+                     <div class="font-mono text-sm ${parseFloat(p.winrate) >= 50 ? 'text-success' : 'text-danger'}">${p.winrate}</div>
                  </div>
                  <div class="bg-black/20 rounded-lg p-2 text-center border border-white/5 hover:bg-white/5 transition-colors">
                      <div class="text-[10px] uppercase text-white/30 font-bold">K/D (30)</div>
-                     <div class="font-mono text-sm ${parseFloat(recent.kd) >= 1 ? 'text-green-400' : 'text-red-400'}">${recent.kd}</div>
+                     <div class="font-mono text-sm ${parseFloat(recent.kd) >= 1 ? 'text-success' : 'text-danger'}">${recent.kd}</div>
                  </div>
             </div>
 
-            <div class="flex justify-between items-end mt-1">
-                 <div class="flex gap-1 items-center h-6">
-                    ${last5Html}
+            <!-- Heatmap Visualization -->
+            <div class="flex flex-col gap-1 mt-1">
+                 <div class="flex gap-[2px] items-center h-6 justify-end overflow-hidden">
+                    ${heatmapHtml}
                  </div>
-                 <div class="text-[10px] text-white/30 font-mono text-right">
-                    Last: ${p.lastMatch}<br>
-                    <span class="text-white/20">TS: ${p.lastMatchTs || 0}</span>
+                 <div class="flex justify-between text-[8px] text-white/20 font-mono uppercase tracking-widest">
+                    <span>30 Matches ago</span>
+                    <span>Last Match</span>
                  </div>
             </div>
         </div>
 
         <!-- Progressive Disclosure Button -->
-        <button class="toggle-details-btn col-span-full w-full py-2 bg-white/5 border-t border-white/5 flex items-center justify-center gap-2 text-xs uppercase font-bold text-white/40 hover:text-neon-blue hover:bg-white/10 transition-colors">
+        <button class="toggle-details-btn col-span-full w-full py-2 bg-white/5 border-t border-white/5 flex items-center justify-center gap-2 text-xs uppercase font-bold text-white/40 hover:text-success hover:bg-white/10 transition-colors">
             <span>Details & History</span>
             <svg class="w-3 h-3 transition-transform duration-300 icon-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
         </button>
 
         <!-- Hidden Details Panel -->
         <div class="card-details hidden bg-[#050510]/50 border-t border-white/5 p-4 animate-fade-in">
-            <!-- Chart Section -->
+            <!-- ELO Chart Section -->
             <div class="mb-5 relative h-32 w-full">
                 <canvas data-history='${historyJson}'></canvas>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                <!-- Advanced Stats -->
+                <!-- Advanced Stats & Radar Chart -->
                 <div>
                      <div class="text-[10px] uppercase text-white/30 font-bold mb-2">Performance (30 Matches)</div>
-                     <div class="space-y-1">
+                     <div class="space-y-1 mb-4">
                          <div class="flex justify-between text-xs"><span class="text-white/50">Avg Kills</span> <span class="text-white font-mono">${Math.round(recent.kills / (recent.matches||1))}</span></div>
                          <div class="flex justify-between text-xs"><span class="text-white/50">Headshot %</span> <span class="text-white font-mono">${recent.hsPercent}</span></div>
                          <div class="flex justify-between text-xs"><span class="text-white/50">ADR</span> <span class="text-white/80 font-mono">${recent.adr}</span></div>
+                     </div>
+                     
+                     <!-- Radar Chart Container -->
+                     <div class="relative h-24 w-full">
+                        <canvas class="radar-chart" data-radar='${radarJson}'></canvas>
                      </div>
                 </div>
 

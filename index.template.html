@@ -29,6 +29,12 @@
             dark: '#050510',
             'neon-blue': '#00f2ff',
             'neon-purple': '#bd00ff',
+            // Accessibility: Blue/Orange Palette
+            'success': '#3b82f6', // blue-500
+            'success-dim': 'rgba(59, 130, 246, 0.1)',
+            'danger': '#f97316', // orange-500
+            'danger-dim': 'rgba(249, 115, 22, 0.1)',
+            
             'glass-border': 'rgba(255, 255, 255, 0.05)',
             'glass-bg': 'rgba(20, 20, 30, 0.4)',
           },
@@ -90,15 +96,15 @@
       box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
     }
 
-    /* Dynamic Border Glows */
+    /* Dynamic Border Glows - Accessible Blue/Orange */
     .glow-border-green {
-      border-color: rgba(74, 222, 128, 0.3);
-      box-shadow: 0 0 15px rgba(74, 222, 128, 0.1), inset 0 0 20px rgba(74, 222, 128, 0.05);
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.2), inset 0 0 20px rgba(59, 130, 246, 0.05);
     }
 
     .glow-border-red {
-      border-color: rgba(248, 113, 113, 0.3);
-      box-shadow: 0 0 15px rgba(248, 113, 113, 0.1), inset 0 0 20px rgba(248, 113, 113, 0.05);
+      border-color: rgba(249, 115, 22, 0.5);
+      box-shadow: 0 0 15px rgba(249, 115, 22, 0.2), inset 0 0 20px rgba(249, 115, 22, 0.05);
     }
 
     /* Bento Grid */
@@ -127,8 +133,8 @@
     }
 
     .text-glow { text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
-    .text-glow-blue { text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
-    .text-glow-orange { text-shadow: 0 0 10px rgba(255, 85, 0, 0.5); }
+    .text-glow-blue { text-shadow: 0 0 10px rgba(59, 130, 246, 0.6); }
+    .text-glow-orange { text-shadow: 0 0 10px rgba(249, 115, 22, 0.6); }
 
     .level-badge {
       clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
@@ -395,8 +401,8 @@
          details.classList.remove('hidden');
          icon.style.transform = 'rotate(180deg)';
 
-         // Init Chart if not exists
-         const canvas = details.querySelector('canvas');
+         // Init ELO History Chart if not exists
+         const canvas = details.querySelector('canvas'); // The first canvas is ELO history
          const pid = card.dataset.playerId;
 
          if (canvas && !charts[pid]) {
@@ -404,8 +410,8 @@
              if (hist.length) {
                 const ctx = canvas.getContext('2d');
                 const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-                gradient.addColorStop(0, 'rgba(0, 242, 255, 0.2)');
-                gradient.addColorStop(1, 'rgba(0, 242, 255, 0)');
+                gradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)'); // Blue
+                gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
 
                 charts[pid] = new Chart(ctx, {
                   type: 'line',
@@ -413,10 +419,10 @@
                     labels: hist.map(h => new Date(h.date * 1000).toLocaleDateString()),
                     datasets: [{
                       data: hist.map(h => h.elo),
-                      borderColor: '#00f2ff',
+                      borderColor: '#3b82f6', // Success Blue
                       backgroundColor: gradient,
                       borderWidth: 2,
-                      pointBackgroundColor: '#00f2ff',
+                      pointBackgroundColor: '#3b82f6',
                       pointRadius: 0,
                       pointHoverRadius: 4,
                       fill: true,
@@ -435,6 +441,44 @@
                 });
              }
          }
+
+         // Init Radar Chart (Map Winrates)
+         const radarCanvas = details.querySelector('.radar-chart');
+         if (radarCanvas && !radarCanvas.chart) {
+             const radarData = JSON.parse(radarCanvas.dataset.radar || "{}");
+             if (radarData.labels && radarData.labels.length) {
+                 radarCanvas.chart = new Chart(radarCanvas, {
+                     type: 'radar',
+                     data: {
+                         labels: radarData.labels,
+                         datasets: [{
+                             label: 'Winrate %',
+                             data: radarData.data,
+                             borderColor: '#f97316', // Orange
+                             backgroundColor: 'rgba(249, 115, 22, 0.2)',
+                             pointBackgroundColor: '#f97316',
+                             borderWidth: 1.5,
+                             pointRadius: 2
+                         }]
+                     },
+                     options: {
+                         responsive: true, maintainAspectRatio: false,
+                         scales: {
+                             r: {
+                                 angleLines: { color: 'rgba(255,255,255,0.05)' },
+                                 grid: { color: 'rgba(255,255,255,0.05)' },
+                                 pointLabels: { color: 'rgba(255,255,255,0.5)', font: { size: 9 } },
+                                 ticks: { display: false, backdropColor: 'transparent' },
+                                 suggestedMin: 0,
+                                 suggestedMax: 100
+                             }
+                         },
+                         plugins: { legend: { display: false } }
+                     }
+                 });
+             }
+         }
+
        } else {
          details.classList.add('hidden');
          icon.style.transform = 'rotate(0deg)';

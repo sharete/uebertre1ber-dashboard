@@ -15,6 +15,7 @@ class StatsCalculator {
 
         // For last 5 results & streak
         const matchResults = []; // ordered newest → oldest
+        const detailedHistory = []; // For Heatmap
 
         for (const match of history) {
             const matchId = match.match_id;
@@ -76,6 +77,22 @@ class StatsCalculator {
 
             // Track match result
             matchResults.push(didWin ? "W" : "L");
+
+            // Track detailed match history for Heatmap
+            if (playerStats) {
+                const mKills = +playerStats.Kills || 0;
+                const mDeaths = +playerStats.Deaths || 0;
+                const mKD = mDeaths ? (mKills / mDeaths).toFixed(2) : (mKills > 0 ? "10.0" : "0.00");
+                
+                detailedHistory.push({
+                    date: match.finished_at,
+                    kd: mKD,
+                    result: didWin ? "W" : "L",
+                    map: mapName,
+                    kills: mKills,
+                    deaths: mDeaths
+                });
+            }
 
             // Map stats accumulation
             if (mapName !== "Unknown") {
@@ -162,6 +179,7 @@ class StatsCalculator {
             recent: recentStats,
             teammates,
             eloHistory,
+            matchHistory: detailedHistory, // Heatmap Data
             streak,
             last5,
             mapPerformance
