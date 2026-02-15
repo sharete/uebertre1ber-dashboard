@@ -57,26 +57,38 @@ async function processPlayer(playerId) {
         // Fetch match stats for all matches in history
         const matchStatsMap = {};
         for (const item of history.items) {
-            const ms = await api.getMatchStats(item.match_id);
-            if (ms) {
-                // Debug / Fix Unknown Maps
-                let mapName = ms.rounds && ms.rounds[0] ? ms.rounds[0].round_stats.Map : "Unknown";
+        let ms = await api.getMatchStats(item.match_id);
+            if (!ms) {
+                // Fallback: Create placeholder so stats.js doesn't skip the match entirely (for Teammates logic)
+                ms = { __mapName: "Unknown" };
+                
+                // Try to get map name from details if stats failed
+                try {
+                    const details = await api.getMatchDetails(item.match_id);
+                    if (details && details.voting && details.voting.map && details.voting.map.pick && details.voting.map.pick.length > 0) {
+                        ms.__mapName = normalizeMapName(details.voting.map.pick[0]);
+                    }
+                } catch (e) {
+                    console.error(`Failed to fetch match details for fallback: ${item.match_id}`, e.message);
+                }
+            } else {
+                // MS exists (it's the mapStats object from api.js)
+                let mapName = ms.__mapName;
                 
                 if (!mapName || mapName === "Unknown") {
-                     // Try fetching full match details
-                     const details = await api.getMatchDetails(item.match_id);
-                     if (details) {
-                         // Check voting -> map -> pick
-                         if (details.voting && details.voting.map && details.voting.map.pick && details.voting.map.pick.length > 0) {
+                     // Try fetching full match details if map is unknown
+                     try {
+                         const details = await api.getMatchDetails(item.match_id);
+                         if (details && details.voting && details.voting.map && details.voting.map.pick && details.voting.map.pick.length > 0) {
                              mapName = details.voting.map.pick[0];
                          }
-                     }
+                     } catch (e) {}
+                     ms.__mapName = mapName || "Unknown";
                 }
-                
-                // Inject map name into stats object for stats.js to use
-                ms.__mapName = normalizeMapName(mapName);
-                matchStatsMap[item.match_id] = ms;
+                // Normalize it
+                ms.__mapName = normalizeMapName(ms.__mapName);
             }
+            matchStatsMap[item.match_id] = ms;
         }
 
         // Calculate stats (now includes streak, last5, mapPerformance)
