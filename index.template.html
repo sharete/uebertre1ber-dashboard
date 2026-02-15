@@ -320,7 +320,7 @@
             const isZero = diff === 0;
             const color = isPlus ? 'text-green-400' : (isZero ? 'text-gray-500' : 'text-red-400');
             const sign = isPlus ? '+' : '';
-            if(diffEl) diffEl.innerHTML = `<span class="\${color}">\${sign}\${diff}</span>`;
+            if(diffEl) diffEl.innerHTML = `<span class="${color}">${sign}${diff}</span>`;
           }
 
           card.dataset.diff = diffVal;
