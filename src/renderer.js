@@ -97,8 +97,8 @@ class Renderer {
         rankBadge = `<div class="absolute -left-1 -top-1 w-10 h-10 bg-gradient-to-br from-orange-300 to-orange-600 text-black font-bold text-lg flex items-center justify-center rounded-br-xl rounded-tl-xl shadow-lg z-20">#3</div>`;
         if(!borderClass) borderClass = "border-orange-500/30";
     } else {
-        // Watermark for others
-        rankBadge = `<div class="absolute top-0 left-2 text-white/20 font-black text-6xl pointer-events-none select-none z-0 tracking-tighter leading-none font-outline-2 drop-shadow-lg">#${rank}</div>`;
+        // Standard Badge for others
+        rankBadge = `<div class="absolute -left-1 -top-1 w-10 h-10 bg-[#0a0a14] border border-white/10 text-white/50 font-bold text-lg flex items-center justify-center rounded-br-xl rounded-tl-xl shadow-lg z-20">#${rank}</div>`;
     }
 
     // Streak Badge - Accessible Colors
@@ -145,7 +145,7 @@ class Renderer {
             <span class="font-mono text-white/30">${m.count}G <span class="${parseFloat(m.winrate)>=50?'text-success':'text-danger'}">${m.winrate}</span></span>
         </div>`).join("");
 
-    const mapRows = (mapPerformance || []).slice(0, 3).map(m => `
+    const mapRows = (mapPerformance || []).map(m => `
       <div class="grid grid-cols-4 text-[10px] py-1 border-b border-white/5 last:border-0">
         <div class="text-white/70 font-medium truncate">${m.map}</div>
         <div class="text-center text-white/30 font-mono">${m.matches}</div>
@@ -171,17 +171,17 @@ class Renderer {
         ${rankBadge}
         <!-- Header / Main Info -->
         <div class="p-5 flex flex-col gap-4 relative">
-            <div class="absolute -top-4 -right-4 p-0 opacity-100 pointer-events-none overflow-visible">
-                 <img src="icons/levels/level_${p.level}_icon.png" class="w-32 h-32 opacity-40 filter blur-[0.5px]">
-            </div>
+
 
             <div class="flex items-center justify-between relative z-10">
                 <div class="flex items-center gap-3">
                     ${avatarHtml}
                     <div>
-                        <a href="${p.faceitUrl}" target="_blank" class="font-bold text-lg text-white hover:text-faceit transition-colors">${p.nickname}</a>
-                        <div class="flex items-center gap-2 mt-0.5">
-                            <span class="text-[10px] bg-white/10 px-1.5 rounded text-white/50 border border-white/5">LVL ${p.level}</span>
+                        <div class="flex items-center gap-2">
+                             <a href="${p.faceitUrl}" target="_blank" class="font-bold text-lg text-white hover:text-faceit transition-colors">${p.nickname}</a>
+                             <img src="icons/levels/level_${p.level}_icon.png" class="w-6 h-6" title="Level ${p.level}">
+                        </div>
+                        <div class="mt-0.5">
                            ${streakBadge}
                         </div>
                     </div>
