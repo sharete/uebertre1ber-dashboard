@@ -69,8 +69,8 @@
     body {
       background-color: #050510;
       background-image:
-        radial-gradient(circle at 10% 20%, rgba(0, 242, 255, 0.05) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(189, 0, 255, 0.05) 0%, transparent 40%);
+        radial-gradient(circle at 10% 20%, rgba(0, 242, 255, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(189, 0, 255, 0.15) 0%, transparent 40%);
       background-attachment: fixed;
     }
 
@@ -545,7 +545,7 @@
         chip.className = 'comparison-chip px-3 py-1.5 rounded-full text-xs font-bold border border-white/10 bg-white/5 text-white/60 hover:text-white flex items-center gap-2 transition-all';
         chip.dataset.playerId = p.id;
         chip.dataset.colorIndex = i % CHART_COLORS.length;
-        chip.innerHTML = `<div class="w-2 h-2 rounded-full" style="background:\${CHART_COLORS[i % CHART_COLORS.length]}"></div>\${p.nickname}`;
+        chip.innerHTML = `<div class="w-2 h-2 rounded-full" style="background:${CHART_COLORS[i % CHART_COLORS.length]}"></div>${p.nickname}`;
         chip.addEventListener('click', () => {
             toggleComparisonPlayer(p.id, chip);
         });
@@ -577,7 +577,7 @@
       const selected = data.filter(p => selectedPlayers.has(p.id));
 
       selected.forEach((p, i) => {
-        const chip = document.querySelector(`.comparison-chip[data-player-id="\${p.id}"]`);
+        const chip = document.querySelector(`.comparison-chip[data-player-id="${p.id}"]`);
         const colorIdx = chip ? parseInt(chip.dataset.colorIndex) : i;
         const color = CHART_COLORS[colorIdx % CHART_COLORS.length];
         const recent = p.history.slice(-MAX_MATCHES);

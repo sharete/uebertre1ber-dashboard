@@ -100,12 +100,15 @@ class Renderer {
         const kd = parseFloat(m.kd);
         let colorClass = "bg-white/5"; 
         
-        // Color coding: Blue (Success) for KD >= 1, Orange (Danger) for KD < 1
-        // Opacity/Intensity based on value
-        if (kd >= 1.5) colorClass = "bg-success"; 
-        else if (kd >= 1.0) colorClass = "bg-success/60";
-        else if (kd >= 0.8) colorClass = "bg-danger/60";
-        else colorClass = "bg-danger";
+        // Color coding: Based on Result (Win/Loss), Opacity on Performance (K/D)
+        if (m.result === "W") {
+             if (kd >= 1.0) colorClass = "bg-success";
+             else colorClass = "bg-success/60";
+        } else {
+             // Loss
+             if (kd >= 1.0) colorClass = "bg-danger"; // Good stats but lost
+             else colorClass = "bg-danger/60";
+        }
 
         const title = `${new Date(m.date * 1000).toLocaleDateString()} - K/D: ${m.kd} (${m.map})`;
         return `<div class="w-1.5 h-6 rounded-sm ${colorClass} hover:scale-125 transition-transform cursor-help" title="${title}"></div>`;
