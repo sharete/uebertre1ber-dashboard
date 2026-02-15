@@ -29,13 +29,6 @@
             dark: '#050510',
             'neon-blue': '#00f2ff',
             'neon-purple': '#bd00ff',
-            // Accessibility: Blue/Orange Palette
-            // Accessibility: Managed via CSS Variables
-            'success': 'rgb(var(--color-success) / <alpha-value>)',
-            'success-dim': 'rgba(var(--color-success), 0.1)', 
-            'danger': 'rgb(var(--color-danger) / <alpha-value>)',
-            'danger-dim': 'rgba(var(--color-danger), 0.1)',
-            
             'glass-border': 'rgba(255, 255, 255, 0.05)',
             'glass-bg': 'rgba(20, 20, 30, 0.4)',
           },
@@ -45,86 +38,74 @@
           boxShadow: {
             'neon': '0 0 10px rgba(0, 242, 255, 0.3), 0 0 20px rgba(0, 242, 255, 0.1)',
             'neon-orange': '0 0 10px rgba(255, 85, 0, 0.3), 0 0 20px rgba(255, 85, 0, 0.1)',
-          },
-          animation: {
-            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           }
         }
       }
     }
   </script>
   <style>
-    :root {
-      /* Default: Green (Win) / Red (Loss) */
-      --color-success: 34 197 94; /* green-500 */
-      --color-danger: 239 68 68;  /* red-500 */
-    }
-    
-    .theme-accessible {
-      /* Accessible: Blue (Win) / Orange (Loss) */
-      --color-success: 59 130 246; /* blue-500 */
-      --color-danger: 249 115 22;  /* orange-500 */
-    }
-
     body {
       background-color: #050510;
       background-image:
-        radial-gradient(circle at 10% 20%, rgba(0, 242, 255, 0.15) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(189, 0, 255, 0.15) 0%, transparent 40%);
+        radial-gradient(circle at 10% 20%, rgba(0, 242, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(189, 0, 255, 0.05) 0%, transparent 40%);
       background-attachment: fixed;
     }
 
-    /* Spatial UI & Noise */
-    .noise-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 50;
-      opacity: 0.03;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    }
-
-    .glass-panel, .stat-card {
+    .glass-panel {
       background: rgba(20, 20, 30, 0.6);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.05);
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.03);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .stat-card {
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
+    .glass-card:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(0, 242, 255, 0.2);
+      box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
     }
 
-    .stat-card:hover {
-      transform: translateY(-4px);
-      background: rgba(255, 255, 255, 0.03);
-      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    /* Desktop table */
+    table {
+      border-collapse: separate;
+      border-spacing: 0 8px;
+      width: 100%;
     }
 
-    /* Dynamic Border Glows - Accessible Blue/Orange */
-    .glow-border-green {
-      border-color: rgb(var(--color-success) / 0.5);
-      box-shadow: 0 0 15px rgb(var(--color-success) / 0.2), inset 0 0 20px rgb(var(--color-success) / 0.05);
+    th {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.75rem;
+      padding: 1rem;
     }
 
-    .glow-border-red {
-      border-color: rgb(var(--color-danger) / 0.5);
-      box-shadow: 0 0 15px rgb(var(--color-danger) / 0.2), inset 0 0 20px rgb(var(--color-danger) / 0.05);
+    td {
+      padding: 1rem;
     }
 
-    /* Bento Grid */
-    .bento-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 1.5rem;
+    tr.player-row td:first-child {
+      border-top-left-radius: 12px;
+      border-bottom-left-radius: 12px;
+    }
+
+    tr.player-row td:last-child {
+      border-top-right-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
+
+    tr.details-row td {
+      border-radius: 12px;
     }
 
     /* Custom Scrollbar */
@@ -145,24 +126,72 @@
       background: #FF5500;
     }
 
-    .text-glow { text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
-    .text-glow-blue { text-shadow: 0 0 10px rgba(59, 130, 246, 0.6); }
-    .text-glow-orange { text-shadow: 0 0 10px rgba(249, 115, 22, 0.6); }
+    .text-glow {
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    .text-glow-blue {
+      text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+    }
+
+    .text-glow-orange {
+      text-shadow: 0 0 10px rgba(255, 85, 0, 0.5);
+    }
 
     .level-badge {
       clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+    }
+
+    /* Mobile card layout */
+    @media (max-width: 768px) {
+      .desktop-table {
+        display: none !important;
+      }
+
+      .mobile-cards {
+        display: flex !important;
+      }
+
+      .hero-stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      .awards-grid {
+        grid-template-columns: 1fr 1fr !important;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .mobile-cards {
+        display: none !important;
+      }
+    }
+
+    /* Comparison chart section */
+    .comparison-chip {
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .comparison-chip:hover {
+      transform: scale(1.05);
+    }
+
+    .comparison-chip.active {
+      border-color: rgba(0, 242, 255, 0.5);
+      background: rgba(0, 242, 255, 0.1);
     }
   </style>
 </head>
 
 <body class="min-h-screen text-gray-200 font-sans selection:bg-neon-blue selection:text-black">
 
-  <div class="noise-overlay"></div>
-
   <!-- Background Mesh -->
   <div class="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
-    <div class="absolute top-[-20%] left-[20%] w-[60%] h-[60%] bg-blue-500/5 rounded-full blur-[150px] animate-pulse-slow"></div>
-    <div class="absolute bottom-[-20%] right-[20%] w-[60%] h-[60%] bg-purple-500/5 rounded-full blur-[150px]" style="animation-delay: 2s"></div>
+    <div class="absolute top-[-20%] left-[20%] w-[60%] h-[60%] bg-blue-500/5 rounded-full blur-[150px] animate-pulse">
+    </div>
+    <div class="absolute bottom-[-20%] right-[20%] w-[60%] h-[60%] bg-purple-500/5 rounded-full blur-[150px]"
+      style="animation-delay: 2s"></div>
   </div>
 
   <!-- Header -->
@@ -170,15 +199,19 @@
     <div class="absolute top-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
 
     <div class="relative group cursor-pointer hover:scale-105 transition-transform duration-500">
-      <div class="absolute -inset-2 bg-gradient-to-r from-faceit to-orange-600 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition duration-500"></div>
+      <div
+        class="absolute -inset-2 bg-gradient-to-r from-faceit to-orange-600 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition duration-500">
+      </div>
       <img src="icons/levels/uebertreiber_logo.png" alt="uebertre1ber" class="relative w-64 md:w-80 drop-shadow-2xl" />
     </div>
 
     <!-- Hero Stats Grid -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-6xl px-4 mt-4 hero-stats-grid">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-5xl px-4 mt-4 hero-stats-grid">
       <!-- The King -->
       <div class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
-        <div class="absolute right-0 top-0 w-24 h-24 bg-yellow-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-yellow-500/20 transition"></div>
+        <div
+          class="absolute right-0 top-0 w-24 h-24 bg-yellow-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-yellow-500/20 transition">
+        </div>
         <div class="w-12 h-12 rounded-lg bg-yellow-500/10 flex items-center justify-center text-2xl">👑</div>
         <div>
           <p class="text-xs uppercase tracking-widest text-white/40 font-bold">The King</p>
@@ -189,7 +222,9 @@
 
       <!-- MVP -->
       <div class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
-        <div class="absolute right-0 top-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-green-500/20 transition"></div>
+        <div
+          class="absolute right-0 top-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-green-500/20 transition">
+        </div>
         <div class="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center text-2xl">🔥</div>
         <div>
           <p class="text-xs uppercase tracking-widest text-white/40 font-bold">MVP</p>
@@ -200,7 +235,9 @@
 
       <!-- Opfer -->
       <div class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
-        <div class="absolute right-0 top-0 w-24 h-24 bg-red-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-red-500/20 transition"></div>
+        <div
+          class="absolute right-0 top-0 w-24 h-24 bg-red-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-red-500/20 transition">
+        </div>
         <div class="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center text-2xl">💀</div>
         <div>
           <p class="text-xs uppercase tracking-widest text-white/40 font-bold">Opfer</p>
@@ -211,45 +248,21 @@
 
       <!-- Tracked -->
       <div class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
-        <div class="absolute right-0 top-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-blue-500/20 transition"></div>
+        <div
+          class="absolute right-0 top-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-blue-500/20 transition">
+        </div>
         <div class="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center text-2xl">📊</div>
         <div>
           <p class="text-xs uppercase tracking-widest text-white/40 font-bold">Tracked</p>
-          <p class="font-bold text-white text-lg tracking-tight"><span class="text-blue-400"><!-- INSERT_PLAYER_COUNT --></span> Players</p>
+          <p class="font-bold text-white text-lg tracking-tight"><span
+              class="text-blue-400"><!-- INSERT_PLAYER_COUNT --></span> Players</p>
           <p class="text-xs text-white/30">Live Updates</p>
         </div>
       </div>
     </div>
   </header>
 
-  <main class="flex-grow w-full max-w-7xl mx-auto p-4 flex flex-col gap-8 z-10">
-
-    <!-- Controls Toolbar -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-2">
-      <!-- Search -->
-      <div class="relative w-full sm:w-64">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        <input id="searchInput" type="text" placeholder="Spieler suchen (Name)..."
-          class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0a0a14]/80 border border-gray-700/50 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-neon-blue/50 focus:shadow-neon transition-all backdrop-blur-sm" />
-      </div>
-      <!-- Time Filter -->
-      <div class="flex items-center gap-2 bg-[#0a0a14]/80 p-1.5 rounded-xl border border-gray-700/50 shadow-lg backdrop-blur-sm overflow-x-auto max-w-full">
-        <button class="time-filter active px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all bg-white/10 text-white shadow-inner" data-val="daily">Daily</button>
-        <button class="time-filter px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 transition-all" data-val="weekly">Weekly</button>
-        <button class="time-filter px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 transition-all" data-val="monthly">Monthly</button>
-        <button class="time-filter px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 transition-all" data-val="yearly">Yearly</button>
-      </div>
-
-      <!-- Theme Toggle -->
-      <button id="themeToggle" class="p-2.5 rounded-xl bg-[#0a0a14]/80 border border-gray-700/50 text-white/50 hover:text-white hover:bg-white/10 transition-all backdrop-blur-sm" title="Toggle Colorblind Mode">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-        </svg>
-      </button>
-    </div>
+  <main class="flex-grow w-full max-w-7xl mx-auto p-4 flex flex-col gap-6 z-10">
 
     <!-- Awards Section -->
     <section id="awards-section" class="px-2">
@@ -259,9 +272,65 @@
       <!-- INSERT_AWARDS_SECTION -->
     </section>
 
-    <!-- Main Bento Grid -->
-    <div id="playerGrid" class="bento-grid px-2">
-      <!-- INSERT_ELO_CARDS_HERE -->
+    <!-- Controls Toolbar -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-2">
+      <!-- Search -->
+      <div class="relative w-full sm:w-64">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input id="searchInput" type="text" placeholder="Spieler suchen..."
+          class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0a0a14]/80 border border-gray-700/50 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-neon-blue/50 focus:shadow-neon transition-all backdrop-blur-sm" />
+      </div>
+      <!-- Time Filter -->
+      <div
+        class="flex items-center gap-2 bg-[#0a0a14]/80 p-1.5 rounded-xl border border-gray-700/50 shadow-lg backdrop-blur-sm">
+        <button
+          class="time-filter active px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all bg-white/10 text-white shadow-inner"
+          data-val="daily">Daily</button>
+        <button
+          class="time-filter px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+          data-val="weekly">Weekly</button>
+        <button
+          class="time-filter px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+          data-val="monthly">Monthly</button>
+        <button
+          class="time-filter px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+          data-val="yearly">Yearly</button>
+      </div>
+    </div>
+
+    <!-- Desktop Table -->
+    <div class="overflow-x-auto pb-4 px-2 desktop-table">
+      <table class="w-full">
+        <thead>
+          <tr class="text-xs uppercase tracking-wider text-white/30 text-left">
+            <th data-sort="nickname" class="p-4 cursor-pointer hover:text-white transition-colors font-medium">Player
+            </th>
+            <th data-sort="elo" class="p-4 cursor-pointer hover:text-white transition-colors font-medium">ELO</th>
+            <th data-sort="diff" class="p-4 cursor-pointer hover:text-white transition-colors font-medium text-center">
+              Gain</th>
+            <th data-sort="level" class="p-4 cursor-pointer hover:text-white transition-colors font-medium text-center">
+              Lvl</th>
+            <th data-sort="winrate" class="p-4 cursor-pointer hover:text-white transition-colors font-medium">
+              Performance (Last 30)</th>
+            <th data-sort="matches"
+              class="p-4 cursor-pointer hover:text-white transition-colors font-medium text-right">Matches</th>
+            <th data-sort="last" class="p-4 cursor-pointer hover:text-white transition-colors font-medium text-right">
+              Last Match</th>
+          </tr>
+        </thead>
+        <tbody id="playerTableBody" class="space-y-2">
+          <!-- INSERT_ELO_TABLE_HERE -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile Cards (hidden on desktop) -->
+    <div class="mobile-cards flex-col gap-3 px-2" style="display: none;">
+      <!-- Populated by JS -->
     </div>
 
     <!-- ELO Comparison Chart -->
@@ -285,8 +354,10 @@
 
   <!-- Footer -->
   <footer class="py-6 text-center z-10 relative">
-    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-xs text-white/40 hover:text-white/60 transition-colors">
-      <span>Dashboard by <a href="https://www.faceit.com/de/players/sha-" target="_blank" class="font-bold text-white hover:text-neon-blue transition-colors">sha</a></span>
+    <div
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-xs text-white/40 hover:text-white/60 transition-colors">
+      <span>Dashboard by <a href="https://www.faceit.com/de/players/sha-" target="_blank"
+          class="font-bold text-white hover:text-neon-blue transition-colors">sha</a></span>
     </div>
   </footer>
 
@@ -297,11 +368,103 @@
   <script>
     // --- State ---
     let currentRange = 'daily';
+    let currentSort = { col: 'elo', asc: false };
 
     // --- DOM Elements ---
-    const playerGrid = document.getElementById('playerGrid');
+    const tableBody = document.getElementById('playerTableBody');
     const searchInput = document.getElementById('searchInput');
     const filterButtons = document.querySelectorAll('.time-filter');
+
+    // --- Relative Time ---
+    function relativeTime(tsSeconds) {
+      if (!tsSeconds || tsSeconds === 0) return "—";
+      const now = Date.now() / 1000;
+      const diff = now - tsSeconds;
+
+      if (diff < 60) return "gerade eben";
+
+      const mins = Math.floor(diff / 60);
+      if (mins < 60) return `vor ${mins} Min`;
+
+      const hours = Math.floor(diff / 3600);
+      if (hours < 24) return `vor ${hours} Std`;
+
+      if (diff < 172800) return "gestern";
+
+      const days = Math.floor(diff / 86400);
+      if (days < 7) return `vor ${days} Tagen`;
+
+      const weeks = Math.floor(diff / 604800);
+      if (weeks < 4) return `vor ${weeks} ${weeks === 1 ? 'Woche' : 'Wochen'}`;
+
+      const months = Math.floor(diff / 2592000); // 30 days
+      if (months < 12) return `vor ${months} ${months === 1 ? 'Monat' : 'Monaten'}`;
+
+      const years = Math.floor(diff / 31536000); // 365 days
+      return `vor ${years} ${years === 1 ? 'Jahr' : 'Jahren'}`;
+    }
+
+    // Apply relative time to all last match cells
+    function applyRelativeTime() {
+      document.querySelectorAll('.last-match-cell').forEach(cell => {
+        const ts = parseInt(cell.dataset.ts);
+        if (ts > 0) {
+          const absTime = cell.textContent.trim();
+          const rel = relativeTime(ts);
+          cell.innerHTML = `<span title="${absTime}">${rel}</span>`;
+        }
+      });
+    }
+
+    // --- Search ---
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase().trim();
+      document.querySelectorAll("tr.player-row").forEach(row => {
+        const name = (row.dataset.nickname || "").toLowerCase();
+        const match = !query || name.includes(query);
+        row.style.display = match ? '' : 'none';
+        const pid = row.dataset.playerId;
+        const details = document.querySelector(`.details-row[data-player-id="${pid}"]`);
+        if (details && !match) details.classList.add('hidden');
+      });
+      buildMobileCards();
+    });
+
+    // --- Time Filter ---
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => {
+          b.className = "time-filter px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 transition-all";
+        });
+        btn.className = "time-filter active px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-neon";
+        currentRange = btn.dataset.val;
+        updateView();
+      });
+    });
+
+    // Sort Headers
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.sort;
+        if (currentSort.col === col) {
+          currentSort.asc = !currentSort.asc;
+        } else {
+          currentSort.col = col;
+          currentSort.asc = false;
+        }
+        sortRows(currentSort.col, currentSort.asc);
+        updateViewHeaders();
+      });
+    });
+
+    function updateViewHeaders() {
+      document.querySelectorAll('th[data-sort]').forEach(th => {
+        th.classList.remove('text-white', 'text-neon-blue');
+        if (th.dataset.sort === currentSort.col) {
+          th.classList.add('text-neon-blue');
+        }
+      });
+    }
 
     // --- Core Logic ---
     function updateView() {
@@ -317,11 +480,11 @@
         let kingElo = -1;
         let kingName = "—";
 
-        document.querySelectorAll(".stat-card").forEach(card => {
-          card.style.display = '';
-          const pid = card.dataset.playerId;
-          const currentElo = parseInt(card.dataset.elo || 0);
-          const name = card.dataset.nickname;
+        document.querySelectorAll("tr.player-row").forEach(row => {
+          row.style.display = '';
+          const pid = row.dataset.playerId;
+          const currentElo = parseInt(row.dataset.elo || 0);
+          const name = row.querySelector('.nickname-link').textContent.trim();
 
           if (currentElo > kingElo) {
             kingElo = currentElo;
@@ -329,33 +492,36 @@
           }
 
           const prev = lookup[pid];
-          const diffEl = card.querySelector(".elo-diff");
+          const cell = row.querySelector(".elo-diff");
           let diffVal = 0;
 
           if (prev == null) {
-              if(diffEl) diffEl.innerHTML = '<span class="text-white/20">—</span>';
+            cell.innerHTML = '<span class="text-white/20">—</span>';
           } else {
             const diff = currentElo - prev;
             diffVal = diff;
             const isPlus = diff > 0;
             const isZero = diff === 0;
             const color = isPlus ? 'text-green-400' : (isZero ? 'text-gray-500' : 'text-red-400');
+            const bg = isPlus ? 'bg-green-500/10' : (isZero ? 'bg-white/5' : 'bg-red-500/10');
             const sign = isPlus ? '+' : '';
-            if(diffEl) diffEl.innerHTML = `<span class="${color}">${sign}${diff}</span>`;
+            cell.innerHTML = `<div class="inline-flex items-center justify-center min-w-[3rem] px-2 py-1 rounded-md ${bg} ${color} font-mono font-bold text-sm border border-white/5 shadow-inner">${sign}${diff}</div>`;
           }
 
-          card.dataset.diff = diffVal;
+          row.dataset.diff = diffVal;
           if (diffVal > bestDiff) { bestDiff = diffVal; mvpName = name; }
           if (diffVal < worstDiff) { worstDiff = diffVal; downName = name; }
         });
 
-        // Hero Stats Logic
+        // Fix: When nobody lost ELO, show lowest gain instead
         if (worstDiff >= 0) {
           if (worstDiff > 0) {
+            // Everyone gained – show the person who gained least
             document.getElementById('hero-down-name').textContent = downName;
             document.getElementById('hero-down-diff').textContent = "+" + worstDiff + " 😅";
             document.getElementById('hero-down-diff').className = "font-mono text-sm text-yellow-400";
           } else {
+            // Everyone at 0
             document.getElementById('hero-down-name').textContent = "Alle im Plus 💪";
             document.getElementById('hero-down-diff').textContent = "±0";
             document.getElementById('hero-down-diff').className = "font-mono text-sm text-gray-500";
@@ -365,6 +531,8 @@
           document.getElementById('hero-down-diff').textContent = worstDiff;
           document.getElementById('hero-down-diff').className = "font-mono text-sm text-red-400";
         }
+
+        sortRows(currentSort.col, currentSort.asc);
 
         document.getElementById('hero-king-name').textContent = kingName;
         document.getElementById('hero-king-elo').textContent = kingElo + " ELO";
@@ -379,120 +547,71 @@
           document.getElementById('hero-mvp-diff').className = "font-mono text-sm text-gray-500";
         }
 
-      } catch (e) {
-        console.error("Update View Error", e);
-      }
+        buildMobileCards();
+      } catch (e) { console.error(e); }
     }
 
-    // --- Event Listeners ---
-    searchInput.addEventListener('input', () => {
-      const query = searchInput.value.toLowerCase().trim();
-      document.querySelectorAll(".stat-card").forEach(card => {
-        const name = (card.dataset.nickname || "").toLowerCase();
-        card.style.display = (!query || name.includes(query)) ? '' : 'none';
-      });
-    });
+    function sortRows(col, asc) {
+      const rows = Array.from(document.querySelectorAll('.player-row'));
+      const container = document.getElementById('playerTableBody');
 
-    filterButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        filterButtons.forEach(b => {
-          b.className = "time-filter px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 transition-all";
-        });
-        btn.className = "time-filter active px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-neon";
-        currentRange = btn.dataset.val;
-        updateView();
+      rows.sort((a, b) => {
+        const valA = getVal(a, col);
+        const valB = getVal(b, col);
+        if (valA < valB) return asc ? -1 : 1;
+        if (valA > valB) return asc ? 1 : -1;
+        return 0;
       });
-    });
 
-    // --- Theme Toggle Logic ---
-    const themeToggle = document.getElementById('themeToggle');
-    const htmlEl = document.documentElement;
-    
-    // Load saved preference
-    const savedTheme = localStorage.getItem('accessibility-mode');
-    if (savedTheme === 'true') {
-        htmlEl.classList.add('theme-accessible');
-        themeToggle.classList.add('text-neon-blue');
+      rows.forEach(row => {
+        container.appendChild(row);
+        const pid = row.dataset.playerId;
+        const details = document.querySelector(`.details-row[data-player-id="${pid}"]`);
+        if (details) container.appendChild(details);
+      });
+      buildMobileCards();
+
+      updateViewHeaders();
     }
 
-    themeToggle.addEventListener('click', () => {
-        const isAccessible = htmlEl.classList.toggle('theme-accessible');
-        localStorage.setItem('accessibility-mode', isAccessible);
-        
-        if(isAccessible) {
-             themeToggle.classList.add('text-neon-blue', 'border-neon-blue/50');
-             themeToggle.classList.remove('text-white/50');
-        } else {
-             themeToggle.classList.remove('text-neon-blue', 'border-neon-blue/50');
-             themeToggle.classList.add('text-white/50');
-        }
-    });
+    function getVal(row, col) {
+      if (col === 'elo') return parseInt(row.dataset.elo || 0);
+      if (col === 'nickname') return (row.dataset.nickname || "").toLowerCase();
+      if (col === 'diff') return parseInt(row.dataset.diff || 0);
+      if (col === 'level') return parseInt(row.dataset.level || 0);
+      if (col === 'winrate') return parseFloat(row.dataset.winrate || 0);
+      if (col === 'matches') return parseInt(row.dataset.matches || 0);
+      if (col === 'last') return parseInt(row.dataset.lastTs || row.dataset.last || 0);
+      return 0;
+    }
 
-    // --- Chart Initialization (Progressive Disclosure) ---
-    // Instead of on-demand rendering on mobile, we can render robust charts inside the details panel
-    // or keep them lightweight. For now, we reuse the existing logic but adapted for cards.
+    // --- Details Toggle & Chart ---
     const charts = {};
 
     document.addEventListener("click", e => {
-       // Handle "Show Details" button or click on card
-       const btn = e.target.closest('.toggle-details-btn');
-       if (!btn) return;
+      if (e.target.closest("a")) return;
+      if (e.target.closest("input")) return;
 
-       const card = btn.closest('.stat-card');
-       const details = card.querySelector('.card-details');
-       const icon = btn.querySelector('.icon-chevron');
+      const row = e.target.closest("tr.player-row");
+      if (!row) return;
 
-       if (details.classList.contains('hidden')) {
-         details.classList.remove('hidden');
-         icon.style.transform = 'rotate(180deg)';
+      const pid = row.dataset.playerId;
+      const toggle = row.querySelector(".toggle-details");
+      const detailRow = document.querySelector(`tr.details-row[data-player-id="${pid}"]`);
 
-         // Init ELO History Chart if not exists
-         const canvas = details.querySelector('canvas'); // The first canvas is ELO history
-         const pid = card.dataset.playerId;
+      if (detailRow) {
+        detailRow.classList.toggle("hidden");
+        const isHidden = detailRow.classList.contains("hidden");
+        if (toggle) toggle.style.transform = isHidden ? "rotate(0deg)" : "rotate(90deg)";
 
-         if (canvas && !charts[pid]) {
-             const hist = JSON.parse(canvas.dataset.history || "[]");
-             if (hist.length) {
-                const ctx = canvas.getContext('2d');
-                const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-                gradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)'); // Blue
-                gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
-
-                charts[pid] = new Chart(ctx, {
-                  type: 'line',
-                  data: {
-                    labels: hist.map(h => new Date(h.date * 1000).toLocaleDateString()),
-                    datasets: [{
-                      data: hist.map(h => h.elo),
-                      borderColor: '#3b82f6', // Success Blue
-                      backgroundColor: gradient,
-                      borderWidth: 2,
-                      pointBackgroundColor: '#3b82f6',
-                      pointRadius: 0,
-                      pointHoverRadius: 4,
-                      fill: true,
-                      tension: 0.4
-                    }]
-                  },
-                  options: {
-                    responsive: true, maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
-                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-                    scales: {
-                      x: { display: false },
-                      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } }
-                    }
-                  }
-                });
-             }
-         }
-
-         // Init Radar Chart (Map Winrates)
-         const radarCanvas = details.querySelector('.radar-chart');
-         if (radarCanvas && !radarCanvas.chart) {
-             const radarData = JSON.parse(radarCanvas.dataset.radar || "{}");
+        if (!isHidden) {
+          // Radar Chart Init
+          const canvasRadar = detailRow.querySelector("canvas.radar-chart");
+          if (canvasRadar && !charts[`radar-${pid}`]) {
+             const radarData = JSON.parse(canvasRadar.dataset.radar || "{}");
              if (radarData.labels && radarData.labels.length) {
-                 radarCanvas.chart = new Chart(radarCanvas, {
+                 const ctxR = canvasRadar.getContext('2d');
+                 charts[`radar-${pid}`] = new Chart(ctxR, {
                      type: 'radar',
                      data: {
                          labels: radarData.labels,
@@ -510,28 +629,75 @@
                          responsive: true, maintainAspectRatio: false,
                          scales: {
                              r: {
-                                 angleLines: { color: 'rgba(255,255,255,0.05)' },
+                                 beginAtZero: true,
+                                 max: 100,
+                                 ticks: { display: false, maxTicksLimit: 3 },
                                  grid: { color: 'rgba(255,255,255,0.05)' },
-                                 pointLabels: { color: 'rgba(255,255,255,0.5)', font: { size: 9 } },
-                                 ticks: { display: false, backdropColor: 'transparent' },
-                                 suggestedMin: 0,
-                                 suggestedMax: 100
+                                 angleLines: { color: 'rgba(255,255,255,0.05)' },
+                                 pointLabels: { color: 'rgba(255,255,255,0.4)', font: { size: 9 } }
                              }
                          },
-                         plugins: { legend: { display: false } }
+                         plugins: {
+                             legend: { display: false }
+                         }
                      }
                  });
              }
-         }
+          }
 
-       } else {
-         details.classList.add('hidden');
-         icon.style.transform = 'rotate(0deg)';
-       }
-    });
+          // ELO Chart Init
+          if (!charts[pid]) {
+          const canvas = detailRow.querySelector("canvas");
+          if (canvas) {
+            const hist = JSON.parse(canvas.dataset.history || "[]");
+            if (hist.length) {
+              const ctx = canvas.getContext('2d');
+              const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+              gradient.addColorStop(0, 'rgba(0, 242, 255, 0.2)');
+              gradient.addColorStop(1, 'rgba(0, 242, 255, 0)');
 
+              charts[pid] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                  labels: hist.map(h => new Date(h.date * 1000).toLocaleDateString()),
+                  datasets: [{
+                    data: hist.map(h => h.elo),
+                    borderColor: '#00f2ff',
+                    backgroundColor: gradient,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#00f2ff',
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    tension: 0.4
+                  }]
+                },
+                options: {
+                  responsive: true, maintainAspectRatio: false,
+                  interaction: { mode: 'index', intersect: false },
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      mode: 'index', intersect: false,
+                      backgroundColor: 'rgba(5, 5, 16, 0.9)',
+                      titleColor: '#fff', bodyColor: '#00f2ff',
+                      borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1
+                    }
+                  },
+                  scales: {
+                    x: { display: false },
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } }
+                  }
+                }
+              });
+            }
+          }
+        }
+      }
+    }
+  });
 
-    // --- Comparison Chart (Reused) ---
+    // --- Comparison Chart ---
     const CHART_COLORS = ['#00f2ff', '#FF5500', '#bd00ff', '#22c55e', '#eab308', '#f43f5e', '#3b82f6', '#a855f7'];
     let comparisonChart = null;
     const selectedPlayers = new Set();
@@ -539,16 +705,15 @@
     function initComparisonSection() {
       const data = window.COMPARISON_DATA;
       if (!data || !data.length) return;
+
       const container = document.getElementById('comparison-chips');
       data.forEach((p, i) => {
         const chip = document.createElement('button');
-        chip.className = 'comparison-chip px-3 py-1.5 rounded-full text-xs font-bold border border-white/10 bg-white/5 text-white/60 hover:text-white flex items-center gap-2 transition-all';
+        chip.className = 'comparison-chip px-3 py-1.5 rounded-full text-xs font-bold border border-white/10 bg-white/5 text-white/60 hover:text-white flex items-center gap-2';
         chip.dataset.playerId = p.id;
         chip.dataset.colorIndex = i % CHART_COLORS.length;
         chip.innerHTML = `<div class="w-2 h-2 rounded-full" style="background:${CHART_COLORS[i % CHART_COLORS.length]}"></div>${p.nickname}`;
-        chip.addEventListener('click', () => {
-            toggleComparisonPlayer(p.id, chip);
-        });
+        chip.addEventListener('click', () => toggleComparisonPlayer(p.id, chip));
         container.appendChild(chip);
       });
     }
@@ -556,12 +721,10 @@
     function toggleComparisonPlayer(id, chip) {
       if (selectedPlayers.has(id)) {
         selectedPlayers.delete(id);
-        chip.classList.remove('bg-white/20', 'text-white');
-        chip.classList.add('bg-white/5', 'text-white/60');
+        chip.classList.remove('active');
       } else {
         selectedPlayers.add(id);
-        chip.classList.add('bg-white/20', 'text-white');
-        chip.classList.remove('bg-white/5', 'text-white/60');
+        chip.classList.add('active');
       }
       updateComparisonChart();
     }
@@ -569,9 +732,12 @@
     function updateComparisonChart() {
       const data = window.COMPARISON_DATA;
       if (!data) return;
+
       const canvas = document.getElementById('comparison-chart');
       const ctx = canvas.getContext('2d');
+
       if (comparisonChart) comparisonChart.destroy();
+
       const MAX_MATCHES = 30;
       const datasets = [];
       const selected = data.filter(p => selectedPlayers.has(p.id));
@@ -580,42 +746,197 @@
         const chip = document.querySelector(`.comparison-chip[data-player-id="${p.id}"]`);
         const colorIdx = chip ? parseInt(chip.dataset.colorIndex) : i;
         const color = CHART_COLORS[colorIdx % CHART_COLORS.length];
+
+        // Take only last 30 matches
         const recent = p.history.slice(-MAX_MATCHES);
+
         datasets.push({
           label: p.nickname,
           data: recent.map(h => h.elo),
+          _dates: recent.map(h => new Date(h.date * 1000).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })),
           borderColor: color,
           backgroundColor: 'transparent',
-          borderWidth: 2,
-          pointRadius: 0,
-          pointHoverRadius: 4,
-          tension: 0.4
+          borderWidth: 2.5,
+          pointRadius: recent.length <= 15 ? 3 : 0,
+          pointHoverRadius: 5,
+          pointBackgroundColor: color,
+          tension: 0.35
         });
       });
 
-      if (datasets.length === 0) { comparisonChart = null; return; }
+      if (datasets.length === 0) {
+        comparisonChart = null;
+        return;
+      }
+
+      // Labels: "Match 1" to "Match 30"
+      const labels = Array.from({ length: MAX_MATCHES }, (_, i) => i + 1);
 
       comparisonChart = new Chart(ctx, {
         type: 'line',
-        data: { labels: Array.from({length: MAX_MATCHES}, (_, i) => i + 1), datasets },
+        data: { labels, datasets },
         options: {
           responsive: true, maintainAspectRatio: false,
           interaction: { mode: 'index', intersect: false },
-          plugins: { legend: { display: true, labels: { color: '#888' } } },
+          plugins: {
+            legend: { display: true, labels: { color: '#999', font: { size: 11 }, usePointStyle: true, pointStyle: 'line' } },
+            tooltip: {
+              backgroundColor: 'rgba(5,5,16,0.95)', titleColor: '#999',
+              bodyFont: { weight: 'bold' },
+              borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+              callbacks: {
+                title: (items) => `Match ${items[0].label} / 30`,
+                afterTitle: (items) => {
+                  // Show each player's actual date for this match index
+                  return items.map(item => {
+                    const ds = item.dataset;
+                    return ds._dates && ds._dates[item.dataIndex] ? `${ds.label}: ${ds._dates[item.dataIndex]}` : '';
+                  }).filter(Boolean).join('\n');
+                },
+                label: (item) => `  ${item.dataset.label}: ${item.formattedValue} ELO`
+              }
+            }
+          },
           scales: {
-             x: { grid: { color: 'rgba(255,255,255,0.05)' } },
-             y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } }
+            x: {
+              title: { display: true, text: 'Letzte 30 Matches →', color: '#555', font: { size: 10 } },
+              ticks: { color: '#444', font: { size: 9 }, maxTicksLimit: 10 },
+              grid: { color: 'rgba(255,255,255,0.03)' }
+            },
+            y: {
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              ticks: { color: '#666' }
+            }
           }
         }
       });
     }
 
-    // Init Logic
-    window.addEventListener('DOMContentLoaded', () => {
-       initComparisonSection();
-       updateView(); // Initial view populate
-    });
+    // --- Mobile Cards ---
+    function buildMobileCards() {
+      const container = document.querySelector('.mobile-cards');
+      if (!container) return;
+      container.innerHTML = '';
 
+      const rows = Array.from(document.querySelectorAll('.player-row'));
+
+      rows.forEach(row => {
+        // Skip if row is hidden (search filter)
+        if (row.style.display === 'none') return;
+
+        const pid = row.dataset.playerId;
+        const name = row.querySelector('.nickname-link')?.textContent || '—';
+        const elo = row.dataset.elo;
+        const level = row.dataset.level;
+        const winrate = row.dataset.winrate;
+        const matches = row.dataset.matches;
+        const diff = row.dataset.diff || '0';
+        const diffNum = parseInt(diff);
+        const diffColor = diffNum > 0 ? 'text-green-400' : (diffNum < 0 ? 'text-red-400' : 'text-gray-500');
+        const diffSign = diffNum > 0 ? '+' : '';
+        const levelIcon = `icons/levels/level_${level}_icon.png`;
+
+        const card = document.createElement('div');
+        card.className = 'glass-card p-4 rounded-xl cursor-pointer transition-all active:scale-[0.98]';
+        card.onclick = (e) => toggleMobileDetails(pid, card);
+
+        // Find the history data from the desktop details row
+        const desktopDetailRow = document.querySelector(`tr.details-row[data-player-id="${pid}"]`);
+        const historyData = desktopDetailRow ? desktopDetailRow.querySelector('canvas')?.dataset.history : '[]';
+
+        card.innerHTML = `
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-3">
+              <img src="${levelIcon}" width="32" height="32" class="level-badge shadow-lg">
+              <div>
+                <p class="font-bold text-white text-base">${name}</p>
+                <p class="font-mono text-neon-blue text-xl font-bold tracking-tight">${elo}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="inline-flex items-center justify-center px-2 py-1 rounded bg-white/5 border border-white/5 mb-1">
+                <p class="font-mono font-bold ${diffColor} text-sm">${diffSign}${diff}</p>
+              </div>
+              <p class="text-[10px] text-white/40 font-mono uppercase tracking-wider">${matches} Games • ${winrate}% WR</p>
+            </div>
+          </div>
+          
+          <!-- Details (Hidden by default) -->
+          <div class="mobile-details hidden mt-4 border-t border-white/5 pt-4" data-player-id="${pid}">
+             <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="bg-black/20 p-2 rounded-lg text-center">
+                   <p class="text-[10px] text-white/30 uppercase">K/D</p>
+                   <p class="font-mono text-neon-blue font-bold text-sm">${row.dataset.kd || '-'}</p>
+                </div>
+                <div class="bg-black/20 p-2 rounded-lg text-center">
+                   <p class="text-[10px] text-white/30 uppercase">Last Match</p>
+                   <p class="font-mono text-white font-bold text-sm text-[11px] leading-6">${relativeTime(parseInt(row.dataset.lastTs))}</p>
+                </div>
+                 <div class="bg-black/20 p-2 rounded-lg text-center">
+                   <p class="text-[10px] text-white/30 uppercase">Streak</p>
+                   <p class="font-mono ${row.dataset.streakType === 'win' ? 'text-green-400' : (row.dataset.streakType === 'loss' ? 'text-red-400' : 'text-gray-500')} font-bold text-sm">${row.dataset.streak || '—'}</p>
+                </div>
+             </div>
+             <div class="h-40 w-full relative">
+                <canvas data-history='${historyData}'></canvas>
+             </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function toggleMobileDetails(pid, card) {
+      const details = card.querySelector('.mobile-details');
+      if (!details) return;
+
+      details.classList.toggle('hidden');
+      const isHidden = details.classList.contains('hidden');
+
+      if (!isHidden) {
+        // Init chart if needed
+        const canvas = details.querySelector('canvas');
+        if (canvas && !canvas.chart) {
+          const hist = JSON.parse(canvas.dataset.history || "[]");
+          if (hist.length) {
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+            gradient.addColorStop(0, 'rgba(0, 242, 255, 0.2)');
+            gradient.addColorStop(1, 'rgba(0, 242, 255, 0)');
+
+            canvas.chart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: hist.map(h => new Date(h.date * 1000).toLocaleDateString()),
+                datasets: [{
+                  data: hist.map(h => h.elo),
+                  borderColor: '#00f2ff',
+                  backgroundColor: gradient,
+                  borderWidth: 2,
+                  pointRadius: 0,
+                  pointHoverRadius: 4,
+                  fill: true,
+                  tension: 0.4
+                }]
+              },
+              options: {
+                responsive: true, maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: { legend: { display: false }, tooltip: { enabled: true, intersect: false, mode: 'index' } },
+                scales: { x: { display: false }, y: { display: true, grid: { color: 'rgba(255,255,255,0.05)' } } }
+              }
+            });
+          }
+        }
+      }
+    }
+
+    // --- Startup ---
+    updateView();
+    applyRelativeTime();
+    initComparisonSection();
+    buildMobileCards();
   </script>
 </body>
+
 </html>
