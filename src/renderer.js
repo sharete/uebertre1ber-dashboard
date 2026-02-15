@@ -10,7 +10,7 @@ class Renderer {
     const awardsHtml = this.renderAwards(awards);
 
     // Pass awards to render function in case we need to highlight winner
-    const cardsHtml = sortedPlayers.map(p => this.renderPlayerCard(p)).join('\n');
+    const cardsHtml = sortedPlayers.map((p, i) => this.renderPlayerCard(p, i + 1)).join('\n');
 
     let template = fs.readFileSync(templatePath, 'utf-8');
     
@@ -68,7 +68,7 @@ class Renderer {
     </div>`;
   }
 
-  renderPlayerCard(p) {
+  renderPlayerCard(p, rank) {
     const { recent, teammates, streak, mapPerformance, eloHistory, matchHistory } = p.stats;
     
     // Formatting Helpers
@@ -83,6 +83,22 @@ class Renderer {
     if (streak.count >= 2) {
         if (streak.type === "win") borderClass = "glow-border-green"; // Maps to Blue in CSS
         else if (streak.type === "loss") borderClass = "glow-border-red"; // Maps to Orange in CSS
+    }
+
+    // Rank Styling (Badge & Border Overrides)
+    let rankBadge = "";
+    if (rank === 1) {
+        rankBadge = `<div class="absolute -left-1 -top-1 w-12 h-12 bg-gradient-to-br from-yellow-300 to-yellow-600 text-black font-black text-xl flex items-center justify-center rounded-br-2xl rounded-tl-2xl shadow-lg shadow-yellow-500/20 z-20">#1</div>`;
+        if(!borderClass) borderClass = "border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.1)]";
+    } else if (rank === 2) {
+        rankBadge = `<div class="absolute -left-1 -top-1 w-10 h-10 bg-gradient-to-br from-gray-300 to-gray-500 text-black font-bold text-lg flex items-center justify-center rounded-br-xl rounded-tl-xl shadow-lg z-20">#2</div>`;
+        if(!borderClass) borderClass = "border-gray-400/30";
+    } else if (rank === 3) {
+        rankBadge = `<div class="absolute -left-1 -top-1 w-10 h-10 bg-gradient-to-br from-orange-300 to-orange-600 text-black font-bold text-lg flex items-center justify-center rounded-br-xl rounded-tl-xl shadow-lg z-20">#3</div>`;
+        if(!borderClass) borderClass = "border-orange-500/30";
+    } else {
+        // Watermark for others
+        rankBadge = `<div class="absolute top-2 left-3 text-white/5 font-black text-5xl pointer-events-none select-none z-0 tracking-tighter">#${rank}</div>`;
     }
 
     // Streak Badge - Accessible Colors
@@ -151,6 +167,7 @@ class Renderer {
          data-elo="${p.elo}"
          data-diff="0">
         
+        ${rankBadge}
         <!-- Header / Main Info -->
         <div class="p-5 flex flex-col gap-4 relative">
             <div class="absolute top-0 right-0 p-4 opacity-50 pointer-events-none">
