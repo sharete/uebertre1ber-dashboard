@@ -5,6 +5,7 @@ const { DateTime } = require("luxon");
 const api = require('./src/api');
 const stats = require('./src/stats');
 const renderer = require('./src/renderer');
+const { normalizeMapName } = require('./src/map_utils');
 
 const PLAYERS_FILE = "players.txt";
 const DATA_DIR = path.join(__dirname, "data");
@@ -73,7 +74,7 @@ async function processPlayer(playerId) {
                 }
                 
                 // Inject map name into stats object for stats.js to use
-                ms.__mapName = mapName;
+                ms.__mapName = normalizeMapName(mapName);
                 matchStatsMap[item.match_id] = ms;
             }
         }

@@ -98,7 +98,7 @@ class Renderer {
         if(!borderClass) borderClass = "border-orange-500/30";
     } else {
         // Standard Badge for others
-        rankBadge = `<div class="absolute -left-1 -top-1 w-10 h-10 bg-[#0a0a14] border border-white/10 text-white/50 font-bold text-lg flex items-center justify-center rounded-br-xl rounded-tl-xl shadow-lg z-20">#${rank}</div>`;
+        rankBadge = `<div class="absolute -left-1 -top-1 w-10 h-10 bg-white/20 border border-white/30 text-white font-bold text-lg flex items-center justify-center rounded-br-xl rounded-tl-xl shadow-lg backdrop-blur-md z-20">#${rank}</div>`;
     }
 
     // Streak Badge - Accessible Colors
@@ -179,7 +179,7 @@ class Renderer {
                     <div>
                         <div class="flex items-center gap-2">
                              <a href="${p.faceitUrl}" target="_blank" class="font-bold text-lg text-white hover:text-faceit transition-colors">${p.nickname}</a>
-                             <img src="icons/levels/level_${p.level}_icon.png" class="w-6 h-6" title="Level ${p.level}">
+                             <img src="icons/levels/level_${p.level}_icon.png" class="w-12 h-12 shrink-0 filter drop-shadow-md" title="Level ${p.level}">
                         </div>
                         <div class="mt-0.5">
                            ${streakBadge}
