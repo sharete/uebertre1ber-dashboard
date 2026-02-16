@@ -67,8 +67,8 @@ class Renderer {
     
     // Radar Chart Data Preparation
     const validMaps = (mapPerformance || []).filter(m => m.map !== "Unknown");
-    const radarLabels = validMaps.slice(0, 5).map(m => m.map);
-    const radarData = validMaps.slice(0, 5).map(m => m.winrate);
+    const radarLabels = validMaps.map(m => m.map);
+    const radarData = validMaps.map(m => m.winrate);
     const radarJson = JSON.stringify({ labels: radarLabels, data: radarData });
 
     const topMates = [...teammates].sort((a, b) => b.count - a.count).slice(0, 5);
