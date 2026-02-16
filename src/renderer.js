@@ -204,11 +204,23 @@ class Renderer {
   </div>
 </div>`;
 
-    const matesList = (list, valueKey = 'count', suffix = 'G') => list.map(m => `
+    const matesList = (list, valueKey = 'count', suffix = 'G', isLossRate = false) => list.map(m => {
+        let percentage = parseFloat(m.winrate) || 0;
+        let displayPct = percentage;
+        let colorClass = percentage >= 50 ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20';
+
+        if (isLossRate) {
+            displayPct = 100 - percentage;
+            // Invert colors: High Loss Rate = Bad (Red), Low Loss Rate = Good (Green)
+            colorClass = displayPct >= 50 ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20';
+        }
+        
+        return `
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
             <a href="${m.url}" target="_blank" class="nickname-link text-white/70 font-medium hover:text-neon-blue transition-colors text-xs">${m.nickname}</a>
-            <span class="text-[10px] text-white/40 font-mono">${m[valueKey]} ${suffix} <span class="ml-2 px-1.5 py-0.5 rounded font-bold ${parseFloat(m.winrate) >= 50 ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}">${m.winrate}</span></span>
-        </li>`).join("");
+            <span class="text-[10px] text-white/40 font-mono">${m[valueKey]} ${suffix} <span class="ml-2 px-1.5 py-0.5 rounded font-bold ${colorClass}">${displayPct}%</span></span>
+        </li>`;
+    }).join("");
 
     const topMatesBlock = `
 <div class="mb-4">
@@ -230,7 +242,7 @@ class Renderer {
 <div class="mb-4">
   <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
-     ${matesList(worstMates, 'losses', 'L')}
+     ${matesList(worstMates, 'losses', 'L', true)}
   </ul>
 </div>`;
 
