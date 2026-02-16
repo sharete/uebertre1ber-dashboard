@@ -72,10 +72,7 @@ class Renderer {
     const radarJson = JSON.stringify({ labels: radarLabels, data: radarData });
 
     const topMates = [...teammates].sort((a, b) => b.count - a.count).slice(0, 5);
-    const worstMates = [...teammates]
-      .filter(t => t.losses > 0 && t.winratePct < 50)
-      .sort((a, b) => a.winratePct - b.winratePct || b.losses - a.losses)
-      .slice(0, 5);
+    const worstMates = [...teammates].sort((a, b) => b.losses - a.losses).slice(0, 5);
     const bestMates = [...teammates].sort((a, b) => b.wins - a.wins).slice(0, 5);
 
     // Calculate Peak ELO (max of history + current)
