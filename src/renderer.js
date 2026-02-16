@@ -212,7 +212,7 @@ class Renderer {
 
     const topMatesBlock = `
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Frequent Duo</div>
+  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     ${matesList(topMates)}
   </ul>
@@ -220,7 +220,7 @@ class Renderer {
 
     const bestMatesBlock = `
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Best Synergy</div>
+  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     ${matesList(bestMates)}
   </ul>
@@ -228,7 +228,7 @@ class Renderer {
 
     const worstMatesBlock = `
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Cursed Duo</div>
+  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      ${matesList(worstMates)}
   </ul>
