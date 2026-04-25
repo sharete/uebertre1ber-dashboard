@@ -16,10 +16,6 @@
     "elo": 2994
   },
   {
-    "playerId": "b1373334-5842-4fa6-90b8-da0479ee94c0",
-    "elo": 2710
-  },
-  {
     "playerId": "f7414b6d-c590-4851-b2dc-ea9ead5fa994",
     "elo": 2700
   },
@@ -34,6 +30,10 @@
   {
     "playerId": "336c5c35-534c-488d-b786-31ad68c83e9e",
     "elo": 2520
+  },
+  {
+    "playerId": "b1373334-5842-4fa6-90b8-da0479ee94c0",
+    "elo": 2489
   },
   {
     "playerId": "76881899-1224-4acb-bd84-09b7b8e97f9c",
