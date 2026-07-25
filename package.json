@@ -2,10 +2,15 @@
   "name": "faceit-elo-updater",
   "version": "1.0.0",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "build:css": "tailwindcss -i tailwind.input.css -o tailwind.generated.css --minify",
+    "test": "node --check dashboard.js && node --check src/renderer.js && node tests/smoke.js"
   },
   "dependencies": {
     "luxon": "^3.4.4",
     "p-limit": "^4.0.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
   }
 }

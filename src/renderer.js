@@ -1,5 +1,24 @@
 const fs = require('fs');
 
+const escapeHtml = (value) => String(value ?? '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;');
+
+const normalizeUrl = (value) => {
+  try {
+    const url = new URL(String(value ?? ''));
+    return ['https:', 'http:'].includes(url.protocol) ? url.href : '#';
+  } catch {
+    return '#';
+  }
+};
+const safeUrl = (value) => escapeHtml(normalizeUrl(value));
+
+const serializeForScript = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
+
 class Renderer {
   render(templatePath, outputPath, data) {
     const { players, lastUpdated, historyData, awards } = data;
@@ -19,14 +38,14 @@ class Renderer {
     const comparisonData = players.map(p => ({
       id: p.playerId,
       nickname: p.nickname,
-      avatar: p.avatar,
+      avatar: normalizeUrl(p.avatar),
       history: p.stats.eloHistory || []
     }));
-    const comparisonScript = `<script>window.COMPARISON_DATA = ${JSON.stringify(comparisonData)};</script>`;
+    const comparisonScript = `<script>window.COMPARISON_DATA = ${serializeForScript(comparisonData)};</script>`;
     template = template.replace("<!-- INSERT_COMPARISON_DATA -->", comparisonScript);
 
     // Inject history data
-    const historyScript = `<script>window.ELO_DATA = ${JSON.stringify(historyData)};</script>`;
+    const historyScript = `<script>window.ELO_DATA = ${serializeForScript(historyData)};</script>`;
     if (template.match(/<!--\s*INSERT_HISTORY_DATA\s*-->/)) {
       template = template.replace(/<!--\s*INSERT_HISTORY_DATA\s*-->/, historyScript);
     } else {
@@ -40,36 +59,38 @@ class Renderer {
   renderAwards(awards) {
     if (!awards || Object.keys(awards).length === 0) return "";
 
-    const card = (emoji, title, name, value, color) => `
+    const card = (title, name, value) => `
       <div class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
-        <div class="absolute right-0 top-0 w-20 h-20 bg-${color}-500/10 rounded-full blur-2xl -mr-8 -mt-8 group-hover:bg-${color}-500/20 transition"></div>
-        <div class="w-10 h-10 rounded-lg bg-${color}-500/10 flex items-center justify-center text-xl">${emoji}</div>
+        <div aria-hidden="true"></div>
+        <div aria-hidden="true"></div>
         <div>
-          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">${title}</p>
-          <p class="font-bold text-white text-sm tracking-tight">${name}</p>
-          <p class="font-mono text-${color}-400 text-xs">${value}</p>
+          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">${escapeHtml(title)}</p>
+          <p class="font-bold text-white text-sm tracking-tight">${escapeHtml(name)}</p>
+          <p class="font-mono text-xs">${escapeHtml(value)}</p>
         </div>
       </div>`;
 
     return `
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 w-full">
-      ${card("🎯", "Best K/D", awards.bestKD.name, awards.bestKD.value, "blue")}
-      ${card("💥", "Headshot King", awards.bestHS.name, awards.bestHS.value, "yellow")}
-      ${card("⚡", "Best ADR", awards.bestADR.name, awards.bestADR.value, "purple")}
-      ${card("🏆", "Best Winrate", awards.bestWinrate.name, `${awards.bestWinrate.value}%`, "green")}
-      ${card("🔥", "Win Streak", awards.longestStreak.name, `${awards.longestStreak.value}W`, "orange")}
-      ${card("🛡️", "Survivor", awards.lowestDeaths.name, `${awards.lowestDeaths.value} Deaths`, "cyan")}
+      ${card("Best K/D", awards.bestKD.name, awards.bestKD.value)}
+      ${card("Headshot King", awards.bestHS.name, awards.bestHS.value)}
+      ${card("Best ADR", awards.bestADR.name, awards.bestADR.value)}
+      ${card("Best Winrate", awards.bestWinrate.name, `${awards.bestWinrate.value}%`)}
+      ${card("Win Streak", awards.longestStreak.name, `${awards.longestStreak.value}W`)}
+      ${card("Survivor", awards.lowestDeaths.name, `${Number.isFinite(awards.lowestDeaths.value) ? awards.lowestDeaths.value : 0} Deaths`)}
     </div>`;
   }
 
   renderPlayer(p) {
     const { recent, teammates, streak, last5, mapPerformance, eloHistory } = p.stats;
+    const nickname = escapeHtml(p.nickname);
+    const playerId = escapeHtml(p.playerId);
     
     // Radar Chart Data Preparation
     const validMaps = (mapPerformance || []).filter(m => m.map !== "Unknown");
     const radarLabels = validMaps.map(m => m.map);
     const radarData = validMaps.map(m => m.winrate);
-    const radarJson = JSON.stringify({ labels: radarLabels, data: radarData });
+    const radarJson = escapeHtml(JSON.stringify({ labels: radarLabels, data: radarData }));
 
     const topMates = [...teammates].sort((a, b) => b.count - a.count).slice(0, 5);
     const worstMates = [...teammates].sort((a, b) => b.losses - a.losses).slice(0, 5);
@@ -96,19 +117,20 @@ class Renderer {
     ).join("");
 
     // Avatar
+    const initial = escapeHtml(String(p.nickname || '?').charAt(0).toUpperCase());
     const avatarHtml = p.avatar
-      ? `<img src="${p.avatar}" class="w-8 h-8 rounded-full object-cover border border-white/10" alt="${p.nickname}" loading="lazy" />`
-      : `<div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50">${p.nickname.charAt(0).toUpperCase()}</div>`;
+      ? `<div class="relative w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 overflow-hidden"><span>${initial}</span><img src="${safeUrl(p.avatar)}" class="absolute inset-0 w-full h-full object-cover border border-white/10" alt="" loading="lazy" onerror="this.remove()" /></div>`
+      : `<div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50">${initial}</div>`;
 
     const mainRow = `
 <tr class="player-row glass-card relative group cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
-    data-player-id="${p.playerId}"
+    data-player-id="${playerId}"
     data-elo="${p.elo}"
-    data-nickname="${p.nickname}"
+    data-nickname="${nickname}"
     data-winrate="${parseFloat(p.winrate) || 0}"
     data-matches="${parseInt(p.matches.toString().replace(/,/g, '')) || 0}"
     data-level="${p.level}"
-    data-last="${p.lastMatch}"
+    data-last="${escapeHtml(p.lastMatch)}"
     data-last-ts="${p.lastMatchTs || 0}"
     data-kd="${parseFloat(recent.kd) || 0}"
     data-peak="${peakElo}"
@@ -121,7 +143,7 @@ class Renderer {
         ${avatarHtml}
         <div class="flex flex-col">
             <div class="flex items-center gap-1">
-                <a href="${p.faceitUrl}" target="_blank" class="nickname-link font-bold text-white text-base tracking-wide hover:text-faceit transition-colors z-10">${p.nickname}</a>
+                <a href="${safeUrl(p.faceitUrl)}" target="_blank" rel="noopener noreferrer" class="nickname-link font-bold text-white text-base tracking-wide hover:text-faceit transition-colors z-10">${nickname}</a>
                 ${streakBadge}
             </div>
             <div class="flex items-center gap-1 mt-1">${last5Html}</div>
@@ -133,7 +155,7 @@ class Renderer {
   <td class="p-4 text-center">
     <div class="relative inline-block group/badge">
        <div class="absolute inset-0 bg-orange-500/20 blur-md rounded-full opacity-0 group-hover/badge:opacity-100 transition-opacity"></div>
-       <img src="icons/levels/level_${p.level}_icon.png" width="28" height="28" title="Level ${p.level}" class="relative drop-shadow-md level-badge">
+        <img src="icons/levels/level_${Math.max(1, Math.min(10, Number.parseInt(p.level) || 1))}_icon.png" width="28" height="28" alt="FACEIT Level ${escapeHtml(p.level)}" class="relative drop-shadow-md level-badge">
     </div>
   </td>
   <td class="p-4">
@@ -148,13 +170,13 @@ class Renderer {
     </div>
   </td>
   <td class="p-4 text-right font-mono text-white/70 text-sm">${p.matches}</td>
-  <td class="p-4 text-xs text-white/40 font-mono text-right last-match-cell" data-ts="${p.lastMatchTs || 0}">${p.lastMatch}</td>
+  <td class="p-4 text-xs text-white/40 font-mono text-right last-match-cell" data-ts="${p.lastMatchTs || 0}">${escapeHtml(p.lastMatch)}</td>
 </tr>`.trim();
 
     // Map Performance Table
     const mapRows = (mapPerformance || []).map(m => `
       <tr class="border-b border-white/5 last:border-0">
-        <td class="py-2 px-3 text-white/80 text-xs font-medium">${m.map}</td>
+        <td class="py-2 px-3 text-white/80 text-xs font-medium">${escapeHtml(m.map)}</td>
         <td class="py-2 px-3 text-center text-xs font-mono text-white/50">${m.matches}</td>
         <td class="py-2 px-3 text-center text-xs font-mono ${m.winrate >= 50 ? 'text-green-400' : 'text-red-400'}">${m.winrate}%</td>
         <td class="py-2 px-3 text-center text-xs font-mono ${parseFloat(m.kd) >= 1 ? 'text-green-400' : 'text-red-400'}">${m.kd}</td>
@@ -217,7 +239,7 @@ class Renderer {
         
         return `
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
-            <a href="${m.url}" target="_blank" class="nickname-link text-white/70 font-medium hover:text-neon-blue transition-colors text-xs">${m.nickname}</a>
+            <a href="${safeUrl(m.url)}" target="_blank" rel="noopener noreferrer" class="nickname-link text-white/70 font-medium hover:text-neon-blue transition-colors text-xs">${escapeHtml(m.nickname)}</a>
             <span class="text-[10px] text-white/40 font-mono">${m[valueKey]} ${suffix} <span class="ml-2 px-1.5 py-0.5 rounded font-bold ${colorClass}">${displayPct}%</span></span>
         </li>`;
     }).join("");
@@ -246,7 +268,7 @@ class Renderer {
   </ul>
 </div>`;
 
-    const historyJson = JSON.stringify(p.stats.eloHistory || []);
+    const historyJson = escapeHtml(JSON.stringify(p.stats.eloHistory || []));
 
     const chartBlock = `
 <div class="mt-6 bg-[#0a0a14] border border-white/5 p-4 rounded-xl shadow-inner relative overflow-hidden group/chart">
@@ -255,13 +277,13 @@ class Renderer {
         📈 ELO Trend (Last 30 Matches)
     </div>
     <div class="h-48 w-full relative z-10">
-        <canvas id="chart-${p.playerId}" class="elo-chart" data-history='${historyJson}'></canvas>
+        <canvas id="chart-${playerId}" class="elo-chart" data-history='${historyJson}'></canvas>
     </div>
 </div>
 `;
 
     const detailRow = `
-<tr class="details-row hidden" data-player-id="${p.playerId}">
+<tr class="details-row hidden" data-player-id="${playerId}">
   <td colspan="7" class="p-0 border-none">
     <div class="mx-2 mb-4 p-6 glass-panel rounded-b-xl border-t-0 grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in relative shadow-neon-blue">
          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-50"></div>
