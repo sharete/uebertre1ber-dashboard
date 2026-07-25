@@ -1,4 +1,4 @@
-name: 🎮 Manage Players
+name: Manage Players
 
 on:
   workflow_dispatch:
@@ -18,36 +18,40 @@ on:
 jobs:
   manage:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: write
 
     steps:
-    - name: 📥 Repo auschecken
-      uses: actions/checkout@v4
+      - name: Repository auschecken
+        uses: actions/checkout@v4
 
-    - name: 🟢 Node.js einrichten
-      uses: actions/setup-node@v4
-      with:
-        node-version: "20"
-        cache: "npm"
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
 
-    - name: 📦 Abhängigkeiten installieren
-      run: npm install
+      - name: Abhängigkeiten installieren
+        run: npm ci
 
-    - name: 🎮 Spieler ${{ inputs.action }}
-      env:
-        FACEIT_API_KEY: ${{ secrets.FACEIT_API_KEY }}
-      run: node manage-players.js ${{ inputs.action }} "${{ inputs.nickname }}"
+      - name: Spieler ${{ inputs.action }}
+        env:
+          FACEIT_API_KEY: ${{ secrets.FACEIT_API_KEY }}
+        run: node manage-players.js ${{ inputs.action }} "${{ inputs.nickname }}"
 
-    - name: 🔁 Änderungen committen und pushen
-      run: |
-        git config user.name "faceit-bot"
-        git config user.email "faceit-bot@localhost"
-        git add players.txt
-        git commit -m "🎮 Spieler ${{ inputs.action }}: ${{ inputs.nickname }}" || echo "🟡 Keine Änderungen"
-        git push
+      - name: Änderungen committen und pushen
+        run: |
+          git config user.name "faceit-bot"
+          git config user.email "faceit-bot@localhost"
+          git add players.txt
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: Spieler ${{ inputs.action }}: ${{ inputs.nickname }}"
+          git push
 
-    - name: 🔄 Dashboard-Update triggern
-      if: success()
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        gh workflow run "FACEIT ELO Auto Update" || echo "⚠️ Trigger fehlgeschlagen"
+      - name: Dashboard-Update triggern
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run "FACEIT ELO Auto Update"

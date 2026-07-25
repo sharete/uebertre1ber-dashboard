@@ -2,42 +2,49 @@ name: FACEIT ELO Auto Update
 
 on:
   schedule:
-  - cron: "*/30 * * * *"
+    - cron: "*/30 * * * *"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 concurrency:
-  group: elo-update
+  group: faceit-dashboard-update
   cancel-in-progress: true
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
-    - name: 📥 Repo auschecken
-      uses: actions/checkout@v4
+      - name: Repository auschecken
+        uses: actions/checkout@v4
 
-    - name: 🟢 Node.js einrichten
-      uses: actions/setup-node@v4
-      with:
-        node-version: "20"
-        cache: "npm"
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
 
-    - name: 📦 Abhängigkeiten installieren
-      run: npm ci
+      - name: Abhängigkeiten installieren
+        run: npm ci
 
-    - name: 🧠 Dashboard generieren
-      env:
-        FACEIT_API_KEY: ${{ secrets.FACEIT_API_KEY }}
-        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-      run: npm start
+      - name: Dashboard aktualisieren
+        env:
+          FACEIT_API_KEY: ${{ secrets.FACEIT_API_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: npm start
 
-    - name: 🔁 Änderungen committen und pushen
-      run: |
-        git config user.name "faceit-bot"
-        git config user.email "faceit-bot@localhost"
-        git add index.html
-        git add data/*.json || echo "Keine JSON-Dateien zum Hinzufügen"
-        git diff --cached --quiet && echo "🟡 Keine Änderungen" && exit 0
-        git commit -m "📊 Auto-Update: $(date -u)"
-        git push
+      - name: Ausgabe prüfen
+        run: npm test
+
+      - name: Änderungen committen und pushen
+        run: |
+          git config user.name "faceit-bot"
+          git config user.email "faceit-bot@localhost"
+          git add index.html
+          git add data/*.json || echo "Keine JSON-Dateien zum Hinzufügen"
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: FACEIT-Daten aktualisieren ($(date -u +'%Y-%m-%d %H:%M UTC'))"
+          git push
