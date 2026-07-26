@@ -2,47 +2,36 @@ name: FACEIT ELO Auto Update
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+  - cron: "*/30 * * * *"
   workflow_dispatch:
 
-permissions:
-  contents: write
 
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    concurrency:
-      group: faceit-dashboard-update
-      cancel-in-progress: false
 
     steps:
-    - name: Repository auschecken
-      uses: actions/checkout@v4
+    - name: 📥 Repo auschecken
+      uses: actions/checkout@v3
 
-    - name: Node.js einrichten
-      uses: actions/setup-node@v4
+    - name: 🟢 Node.js einrichten
+      uses: actions/setup-node@v3
       with:
         node-version: "20"
-        cache: npm
 
-    - name: Abhängigkeiten installieren
-      run: npm ci
+    - name: 📦 Abhängigkeiten installieren
+      run: npm install
 
-    - name: Dashboard aktualisieren
+    - name: 🧠 Puppeteer Script ausführen
       env:
         FACEIT_API_KEY: ${{ secrets.FACEIT_API_KEY }}
       run: npm start
 
-    - name: Ausgabe prüfen
-      run: npm test
-
-    - name: Änderungen committen und pushen
+    - name: 🔁 Änderungen committen und pushen
       run: |
         git config user.name "faceit-bot"
         git config user.email "faceit-bot@localhost"
         git add index.html
         git add data/*.json || echo "Keine JSON-Dateien zum Hinzufügen"
-        git diff --cached --quiet && exit 0
-        git commit -m "chore: FACEIT-Daten aktualisieren ($(date -u +'%Y-%m-%d %H:%M UTC'))"
+        git commit -m "📊 Auto-Update: $(date -u)" || echo "🟡 Keine Änderungen zu committen"
         git push
