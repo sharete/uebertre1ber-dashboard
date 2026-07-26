@@ -18,6 +18,7 @@
   const visibleCount = document.getElementById("visible-player-count");
   const filterButtons = [...document.querySelectorAll(".time-filter")];
   const sortButtons = [...document.querySelectorAll("[data-sort]")];
+  const formSort = document.getElementById("formSort");
 
   if (!tableBody || !searchInput) return;
 
@@ -64,6 +65,7 @@
       cell.classList.toggle("negative", diff < 0);
     });
     updateSummary();
+    renderGlobalInsights();
   };
 
   const updateSummary = () => {
@@ -191,6 +193,39 @@
     }
   };
 
+  const renderGlobalInsights = () => {
+    const container = document.getElementById("global-insights");
+    if (!container) return;
+    const items = [];
+    for (const row of playerRows()) {
+      const name = row.dataset.nickname || "Spieler";
+      const streakCount = number(row.dataset.streak);
+      if (row.dataset.streakType === "loss" && streakCount >= 3) items.push({ tone: "warning", icon: "↘", title: name, text: `${streakCount} Niederlagen in Folge` });
+      else if (row.dataset.streakType === "win" && streakCount >= 3) items.push({ tone: "positive", icon: "↗", title: name, text: `${streakCount} Siege in Folge` });
+      const gap = number(row.dataset.peak) - number(row.dataset.elo);
+      if (gap >= 0 && gap <= 5) items.push({ tone: "peak", icon: "◆", title: name, text: "spielt am persönlichen Peak" });
+      if (number(row.dataset.diff) >= 75) items.push({ tone: "positive", icon: "↑", title: name, text: `+${number(row.dataset.diff)} ELO im Zeitraum` });
+    }
+    const unique = items.filter((item, index) => items.findIndex(candidate => candidate.title === item.title && candidate.text === item.text) === index).slice(0, 4);
+    container.replaceChildren();
+    unique.forEach(item => {
+      const article = document.createElement("article");
+      article.className = `global-insight insight-${item.tone}`;
+      const icon = document.createElement("span");
+      icon.textContent = item.icon;
+      icon.setAttribute("aria-hidden", "true");
+      const copy = document.createElement("div");
+      const title = document.createElement("strong");
+      const detail = document.createElement("small");
+      title.textContent = item.title;
+      detail.textContent = item.text;
+      copy.append(title, detail);
+      article.append(icon, copy);
+      container.append(article);
+    });
+    container.hidden = !unique.length;
+  };
+
   const normalizeHistory = (rawHistory, limit = 100) => {
     if (!Array.isArray(rawHistory)) return [];
     const normalized = rawHistory
@@ -198,7 +233,20 @@
         const rawDate = number(item?.date ?? item?.created_at ?? item?.updated_at, NaN);
         const elo = number(item?.elo ?? item?.i20, NaN);
         const date = rawDate > 1e12 ? rawDate : rawDate * 1000;
-        return { x: date, y: elo };
+        const rawResult = item?.result ?? item?.i10;
+        const rawDiff = item?.eloDiff ?? item?.elo_delta;
+        const matchId = text(item?.matchId ?? item?.match_id);
+        const rawMap = text(item?.map ?? item?.i1).replace(/^de_/i, "");
+        return {
+          x: date,
+          y: elo,
+          eloDiff: Number.isFinite(number(rawDiff, NaN)) ? number(rawDiff) : null,
+          matchId,
+          matchUrl: matchId ? `https://www.faceit.com/de/cs2/room/${encodeURIComponent(matchId)}` : "",
+          map: rawMap ? rawMap.charAt(0).toUpperCase() + rawMap.slice(1) : "",
+          score: text(item?.score ?? item?.i18),
+          result: rawResult === "W" || rawResult === "L" ? rawResult : String(rawResult) === "1" ? "W" : String(rawResult) === "0" ? "L" : ""
+        };
       })
       .filter(point => Number.isFinite(point.x) && Number.isFinite(point.y))
       .sort((a, b) => a.x - b.x)
@@ -217,9 +265,11 @@
 
   const resolveHistory = async (playerId, embeddedHistory, limit) => {
     const embedded = normalizeHistory(embeddedHistory, limit);
-    if (embedded.length >= 2) return embedded;
     const cache = await loadHistoryCache();
-    return normalizeHistory(cache?.[playerId], limit);
+    const cached = normalizeHistory(cache?.[playerId], limit);
+    const cachedMetadata = cached.filter(point => point.matchId || point.map || point.result).length;
+    if (cached.length >= 2 && (cachedMetadata || embedded.length < 2)) return cached;
+    return embedded;
   };
 
   const toMatchSeries = (history, limit = 30) => history
@@ -227,8 +277,42 @@
     .map((point, index) => ({
       x: index + 1,
       y: point.y,
-      date: point.x
+      date: point.x,
+      eloDiff: point.eloDiff,
+      matchId: point.matchId,
+      matchUrl: point.matchUrl,
+      map: point.map,
+      score: point.score,
+      result: point.result
     }));
+
+  const formatChartDate = timestamp => timestamp
+    ? new Intl.DateTimeFormat("de-DE", { day: "2-digit", month: "short", year: "2-digit" }).format(new Date(timestamp))
+    : "";
+
+  const matchTooltipCallbacks = {
+    title: items => items.length ? `Match ${items[0].parsed.x} / ${items[0].dataset.data.length}` : "",
+    label: context => {
+      const point = context.raw || {};
+      const delta = Number.isFinite(point.eloDiff) ? ` · ${point.eloDiff > 0 ? "+" : ""}${point.eloDiff}` : "";
+      const prefix = context.dataset.label ? ` ${context.dataset.label}: ` : "";
+      return `${prefix}${context.parsed.y} ELO${delta}`;
+    },
+    afterLabel: context => {
+      const point = context.raw || {};
+      return [
+        [point.result, point.map, point.score].filter(Boolean).join(" · "),
+        formatChartDate(point.date)
+      ].filter(Boolean);
+    },
+    footer: items => items.some(item => item.raw?.matchUrl) ? "Klicken, um das FACEIT-Match zu öffnen" : ""
+  };
+
+  const openChartMatch = (event, elements, chart) => {
+    const element = elements[0];
+    const point = element ? chart.data.datasets[element.datasetIndex]?.data?.[element.index] : null;
+    if (point?.matchUrl) window.open(point.matchUrl, "_blank", "noopener,noreferrer");
+  };
 
   const showDetailFallback = (canvas, message) => {
     if (!canvas) return;
@@ -330,11 +414,11 @@
       tooltip: {
         displayColors: false,
         callbacks: {
-          title: items => items.length ? `Match ${items[0].parsed.x} / ${items[0].dataset.data.length}` : "",
-          label: context => `${context.parsed.y} ELO`
+          ...matchTooltipCallbacks
         }
       }
     },
+    onClick: openChartMatch,
     scales: {
       x: { type: "linear", min: 1, max: 30, display: false },
       y: { grid: { color: "rgba(255,255,255,.055)" }, ticks: { maxTicksLimit: 5, font: { size: 9 } } }
@@ -377,6 +461,77 @@
     formLine.append(indicator);
   };
 
+  const playerData = playerId => (Array.isArray(window.COMPARISON_DATA) ? window.COMPARISON_DATA : [])
+    .find(player => player.id === playerId);
+
+  const calculateBestThirty = history => {
+    const points = normalizeHistory(history, 100);
+    let gain = 0;
+    points.forEach((point, index) => {
+      const end = points[Math.min(index + 29, points.length - 1)];
+      gain = Math.max(gain, end.y - point.y);
+    });
+    return gain;
+  };
+
+  const enhancePlayerAnalytics = row => {
+    const details = pairedDetailRow(row);
+    if (!details || details.querySelector(".player-analytics")) return;
+    const player = playerData(row.dataset.playerId) || {};
+    const history = player.history || [];
+    const peak = Math.max(number(row.dataset.peak), ...normalizeHistory(history).map(point => point.y));
+    const bestGain = calculateBestThirty(history);
+    const status = number(row.dataset.lastTs) && Date.now() / 1000 - number(row.dataset.lastTs) < 72 * 3600 ? "fresh" : "stale";
+    const label = status === "fresh" ? "Aktuell" : "Veraltet";
+    const analytics = document.createElement("div");
+    analytics.className = "player-analytics";
+    analytics.innerHTML = `
+      <div class="player-analytics-head">
+        <div><span class="data-status status-${status}"><i></i>${label}</span><small>${normalizeHistory(history).length} ELO-Werte geprüft</small></div>
+        <button type="button" class="share-player" data-share-player="${row.dataset.playerId}">Ansicht teilen <span aria-hidden="true">↗</span></button>
+      </div>
+      <div class="personal-bests">
+        <article><span>Peak ELO</span><strong>${peak || number(row.dataset.elo)}</strong></article>
+        <article><span>Aktuelle Serie</span><strong>${text(row.dataset.streak) || "—"}</strong></article>
+        <article><span>Form · letzte 5</span><strong>${number(row.dataset.form)}%</strong></article>
+        <article><span>Beste 30er-Phase</span><strong>${bestGain > 0 ? "+" : ""}${bestGain}</strong><small>ELO</small></article>
+      </div>
+      <div class="insight-grid"></div>`;
+    const primaryColumn = [...(details.querySelector("td > div")?.children || [])]
+      .find(element => element.querySelector(".elo-chart"));
+    primaryColumn?.prepend(analytics);
+  };
+
+  const toast = message => {
+    const element = document.getElementById("dashboard-toast");
+    if (!element) return;
+    element.textContent = message;
+    element.classList.add("show");
+    window.clearTimeout(state.toastTimer);
+    state.toastTimer = window.setTimeout(() => element.classList.remove("show"), 2800);
+  };
+
+  const sharePlayer = async playerId => {
+    const row = playerRows().find(candidate => candidate.dataset.playerId === playerId);
+    const url = new URL(window.location.href);
+    url.searchParams.set("player", playerId);
+    url.hash = "leaderboard";
+    const payload = {
+      title: `${row?.dataset.nickname || "Spieler"} · Uebertr1eber Dashboard`,
+      text: `${row?.dataset.nickname || "Spieler"}: ${row?.dataset.elo || "—"} ELO im Uebertr1eber Dashboard`,
+      url: url.href
+    };
+    try {
+      if (navigator.share) await navigator.share(payload);
+      else {
+        await navigator.clipboard.writeText(url.href);
+        toast("Spieleransicht wurde in die Zwischenablage kopiert.");
+      }
+    } catch (error) {
+      if (error?.name !== "AbortError") toast("Teilen war nicht möglich. Bitte URL kopieren.");
+    }
+  };
+
   const setupRows = () => {
     document.querySelectorAll(".last-match-cell").forEach(cell => {
       const absolute = cell.textContent.trim();
@@ -384,7 +539,13 @@
       cell.title = absolute;
     });
     playerRows().forEach(row => {
+      if (!row.dataset.form) {
+        const wins = row.querySelectorAll(".player-form .bg-green-400").length;
+        const total = row.querySelectorAll(".player-form > div").length;
+        row.dataset.form = String(total ? Math.round(wins / total * 100) : 0);
+      }
       normalizeStreakDisplay(row);
+      enhancePlayerAnalytics(row);
       row.tabIndex = 0;
       row.setAttribute("role", "button");
       row.setAttribute("aria-expanded", "false");
@@ -400,6 +561,10 @@
         }
       });
       row.querySelectorAll("a[target='_blank']").forEach(link => link.rel = "noopener noreferrer");
+    });
+    tableBody.addEventListener("click", event => {
+      const button = event.target.closest("[data-share-player]");
+      if (button) void sharePlayer(button.dataset.sharePlayer);
     });
   };
 
@@ -440,6 +605,11 @@
       }
       sortRows();
     }));
+    formSort?.addEventListener("change", () => {
+      state.sort.key = formSort.value;
+      state.sort.direction = "desc";
+      sortRows();
+    });
   };
 
   const createComparisonChips = () => {
@@ -487,11 +657,59 @@
     });
   };
 
+  const comparisonValue = (player, key) => {
+    const row = playerRows().find(candidate => candidate.dataset.playerId === player.id);
+    if (key === "elo") return number(player.elo, number(row?.dataset.elo));
+    if (key === "winrate") return number(player.winrate, number(row?.dataset.winrate));
+    if (key === "kd") return number(player.recent?.kd, number(row?.dataset.kd));
+    if (key === "adr") return number(player.recent?.adr, number(row?.dataset.adr));
+    if (key === "form") return number(row?.dataset.form, (player.last5 || []).filter(result => result === "W").length * 20);
+    return 0;
+  };
+
+  const commonMatches = (first, second) => {
+    const ids = new Set((first.matchHistory || []).map(match => match.matchId).filter(Boolean));
+    return (second.matchHistory || []).filter(match => ids.has(match.matchId)).length;
+  };
+
+  const renderComparisonMetrics = selected => {
+    const container = document.getElementById("comparison-metrics");
+    if (!container) return;
+    container.replaceChildren();
+    if (!selected.length) return;
+    const table = document.createElement("table");
+    table.innerHTML = `<thead><tr><th>Spieler</th><th>ELO</th><th>Winrate</th><th>K/D</th><th>ADR</th><th>Form</th><th>Gemeinsame Matches</th></tr></thead>`;
+    const body = document.createElement("tbody");
+    selected.forEach(player => {
+      const shared = Math.max(...selected.filter(other => other.id !== player.id).map(other => commonMatches(player, other)), 0);
+      const row = document.createElement("tr");
+      const values = [
+        player.nickname,
+        Math.round(comparisonValue(player, "elo")).toLocaleString("de-DE"),
+        `${comparisonValue(player, "winrate").toFixed(0)}%`,
+        comparisonValue(player, "kd").toFixed(2),
+        comparisonValue(player, "adr").toFixed(1),
+        `${comparisonValue(player, "form").toFixed(0)}%`,
+        String(shared)
+      ];
+      values.forEach((value, index) => {
+        const cell = document.createElement(index ? "td" : "th");
+        cell.textContent = value;
+        if (!index) cell.scope = "row";
+        row.append(cell);
+      });
+      body.append(row);
+    });
+    table.append(body);
+    container.append(table);
+  };
+
   const renderComparison = async () => {
     const canvas = document.getElementById("comparison-chart");
     const fallback = document.getElementById("chartFallback");
     const data = Array.isArray(window.COMPARISON_DATA) ? window.COMPARISON_DATA : [];
     const selectedPlayers = data.filter(player => state.selectedPlayers.has(player.id));
+    renderComparisonMetrics(selectedPlayers);
     const renderId = ++state.comparisonRenderId;
     state.comparisonChart?.destroy();
     state.comparisonChart = null;
@@ -551,12 +769,10 @@
           legend: { position: "top", align: "start", labels: { usePointStyle: true, boxWidth: 7, boxHeight: 7, padding: 18, font: { size: 10 } } },
           tooltip: {
             displayColors: true,
-            callbacks: {
-              title: items => items.length ? `Match ${items[0].parsed.x} / 30` : "",
-              label: context => ` ${context.dataset.label}: ${context.parsed.y} ELO`
-            }
+            callbacks: matchTooltipCallbacks
           }
         },
+        onClick: openChartMatch,
         scales: {
           x: {
             type: "linear",
@@ -570,6 +786,56 @@
         }
       }
     });
+  };
+
+  const renderSynergies = () => {
+    const container = document.getElementById("synergy-grid");
+    if (!container) return;
+    let synergies = Array.isArray(window.DASHBOARD_ANALYTICS?.synergies)
+      ? window.DASHBOARD_ANALYTICS.synergies
+      : [];
+    if (!synergies.length) {
+      const byName = new Map(playerRows().map(row => [row.dataset.nickname, row]));
+      const seen = new Set();
+      synergies = [];
+      document.querySelectorAll(".details-row").forEach(details => {
+        const playerRow = playerRows().find(row => row.dataset.playerId === details.dataset.playerId);
+        const firstList = details.querySelector("ul");
+        firstList?.querySelectorAll("li").forEach(item => {
+          const mateName = item.querySelector("a")?.textContent?.trim();
+          if (!mateName || !byName.has(mateName)) return;
+          const pair = [playerRow?.dataset.nickname, mateName].sort();
+          const key = pair.join(":");
+          if (seen.has(key)) return;
+          seen.add(key);
+          const copy = item.querySelector("span")?.textContent || "";
+          synergies.push({
+            players: pair,
+            matches: number(copy),
+            winrate: number(copy.match(/(\d+)%/)?.[1])
+          });
+        });
+      });
+    }
+    container.replaceChildren();
+    synergies.slice(0, 6).forEach((synergy, index) => {
+      const article = document.createElement("article");
+      article.className = "synergy-card";
+      article.innerHTML = `
+        <span class="synergy-rank">${String(index + 1).padStart(2, "0")}</span>
+        <div><strong></strong><small></small></div>
+        <span class="synergy-rate"></span>`;
+      article.querySelector("strong").textContent = (synergy.players || []).join(" + ");
+      article.querySelector("small").textContent = `${number(synergy.matches)} gemeinsame Matches`;
+      article.querySelector(".synergy-rate").textContent = `${number(synergy.winrate)}% WR`;
+      container.append(article);
+    });
+    if (!container.children.length) {
+      const empty = document.createElement("p");
+      empty.className = "analytics-empty";
+      empty.textContent = "Noch keine gemeinsamen Matches zwischen getrackten Spielern.";
+      container.append(empty);
+    }
   };
 
   const waitForCharts = (attempt = 0) => {
@@ -588,5 +854,17 @@
   updateDiffs();
   sortRows();
   createComparisonChips();
+  renderSynergies();
   waitForCharts();
+
+  const sharedPlayerId = new URLSearchParams(window.location.search).get("player");
+  if (sharedPlayerId) {
+    const row = playerRows().find(candidate => candidate.dataset.playerId === sharedPlayerId);
+    if (row) {
+      window.setTimeout(() => {
+        toggleDetails(row);
+        row.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 150);
+    }
+  }
 })();

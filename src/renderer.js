@@ -39,9 +39,40 @@ class Renderer {
       id: p.playerId,
       nickname: p.nickname,
       avatar: normalizeUrl(p.avatar),
+      faceitUrl: normalizeUrl(p.faceitUrl),
+      elo: Number.parseInt(p.elo) || 0,
+      winrate: Number.parseFloat(p.winrate) || 0,
+      level: Number.parseInt(p.level) || 0,
+      recent: p.stats.recent || {},
+      last5: p.stats.last5 || [],
+      matchHistory: p.stats.matchHistory || [],
+      personalBests: p.stats.personalBests || {},
+      dataQuality: p.stats.dataQuality || {},
+      insights: p.stats.insights || [],
+      teammates: p.stats.teammates || [],
       history: (p.stats.eloHistory || []).slice(-100)
     }));
-    const comparisonScript = `<script>window.COMPARISON_DATA = ${serializeForScript(comparisonData)};</script>`;
+    const trackedIds = new Set(players.map(player => player.playerId));
+    const synergies = [];
+    const seenPairs = new Set();
+    for (const player of comparisonData) {
+      for (const mate of player.teammates) {
+        if (!trackedIds.has(mate.playerId)) continue;
+        const pairKey = [player.id, mate.playerId].sort().join(":");
+        if (seenPairs.has(pairKey)) continue;
+        seenPairs.add(pairKey);
+        const other = comparisonData.find(candidate => candidate.id === mate.playerId);
+        synergies.push({
+          ids: [player.id, mate.playerId],
+          players: [player.nickname, other?.nickname || mate.nickname],
+          matches: Number(mate.count) || 0,
+          wins: Number(mate.wins) || 0,
+          winrate: Number(mate.winratePct) || 0
+        });
+      }
+    }
+    synergies.sort((a, b) => b.matches - a.matches || b.winrate - a.winrate);
+    const comparisonScript = `<script>window.COMPARISON_DATA = ${serializeForScript(comparisonData)};window.DASHBOARD_ANALYTICS = ${serializeForScript({ lastUpdated, synergies })};</script>`;
     template = template.replace("<!-- INSERT_COMPARISON_DATA -->", comparisonScript);
 
     // Inject history data
@@ -82,6 +113,9 @@ class Renderer {
 
   renderPlayer(p) {
     const { recent, teammates, streak, last5, mapPerformance, eloHistory } = p.stats;
+    const personalBests = p.stats.personalBests || {};
+    const dataQuality = p.stats.dataQuality || { status: "partial", label: "Teilweise", matchCoverage: 0, eloSamples: 0 };
+    const insights = p.stats.insights || [];
     const nickname = escapeHtml(p.nickname);
     const playerId = escapeHtml(p.playerId);
 
@@ -130,6 +164,9 @@ class Renderer {
     data-last="${escapeHtml(p.lastMatch)}"
     data-last-ts="${p.lastMatchTs || 0}"
     data-kd="${parseFloat(recent.kd) || 0}"
+    data-adr="${parseFloat(recent.adr) || 0}"
+    data-form="${last5.filter(result => result === 'W').length * 20}"
+    data-quality="${escapeHtml(dataQuality.status)}"
     data-peak="${peakElo}"
     data-streak="${streakStr}"
     data-streak-type="${streak.type}">
@@ -277,12 +314,39 @@ class Renderer {
 </div>
 `;
 
+    const bestMap = personalBests.bestMap;
+    const insightHtml = insights.length
+      ? insights.slice(0, 4).map(item => `
+        <article class="player-insight insight-${escapeHtml(item.type)}">
+          <span aria-hidden="true">${escapeHtml(item.icon)}</span>
+          <div><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.text)}</small></div>
+        </article>`).join("")
+      : `<p class="analytics-empty">Noch keine belastbare Auffälligkeit in den letzten Matches.</p>`;
+    const analyticsBlock = `
+<div class="player-analytics">
+  <div class="player-analytics-head">
+    <div>
+      <span class="data-status status-${escapeHtml(dataQuality.status)}"><i></i>${escapeHtml(dataQuality.label)}</span>
+      <small>${Number(dataQuality.matchCoverage) || 0}% Match-Abdeckung · ${Number(dataQuality.eloSamples) || 0} ELO-Werte</small>
+    </div>
+    <button type="button" class="share-player" data-share-player="${playerId}">Ansicht teilen <span aria-hidden="true">↗</span></button>
+  </div>
+  <div class="personal-bests" aria-label="Persönliche Bestwerte">
+    <article><span>Peak ELO</span><strong>${Number(personalBests.peakElo) || peakElo}</strong></article>
+    <article><span>Längste Serie</span><strong>${Number(personalBests.longestWinStreak) || 0}W</strong></article>
+    <article><span>Beste Map</span><strong>${escapeHtml(bestMap?.map || "—")}</strong><small>${bestMap ? `${bestMap.winrate}% WR` : "Noch offen"}</small></article>
+    <article><span>Beste 30er-Phase</span><strong>${Number(personalBests.bestThirtyGain) > 0 ? "+" : ""}${Number(personalBests.bestThirtyGain) || 0}</strong><small>ELO</small></article>
+  </div>
+  <div class="insight-grid">${insightHtml}</div>
+</div>`;
+
     const detailRow = `
 <tr class="details-row hidden" data-player-id="${playerId}">
   <td colspan="7" class="p-0 border-none">
     <div class="mx-2 mb-4 p-6 glass-panel rounded-b-xl border-t-0 grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in relative shadow-neon-blue">
          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-50"></div>
         <div class="col-span-1 md:col-span-2">
+            ${analyticsBlock}
             ${statBlock}
             ${mapBlock}
             ${chartBlock}

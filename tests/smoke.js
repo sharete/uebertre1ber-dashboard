@@ -33,10 +33,20 @@ assert.match(generated, />Baiter</);
 assert.match(generated, /class="award-icon"/);
 assert.match(generated, /Last Update:/);
 assert.match(generated, /Dashboard by <a [^>]*>sha<\/a>/);
+assert.match(generated, /id="formSort"/);
+assert.match(generated, /id="global-insights"/);
+assert.match(generated, /id="comparison-metrics"/);
+assert.match(generated, /id="synergy-grid"/);
+assert.match(generated, /id="dashboard-toast"/);
 assert.equal(fs.statSync(path.join(root, "vendor", "chart.min.js")).size > 100000, true);
 assert.match(dashboardScript, /toMatchSeries/);
 assert.match(dashboardScript, /cubicInterpolationMode: "monotone"/);
 assert.match(dashboardScript, /max: 30/);
+assert.match(dashboardScript, /matchTooltipCallbacks/);
+assert.match(dashboardScript, /Klicken, um das FACEIT-Match zu öffnen/);
+assert.match(dashboardScript, /renderComparisonMetrics/);
+assert.match(dashboardScript, /renderSynergies/);
+assert.match(dashboardScript, /sharePlayer/);
 
 const awardHtml = renderer.renderAwards({
   bestKD: { name: "One", value: "1.20" },
@@ -107,5 +117,37 @@ assert.deepEqual(
   ],
   "ELO history should accept both FACEIT history formats and remain chronological"
 );
+
+const analyzedStats = stats.calculatePlayerStats(
+  "player-1",
+  [
+    {
+      match_id: "1-match-a",
+      finished_at: 1767268800,
+      results: { winner: "faction1" },
+      teams: { faction1: { players: [{ player_id: "player-1", nickname: "One" }, { player_id: "player-2", nickname: "Two" }] } }
+    },
+    {
+      match_id: "1-match-b",
+      finished_at: 1767265200,
+      results: { winner: "faction1" },
+      teams: { faction1: { players: [{ player_id: "player-1", nickname: "One" }, { player_id: "player-2", nickname: "Two" }] } }
+    }
+  ],
+  {
+    "1-match-a": { __mapName: "Mirage", __score: "13 - 8", "player-1": { Kills: 20, Deaths: 10, Assists: 5, ADR: 92, Headshots: 10 } },
+    "1-match-b": { __mapName: "Mirage", __score: "13 - 10", "player-1": { Kills: 18, Deaths: 12, Assists: 4, ADR: 84, Headshots: 8 } }
+  },
+  [
+    { date: 1767265200, elo: 1500, elo_delta: 25, matchId: "1-match-b", i1: "de_mirage", i10: "1", i18: "13 - 10" },
+    { date: 1767268800, elo: 1525, elo_delta: 25, matchId: "1-match-a", i1: "de_mirage", i10: "1", i18: "13 - 8" }
+  ]
+);
+assert.equal(analyzedStats.matchHistory[0].matchUrl, "https://www.faceit.com/de/cs2/room/1-match-a");
+assert.equal(analyzedStats.personalBests.peakElo, 1525);
+assert.equal(analyzedStats.personalBests.longestWinStreak, 2);
+assert.equal(analyzedStats.personalBests.bestMap.map, "Mirage");
+assert.equal(analyzedStats.dataQuality.matchCoverage, 100);
+assert.ok(Array.isArray(analyzedStats.insights));
 
 console.log("Dashboard smoke tests passed.");

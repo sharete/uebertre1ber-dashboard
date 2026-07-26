@@ -100,6 +100,7 @@ class StatsCalculator {
                 
                 detailedHistory.push({
                     matchId: matchId,
+                    matchUrl: `https://www.faceit.com/de/cs2/room/${encodeURIComponent(matchId)}`,
                     date: match.finished_at,
                     kd: mKD,
                     result: didWin ? "W" : "L",
@@ -175,16 +176,95 @@ class StatsCalculator {
                 const date = rawDate > 1e12 ? Math.floor(rawDate / 1000) : Math.floor(rawDate);
                 const elo = parseInt(item.elo ?? item.i20);
                 const rawDiff = item.elo_delta ?? item.eloDiff;
-                return {
+                const normalized = {
                     date,
                     elo,
                     eloDiff: rawDiff !== undefined && rawDiff !== "" ? parseInt(rawDiff) : undefined
                 };
+                const matchId = item.matchId ?? item.match_id;
+                const map = item.map ?? item.i1;
+                const score = item.score ?? item.i18;
+                const rawResult = item.result ?? item.i10;
+                if (matchId) {
+                    normalized.matchId = String(matchId);
+                    normalized.matchUrl = `https://www.faceit.com/de/cs2/room/${encodeURIComponent(matchId)}`;
+                }
+                if (map) normalized.map = String(map).replace(/^de_/i, "").replace(/\b\w/g, letter => letter.toUpperCase());
+                if (score) normalized.score = String(score);
+                if (rawResult === "W" || rawResult === "L") normalized.result = rawResult;
+                else if (String(rawResult) === "1") normalized.result = "W";
+                else if (String(rawResult) === "0") normalized.result = "L";
+                return normalized;
             })
             .filter(item => Number.isFinite(item.date) && Number.isFinite(item.elo))
             .sort((a, b) => a.date - b.date)
             .filter((item, index, items) => index === 0 || item.date !== items[index - 1].date)
             .slice(-300);
+
+        // Match the detailed statistics with the closest ELO sample. FACEIT's two
+        // endpoints do not always use the exact same second for a completed match.
+        for (const match of detailedHistory) {
+            const matchDate = Number(match.date);
+            const closest = eloHistory.reduce((best, point) => {
+                const distance = Math.abs(point.date - matchDate);
+                return !best || distance < best.distance ? { point, distance } : best;
+            }, null);
+            if (closest && closest.distance <= 12 * 60 * 60) {
+                match.elo = closest.point.elo;
+                match.eloDiff = closest.point.eloDiff;
+            }
+        }
+
+        let longestWinStreak = 0;
+        let currentWinStreak = 0;
+        for (const result of [...matchResults].reverse()) {
+            currentWinStreak = result === "W" ? currentWinStreak + 1 : 0;
+            longestWinStreak = Math.max(longestWinStreak, currentWinStreak);
+        }
+        const peakPoint = eloHistory.reduce((best, point) => !best || point.elo > best.elo ? point : best, null);
+        const currentElo = eloHistory.at(-1)?.elo || 0;
+        const bestMap = mapPerformance
+            .filter(map => map.map !== "Unknown" && map.matches >= 2)
+            .sort((a, b) => b.winrate - a.winrate || parseFloat(b.kd) - parseFloat(a.kd) || b.matches - a.matches)[0] || null;
+        let bestThirtyGain = 0;
+        for (let index = 0; index < eloHistory.length; index++) {
+            const end = eloHistory[Math.min(index + 29, eloHistory.length - 1)];
+            bestThirtyGain = Math.max(bestThirtyGain, end.elo - eloHistory[index].elo);
+        }
+
+        const personalBests = {
+            peakElo: peakPoint?.elo || currentElo,
+            peakEloDate: peakPoint?.date || null,
+            longestWinStreak,
+            bestMap,
+            bestThirtyGain
+        };
+
+        const expectedMatches = Math.min(MAX_MATCHES, history.length);
+        const matchCoverage = expectedMatches ? Math.round((count / expectedMatches) * 100) : 0;
+        const latestTimestamp = Math.max(
+            Number(history[0]?.finished_at) || 0,
+            Number(eloHistory.at(-1)?.date) || 0
+        );
+        const ageHours = latestTimestamp ? (Date.now() / 1000 - latestTimestamp) / 3600 : Infinity;
+        const status = matchCoverage < 70 || eloHistory.length < 2 ? "partial" : ageHours > 72 ? "stale" : "fresh";
+        const dataQuality = {
+            status,
+            label: status === "fresh" ? "Aktuell" : status === "stale" ? "Veraltet" : "Teilweise",
+            matchCoverage,
+            eloSamples: eloHistory.length,
+            latestTimestamp
+        };
+
+        const recentElo = eloHistory.slice(-10);
+        const recentGain = recentElo.length >= 2 ? recentElo.at(-1).elo - recentElo[0].elo : 0;
+        const insights = [];
+        if (streak.type === "loss" && streak.count >= 3) insights.push({ type: "warning", icon: "↘", title: "Negativserie", text: `${streak.count} Niederlagen in Folge` });
+        if (streak.type === "win" && streak.count >= 3) insights.push({ type: "positive", icon: "↗", title: "Heißer Lauf", text: `${streak.count} Siege in Folge` });
+        if (currentElo && personalBests.peakElo - currentElo <= 5) insights.push({ type: "peak", icon: "◆", title: "Peak-Alarm", text: `${currentElo} ELO · persönlicher Bestwert` });
+        if (recentGain >= 80) insights.push({ type: "positive", icon: "↑", title: "Starker Trend", text: `+${recentGain} ELO in 10 Matches` });
+        if (recentGain <= -80) insights.push({ type: "warning", icon: "↓", title: "Formtief", text: `${recentGain} ELO in 10 Matches` });
+        if (bestMap) insights.push({ type: "map", icon: "⌖", title: "Beste Map", text: `${bestMap.map} · ${bestMap.winrate}% Winrate` });
 
         // Aggregate Teammate Stats
         const teammates = Object.entries(teammateCounts).map(([id, cnt]) => {
@@ -211,7 +291,10 @@ class StatsCalculator {
             matchHistory: detailedHistory, // Heatmap Data
             streak,
             last5,
-            mapPerformance
+            mapPerformance,
+            personalBests,
+            dataQuality,
+            insights
         };
     }
 
@@ -224,7 +307,10 @@ class StatsCalculator {
             matchHistory: [],
             streak: { type: "none", count: 0 },
             last5: [],
-            mapPerformance: []
+            mapPerformance: [],
+            personalBests: { peakElo: 0, peakEloDate: null, longestWinStreak: 0, bestMap: null, bestThirtyGain: 0 },
+            dataQuality: { status: "partial", label: "Teilweise", matchCoverage: 0, eloSamples: 0, latestTimestamp: 0 },
+            insights: []
         };
     }
 }

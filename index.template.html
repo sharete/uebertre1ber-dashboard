@@ -99,13 +99,26 @@
           <input id="searchInput" type="search" placeholder="Spieler suchen …" autocomplete="off">
           <kbd>⌘ K</kbd>
         </label>
-        <div class="range-control" role="group" aria-label="Zeitraum für ELO-Veränderung">
-          <button class="time-filter active" type="button" data-val="daily" aria-pressed="true">Heute</button>
-          <button class="time-filter" type="button" data-val="weekly" aria-pressed="false">Woche</button>
-          <button class="time-filter" type="button" data-val="monthly" aria-pressed="false">Monat</button>
-          <button class="time-filter" type="button" data-val="yearly" aria-pressed="false">Jahr</button>
+        <div class="toolbar-actions">
+          <label class="sort-control">
+            <span>Sortierung</span>
+            <select id="formSort" aria-label="Leaderboard sortieren">
+              <option value="elo">ELO</option>
+              <option value="diff">Aktueller Trend</option>
+              <option value="form">Form · letzte 5</option>
+              <option value="winrate">Winrate</option>
+            </select>
+          </label>
+          <div class="range-control" role="group" aria-label="Zeitraum für ELO-Veränderung">
+            <button class="time-filter active" type="button" data-val="daily" aria-pressed="true">Heute</button>
+            <button class="time-filter" type="button" data-val="weekly" aria-pressed="false">Woche</button>
+            <button class="time-filter" type="button" data-val="monthly" aria-pressed="false">Monat</button>
+            <button class="time-filter" type="button" data-val="yearly" aria-pressed="false">Jahr</button>
+          </div>
         </div>
       </div>
+
+      <div class="insights-strip" id="global-insights" aria-label="Automatische Auffälligkeiten"></div>
 
       <div class="table-shell">
         <div class="table-scroll">
@@ -158,6 +171,18 @@
             <div class="chart-fallback" id="chartFallback">Verlaufsdaten werden geladen …</div>
           </div>
         </div>
+        <div class="comparison-metrics" id="comparison-metrics" aria-live="polite"></div>
+
+        <section class="synergy-panel" aria-labelledby="synergy-title">
+          <div class="synergy-head">
+            <div>
+              <p class="kicker">Team Chemistry</p>
+              <h3 id="synergy-title">Team-Synergien</h3>
+            </div>
+            <p>Gemeinsame Matches und Winrate der häufigsten Duos.</p>
+          </div>
+          <div class="synergy-grid" id="synergy-grid"></div>
+        </section>
         <p class="last-update">Last Update: <time><!-- INSERT_LAST_UPDATED --></time></p>
       </div>
     </section>
@@ -175,5 +200,6 @@
   <!-- INSERT_HISTORY_DATA -->
   <!-- INSERT_COMPARISON_DATA -->
   <script src="dashboard.js" defer></script>
+  <div class="dashboard-toast" id="dashboard-toast" role="status" aria-live="polite"></div>
 </body>
 </html>
