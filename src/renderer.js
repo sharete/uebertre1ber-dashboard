@@ -27,8 +27,8 @@ class Renderer {
 
     let template = fs.readFileSync(templatePath, 'utf-8');
     template = template.replace("<!-- INSERT_ELO_TABLE_HERE -->", rows);
-    template = template.replace("<!-- INSERT_LAST_UPDATED -->", lastUpdated);
-    template = template.replace("<!-- INSERT_PLAYER_COUNT -->", players.length);
+    template = template.replaceAll("<!-- INSERT_LAST_UPDATED -->", lastUpdated);
+    template = template.replaceAll("<!-- INSERT_PLAYER_COUNT -->", players.length);
 
     // Inject awards section
     const awardsHtml = this.renderAwards(awards);
@@ -39,7 +39,7 @@ class Renderer {
       id: p.playerId,
       nickname: p.nickname,
       avatar: normalizeUrl(p.avatar),
-      history: p.stats.eloHistory || []
+      history: (p.stats.eloHistory || []).slice(-100)
     }));
     const comparisonScript = `<script>window.COMPARISON_DATA = ${serializeForScript(comparisonData)};</script>`;
     template = template.replace("<!-- INSERT_COMPARISON_DATA -->", comparisonScript);
@@ -102,13 +102,11 @@ class Renderer {
 
     // Format Streak
     const streakStr = streak.count > 0 ? `${streak.count}${streak.type === 'win' ? 'W' : 'L'}` : '—';
-    const streakColor = streak.type === 'win' ? 'text-green-400' : (streak.type === 'loss' ? 'text-red-400' : 'text-gray-500');
-
-    // Streak badge
+    // Keep streak information on the form line so it never shifts the ELO column.
     const streakBadge = streak.count >= 2
       ? (streak.type === "win"
-        ? `<span class="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/20">🔥${streak.count}W</span>`
-        : `<span class="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/20">💀${streak.count}L</span>`)
+        ? `<span class="streak-indicator streak-win" title="${streak.count} Siege in Folge">${streak.count}W</span>`
+        : `<span class="streak-indicator streak-loss" title="${streak.count} Niederlagen in Folge">${streak.count}L</span>`)
       : "";
 
     // Last 5 dots
@@ -144,9 +142,8 @@ class Renderer {
         <div class="flex flex-col">
             <div class="flex items-center gap-1">
                 <a href="${safeUrl(p.faceitUrl)}" target="_blank" rel="noopener noreferrer" class="nickname-link font-bold text-white text-base tracking-wide hover:text-faceit transition-colors z-10">${nickname}</a>
-                ${streakBadge}
             </div>
-            <div class="flex items-center gap-1 mt-1">${last5Html}</div>
+            <div class="player-form flex items-center gap-1 mt-1">${last5Html}${streakBadge}</div>
         </div>
     </div>
   </td>
@@ -219,7 +216,7 @@ class Renderer {
   </div>
   
   <div class="mt-4 bg-[#0a0a14] border border-white/5 p-4 rounded-xl shadow-inner relative overflow-hidden">
-      <div class="font-bold text-white/60 mb-2 text-[10px] uppercase tracking-widest pl-1">🕸️ Performance Web</div>
+      <div class="font-bold text-white/60 mb-2 text-[10px] uppercase tracking-widest pl-1">Map-Profil</div>
       <div class="relative h-48 w-full">
          <canvas class="radar-chart" data-radar='${radarJson}'></canvas>
       </div>
@@ -268,13 +265,12 @@ class Renderer {
   </ul>
 </div>`;
 
-    const historyJson = escapeHtml(JSON.stringify(p.stats.eloHistory || []));
+    const historyJson = escapeHtml(JSON.stringify((p.stats.eloHistory || []).slice(-30)));
 
     const chartBlock = `
 <div class="mt-6 bg-[#0a0a14] border border-white/5 p-4 rounded-xl shadow-inner relative overflow-hidden group/chart">
-    <div class="absolute inset-0 bg-blue-500/5 blur-xl group-hover/chart:bg-blue-500/10 transition-colors"></div>
     <div class="font-bold text-white/60 mb-4 text-[10px] uppercase tracking-widest relative z-10">
-        📈 ELO Trend (Last 30 Matches)
+        ELO-Trend · letzte 30 Matches
     </div>
     <div class="h-48 w-full relative z-10">
         <canvas id="chart-${playerId}" class="elo-chart" data-history='${historyJson}'></canvas>

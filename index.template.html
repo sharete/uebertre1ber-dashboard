@@ -10,30 +10,26 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Uebertr1eber — FACEIT Performance Hub">
   <meta property="og:description" content="ELO, Form, Trends und Team-Statistiken der Crew auf einen Blick.">
-  <meta property="og:image" content="https://sharete.github.io/uebertre1ber-dashboard/og.png">
+  <meta property="og:image" content="https://sharete.github.io/dev-uebertre1ber-dashboard/og.png">
   <meta property="og:image:alt" content="Uebertr1eber FACEIT Performance Hub">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Uebertr1eber — FACEIT Performance Hub">
   <meta name="twitter:description" content="ELO, Form, Trends und Team-Statistiken der Crew auf einen Blick.">
-  <meta name="twitter:image" content="https://sharete.github.io/uebertre1ber-dashboard/og.png">
+  <meta name="twitter:image" content="https://sharete.github.io/dev-uebertre1ber-dashboard/og.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+  <script src="vendor/chart.min.js" defer></script>
   <link rel="stylesheet" href="tailwind.generated.css">
   <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
   <a class="skip-link" href="#leaderboard">Zum Ranking springen</a>
 
-  <header class="site-header">
+  <header class="site-header compact-header">
     <div class="shell header-inner">
-      <a class="brand" href="#" aria-label="Uebertr1eber Startseite">
-        <span class="brand-mark" aria-hidden="true"><span>U1</span></span>
-        <span class="brand-copy">
-          <strong>UEBERTR1EBER</strong>
-          <small>FACEIT PERFORMANCE HUB</small>
-        </span>
+      <a class="legacy-brand" href="#" aria-label="Uebertr1eber Startseite">
+        <img src="icons/levels/uebertreiber_logo.png" alt="Uebertr1eber ELO Dashboard">
       </a>
       <div class="header-status">
         <span class="live-dot" aria-hidden="true"></span>
@@ -45,107 +41,11 @@
   </header>
 
   <main>
-    <section class="hero">
-      <div class="hero-grid" aria-hidden="true"></div>
-      <div class="hero-glow hero-glow-one" aria-hidden="true"></div>
-      <div class="hero-glow hero-glow-two" aria-hidden="true"></div>
-      <div class="shell hero-inner">
-        <div class="hero-copy">
-          <p class="eyebrow"><span></span> Uebertr1eber Command Center</p>
-          <h1>Jeder Punkt zählt.<br><em>Jede Session erzählt.</em></h1>
-          <p class="hero-lede">Formkurven, ELO-Bewegungen und Team-Performance — verdichtet zu den Insights, die euch wirklich besser machen.</p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="#leaderboard">Ranking ansehen <span aria-hidden="true">↘</span></a>
-            <a class="button button-ghost" href="#elo-vergleich">ELO vergleichen</a>
-          </div>
-        </div>
-
-        <aside class="leader-spotlight" aria-label="Aktueller Spitzenreiter">
-          <div class="spotlight-topline">
-            <span class="spotlight-label">Aktueller Spitzenreiter</span>
-            <span class="spotlight-rank">#01</span>
-          </div>
-          <div class="spotlight-player">
-            <div class="spotlight-avatar" id="hero-king-avatar"><span>—</span></div>
-            <div>
-              <p id="hero-king-name">Wird geladen</p>
-              <span>FACEIT Level <b id="hero-king-level">—</b></span>
-            </div>
-          </div>
-          <div class="spotlight-score">
-            <div>
-              <small>Current ELO</small>
-              <strong id="hero-king-elo">—</strong>
-            </div>
-            <div class="spotlight-change" id="hero-king-diff">±0</div>
-          </div>
-          <div class="spotlight-track"><span id="hero-king-progress"></span></div>
-          <p class="spotlight-caption">Auf dem Weg zur nächsten Marke</p>
-        </aside>
-      </div>
-    </section>
-
-    <section class="shell overview" aria-labelledby="overview-title">
-      <div class="section-heading overview-heading">
-        <div>
-          <p class="kicker">Live Overview</p>
-          <h2 id="overview-title">Die Crew in Zahlen</h2>
-        </div>
-        <p>Automatisch aktualisiert aus den letzten 30 Matches.</p>
-      </div>
-
-      <div class="metrics-grid">
-        <article class="metric-card metric-accent">
-          <span class="metric-icon">↑</span>
-          <div>
-            <small>Stärkster Climb</small>
-            <strong id="hero-mvp-name">—</strong>
-            <p id="hero-mvp-diff">±0 ELO</p>
-          </div>
-        </article>
-        <article class="metric-card">
-          <span class="metric-icon metric-icon-violet">◎</span>
-          <div>
-            <small>Ø Crew ELO</small>
-            <strong id="crew-average">—</strong>
-            <p id="crew-average-caption">über alle Spieler</p>
-          </div>
-        </article>
-        <article class="metric-card">
-          <span class="metric-icon metric-icon-blue">◫</span>
-          <div>
-            <small>Aktive Spieler</small>
-            <strong><!-- INSERT_PLAYER_COUNT --></strong>
-            <p>im Live-Ranking</p>
-          </div>
-        </article>
-        <article class="metric-card">
-          <span class="metric-icon metric-icon-red">↓</span>
-          <div>
-            <small>Größter Rückgang</small>
-            <strong id="hero-down-name">—</strong>
-            <p id="hero-down-diff">±0 ELO</p>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="shell awards-section" aria-labelledby="awards-title">
-      <div class="section-heading compact">
-        <div>
-          <p class="kicker">Recent Form</p>
-          <h2 id="awards-title">Top Performer</h2>
-        </div>
-        <p>Auswertung der letzten 30 Matches</p>
-      </div>
-      <div id="awards-grid"><!-- INSERT_AWARDS_SECTION --></div>
-    </section>
-
-    <section class="shell leaderboard-section" id="leaderboard" aria-labelledby="leaderboard-title">
-      <div class="section-heading">
+    <section class="shell leaderboard-section first-section" id="leaderboard" aria-labelledby="leaderboard-title">
+      <div class="section-heading leaderboard-heading">
         <div>
           <p class="kicker">Live Leaderboard</p>
-          <h2 id="leaderboard-title">Crew Ranking</h2>
+          <h1 id="leaderboard-title">Crew Ranking</h1>
         </div>
         <p>Spieler öffnen, Details analysieren, Zeitraum wechseln.</p>
       </div>
@@ -195,6 +95,17 @@
       </div>
     </section>
 
+    <section class="shell awards-section" aria-labelledby="awards-title">
+      <div class="section-heading compact">
+        <div>
+          <p class="kicker">Recent Form</p>
+          <h2 id="awards-title">Top Performer</h2>
+        </div>
+        <p>Auswertung der letzten 30 Matches</p>
+      </div>
+      <div id="awards-grid"><!-- INSERT_AWARDS_SECTION --></div>
+    </section>
+
     <section class="comparison-section" id="elo-vergleich" aria-labelledby="comparison-title">
       <div class="comparison-grid" aria-hidden="true"></div>
       <div class="shell">
@@ -213,7 +124,7 @@
           </div>
           <div class="chart-wrap">
             <canvas id="comparison-chart" aria-label="Vergleich der ELO-Verläufe" role="img"></canvas>
-            <div class="chart-fallback" id="chartFallback" hidden>Für den Vergleich sind noch keine Verlaufsdaten verfügbar.</div>
+            <div class="chart-fallback" id="chartFallback">Verlaufsdaten werden geladen …</div>
           </div>
         </div>
       </div>
@@ -222,10 +133,7 @@
 
   <footer class="site-footer">
     <div class="shell footer-inner">
-      <div class="brand footer-brand">
-        <span class="brand-mark" aria-hidden="true"><span>U1</span></span>
-        <span class="brand-copy"><strong>UEBERTR1EBER</strong><small>PLAY. TRACK. IMPROVE.</small></span>
-      </div>
+      <img class="footer-logo" src="icons/levels/uebertreiber_logo.png" alt="Uebertr1eber">
       <p>Performance-Daten für die Crew. Gebaut für bessere Sessions.</p>
       <a href="https://www.faceit.com/de/players/sha-" target="_blank" rel="noopener noreferrer">FACEIT Profil <span aria-hidden="true">↗</span></a>
     </div>

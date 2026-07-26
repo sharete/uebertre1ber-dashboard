@@ -6,7 +6,9 @@
     sort: { key: "elo", direction: "desc" },
     selectedPlayers: new Set(),
     comparisonChart: null,
-    detailCharts: new Map()
+    detailCharts: new Map(),
+    historyCachePromise: null,
+    comparisonRenderId: 0
   };
 
   const colors = ["#ff6a2b", "#64e6a4", "#69a9ff", "#a98dff", "#ff6e7b"];
@@ -188,18 +190,68 @@
     }
   };
 
-  const renderDetailCharts = details => {
+  const normalizeHistory = (rawHistory, limit = 100) => {
+    if (!Array.isArray(rawHistory)) return [];
+    const normalized = rawHistory
+      .map(item => {
+        const rawDate = number(item?.date ?? item?.created_at ?? item?.updated_at, NaN);
+        const elo = number(item?.elo ?? item?.i20, NaN);
+        const date = rawDate > 1e12 ? rawDate : rawDate * 1000;
+        return { x: date, y: elo };
+      })
+      .filter(point => Number.isFinite(point.x) && Number.isFinite(point.y))
+      .sort((a, b) => a.x - b.x)
+      .filter((point, index, points) => index === 0 || point.x !== points[index - 1].x);
+    return normalized.slice(-limit);
+  };
+
+  const loadHistoryCache = async () => {
+    if (!state.historyCachePromise) {
+      state.historyCachePromise = fetch("data/history-cache.json", { cache: "no-store" })
+        .then(response => response.ok ? response.json() : {})
+        .catch(() => ({}));
+    }
+    return state.historyCachePromise;
+  };
+
+  const resolveHistory = async (playerId, embeddedHistory, limit) => {
+    const embedded = normalizeHistory(embeddedHistory, limit);
+    if (embedded.length >= 2) return embedded;
+    const cache = await loadHistoryCache();
+    return normalizeHistory(cache?.[playerId], limit);
+  };
+
+  const showDetailFallback = (canvas, message) => {
+    if (!canvas) return;
+    canvas.hidden = true;
+    const parent = canvas.parentElement;
+    if (!parent) return;
+    let fallback = parent.querySelector(".detail-chart-fallback");
+    if (!fallback) {
+      fallback = document.createElement("p");
+      fallback.className = "detail-chart-fallback";
+      parent.append(fallback);
+    }
+    fallback.textContent = message;
+  };
+
+  const renderDetailCharts = async details => {
     if (!chartAvailable() || !details) return;
 
     const lineCanvas = details.querySelector(".elo-chart");
     if (lineCanvas && !state.detailCharts.has(lineCanvas)) {
-      const history = parseJSONAttribute(lineCanvas, "history");
-      if (history.length) {
+      const history = await resolveHistory(
+        details.dataset.playerId,
+        parseJSONAttribute(lineCanvas, "history"),
+        30
+      );
+      if (history.length >= 2) {
+        lineCanvas.hidden = false;
         state.detailCharts.set(lineCanvas, new Chart(lineCanvas, {
           type: "line",
           data: {
             datasets: [{
-              data: history.map(item => ({ x: number(item.date) * 1000, y: number(item.elo) })),
+              data: history,
               borderColor: "#ff6a2b",
               backgroundColor: "rgba(255,106,43,.08)",
               fill: true,
@@ -210,6 +262,8 @@
           },
           options: detailChartOptions()
         }));
+      } else {
+        showDetailFallback(lineCanvas, "Noch nicht genügend ELO-Verlaufsdaten vorhanden.");
       }
     }
 
@@ -232,7 +286,13 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                displayColors: false,
+                callbacks: { label: context => `${context.formattedValue}% Winrate` }
+              }
+            },
             scales: {
               r: {
                 min: 0, max: 100,
@@ -270,7 +330,29 @@
     });
     details.classList.toggle("hidden", !opening);
     row.setAttribute("aria-expanded", String(opening));
-    if (opening) requestAnimationFrame(() => renderDetailCharts(details));
+    if (opening) requestAnimationFrame(() => void renderDetailCharts(details));
+  };
+
+  const normalizeStreakDisplay = row => {
+    const formLine = row.querySelector(".player-form")
+      || row.querySelector(".nickname-link")?.closest(".flex-col")?.querySelector(".mt-1");
+    if (!formLine) return;
+
+    row.querySelectorAll(".streak-indicator").forEach(indicator => indicator.remove());
+    const nicknameLine = row.querySelector(".nickname-link")?.parentElement;
+    [...(nicknameLine?.children || [])].forEach(child => {
+      if (child !== row.querySelector(".nickname-link") && child.tagName === "SPAN") child.remove();
+    });
+
+    const count = Math.max(0, Number.parseInt(row.dataset.streak) || 0);
+    const type = row.dataset.streakType;
+    if (count < 2 || (type !== "win" && type !== "loss")) return;
+
+    const indicator = document.createElement("span");
+    indicator.className = `streak-indicator ${type === "win" ? "streak-win" : "streak-loss"}`;
+    indicator.textContent = `${count}${type === "win" ? "W" : "L"}`;
+    indicator.title = `${count} ${type === "win" ? "Siege" : "Niederlagen"} in Folge`;
+    formLine.append(indicator);
   };
 
   const setupRows = () => {
@@ -280,6 +362,7 @@
       cell.title = absolute;
     });
     playerRows().forEach(row => {
+      normalizeStreakDisplay(row);
       row.tabIndex = 0;
       row.setAttribute("role", "button");
       row.setAttribute("aria-expanded", "false");
@@ -371,7 +454,7 @@
         else if (state.selectedPlayers.size < 5) state.selectedPlayers.add(id);
         button.classList.toggle("active", state.selectedPlayers.has(id));
         button.setAttribute("aria-pressed", String(state.selectedPlayers.has(id)));
-        renderComparison();
+        void renderComparison();
       });
       container.append(button);
       if (index < 3) {
@@ -382,15 +465,16 @@
     });
   };
 
-  const renderComparison = () => {
+  const renderComparison = async () => {
     const canvas = document.getElementById("comparison-chart");
     const fallback = document.getElementById("chartFallback");
     const data = Array.isArray(window.COMPARISON_DATA) ? window.COMPARISON_DATA : [];
-    const selected = data.filter(player => state.selectedPlayers.has(player.id) && Array.isArray(player.history) && player.history.length);
+    const selectedPlayers = data.filter(player => state.selectedPlayers.has(player.id));
+    const renderId = ++state.comparisonRenderId;
     state.comparisonChart?.destroy();
     state.comparisonChart = null;
 
-    if (!canvas || !selected.length || !chartAvailable()) {
+    if (!canvas || !selectedPlayers.length || !chartAvailable()) {
       if (canvas) canvas.hidden = true;
       if (fallback) {
         fallback.hidden = false;
@@ -401,6 +485,23 @@
       return;
     }
 
+    canvas.hidden = true;
+    if (fallback) {
+      fallback.hidden = false;
+      fallback.textContent = "Verlaufsdaten werden geladen …";
+    }
+
+    const selected = (await Promise.all(selectedPlayers.map(async player => ({
+      ...player,
+      points: await resolveHistory(player.id, player.history, 100)
+    })))).filter(player => player.points.length >= 2);
+    if (renderId !== state.comparisonRenderId) return;
+
+    if (!selected.length) {
+      if (fallback) fallback.textContent = "Für den Vergleich sind noch keine Verlaufsdaten verfügbar.";
+      return;
+    }
+
     canvas.hidden = false;
     if (fallback) fallback.hidden = true;
     state.comparisonChart = new Chart(canvas, {
@@ -408,7 +509,7 @@
       data: {
         datasets: selected.map((player, index) => ({
           label: player.nickname,
-          data: player.history.map(point => ({ x: number(point.date) * 1000, y: number(point.elo) })),
+          data: player.points,
           borderColor: colors[index % colors.length],
           backgroundColor: colors[index % colors.length],
           borderWidth: 2,
@@ -436,11 +537,11 @@
   const waitForCharts = (attempt = 0) => {
     if (chartAvailable()) {
       chartDefaults();
-      renderComparison();
+      void renderComparison();
       return;
     }
     if (attempt < 30) window.setTimeout(() => waitForCharts(attempt + 1), 100);
-    else renderComparison();
+    else void renderComparison();
   };
 
   setupRows();

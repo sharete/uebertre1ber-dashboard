@@ -170,13 +170,21 @@ class StatsCalculator {
 
         // ELO History
         const eloHistory = (externalEloHistory || [])
-            .map(item => ({
-                date: Math.floor(item.date / 1000),
-                elo: parseInt(item.elo),
-                eloDiff: item.elo_delta !== undefined && item.elo_delta !== "" ? parseInt(item.elo_delta) : undefined
-            }))
-            .filter(item => !isNaN(item.date) && !isNaN(item.elo))
-            .reverse();
+            .map(item => {
+                const rawDate = Number(item.date ?? item.created_at ?? item.updated_at);
+                const date = rawDate > 1e12 ? Math.floor(rawDate / 1000) : Math.floor(rawDate);
+                const elo = parseInt(item.elo ?? item.i20);
+                const rawDiff = item.elo_delta ?? item.eloDiff;
+                return {
+                    date,
+                    elo,
+                    eloDiff: rawDiff !== undefined && rawDiff !== "" ? parseInt(rawDiff) : undefined
+                };
+            })
+            .filter(item => Number.isFinite(item.date) && Number.isFinite(item.elo))
+            .sort((a, b) => a.date - b.date)
+            .filter((item, index, items) => index === 0 || item.date !== items[index - 1].date)
+            .slice(-300);
 
         // Aggregate Teammate Stats
         const teammates = Object.entries(teammateCounts).map(([id, cnt]) => {
