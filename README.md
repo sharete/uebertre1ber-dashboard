@@ -1,74 +1,77 @@
-# 🎯 uebertre1ber FACEIT ELO Dashboard
+# Uebertr1eber FACEIT Performance Hub
 
-Ein automatisiertes FACEIT-Dashboard, das Statistiken wie ELO-Entwicklung, Match-Performance und Spieleranalysen übersichtlich darstellt. Ideal für Spielergruppen, Teams oder Streamer, die ihre Leistung langfristig verfolgen möchten.
+Ein automatisch aktualisiertes Performance-Dashboard für die Uebertr1eber-Crew. Es verdichtet FACEIT-Daten zu einem klaren Ranking, aktuellen Formwerten, ELO-Trends und Team-Insights.
 
-## 🚀 Features
+## Funktionen
 
-- 📊 **Live ELO-Tracking** (alle 30 Minuten via GitHub Actions)
-- 🧠 **Statistik-Auswertung** der letzten 30 Matches:
-  - Wins/Losses, Winrate
-  - K/D, ADR, HS%, K/R
-  - ELO +/- pro Spiel
-- 🗓️ **ELO-Verlauf** als Sparkline (täglich, wöchentlich, monatlich, jährlich)
-- 📁 **Match-Analyse** mit:
-  - Beste/schlechteste Map
-  - Durchschnittliche K/D pro Map
-  - Stats gegen häufige Gegner
-- 👥 **Häufigster Mitspieler** & gemeinsame Winrate
-- 🧩 Modernes UI mit **Tailwind CSS** und **Glassmorphism**
-- 🔍 Sortierbare Tabellen & Tooltips für jede Zahl
+- Live-Ranking mit Tages-, Wochen-, Monats- und Jahresvergleich
+- Suche und Sortierung nach Spieler, ELO, Trend, Level, Winrate und Aktivität
+- Detailanalyse der letzten 30 Matches
+- K/D, ADR, Headshot-Quote, K/R, Form und Streaks
+- Map-Performance sowie beste und häufigste Mitspieler
+- Direkter ELO-Verlauf-Vergleich für bis zu fünf Spieler
+- Responsive Bedienung für Desktop, Tablet und Smartphone
+- Barrierearme Tastaturbedienung und robuste Avatar-Fallbacks
 
-## 🛠️ Technologie-Stack
+## Lokale Entwicklung
 
-- 📦 `Node.js` + `node-fetch` zur Datenabfrage via [FACEIT API](https://developers.faceit.com/)
-- 🧪 Datenanalyse mit JavaScript (Matchauswertung & Snapshots)
-- 🎨 Frontend mit HTML + TailwindCSS
-- 🔁 Automatisches Deployment mit GitHub Actions
-
-## ⚙️ Einrichtung (lokal)
+Voraussetzungen: Node.js 20 oder neuer.
 
 ```bash
-git clone https://github.com/deinname/uebertre1ber-dashboard.git
-cd uebertre1ber-dashboard
-npm install
-node fetch-elos.js
+npm ci
+npm run build:css
+npm test
 ```
 
-> Die Datei `players.txt` enthält die zu überwachenden Spieler (FACEIT URLs). IDs werden automatisch via `resolve_ids.sh` extrahiert.
+Für eine Aktualisierung mit Live-Daten:
 
-## 📄 Struktur
-
+```bash
+FACEIT_API_KEY=dein_key npm start
 ```
+
+Unter Windows PowerShell:
+
+```powershell
+$env:FACEIT_API_KEY = "dein_key"
+npm start
+```
+
+## Spielerverwaltung
+
+```bash
+# Spieler hinzufügen
+FACEIT_API_KEY=xxx node manage-players.js add noxq
+
+# Spieler entfernen
+node manage-players.js remove noxq
+
+# Alle Spieler anzeigen
+node manage-players.js list
+```
+
+## Projektstruktur
+
+```text
 .
-├── data/                  # ELO Snapshots (daily, weekly, monthly, yearly)
-├── icons/                 # Icons und Visuals
-├── index.template.html    # HTML-Template mit Platzhaltern
-├── fetch-elos.js          # Main Script zur ELO-Analyse und HTML-Generierung
-├── players.txt            # Liste der Spieler-Links
-├── resolve_ids.sh         # Script zur Auflösung von player_ids
-├── .github/workflows/     # GitHub Actions für automatisiertes Update
-└── README.md              # Diese Datei
+├── dashboard.css           # Produktspezifisches Designsystem
+├── dashboard.js            # Suche, Sortierung, Details und Charts
+├── index.template.html     # HTML-Template
+├── index.html              # Generierte, veröffentlichte Website
+├── index.js                # FACEIT-Datenpipeline
+├── src/                    # API, Statistik und Rendering
+├── data/                   # ELO-Snapshots und Match-Cache
+├── icons/                  # FACEIT-Level-Assets
+└── tests/                  # Smoke- und Security-Tests
 ```
 
-## ⏰ Automatisierte Aktualisierung
+## Automatische Aktualisierung
 
-Das Dashboard aktualisiert sich automatisch alle 30 Minuten über GitHub Actions. Es wird `fetch-elos.js` ausgeführt, welches:
+Der Workflow `FACEIT ELO Auto Update` läuft alle 30 Minuten:
 
-1. Daten über die FACEIT API abruft
-2. Statistiken berechnet und Snapshots erstellt
-3. Die `index.html` neu generiert und auf GitHub Pages veröffentlicht
+1. Repository und Node.js vorbereiten
+2. FACEIT-Daten abrufen und Statistiken berechnen
+3. Website aus dem Template generieren
+4. Smoke- und Security-Tests ausführen
+5. Nur tatsächliche Änderungen committen und pushen
 
-## 📦 Geplante Features
-
-- 🔍 Filter & Suche nach Spielern
-- 📈 Interaktive Charts mit Chart.js
-- 🧮 Mehr Vergleichsmetriken zwischen Spielern
-- 🏷️ Ranglisten-Sektion (Top K/D, Winrate etc.)
-
-## 📜 Lizenz
-
-MIT – feel free to fork, verbessern oder deinen eigenen Style hinzufügen!
-
----
-
-> Maintained with ❤️ by [Sharam / sharete](https://github.com/sharete)
+Der API-Key wird ausschließlich als GitHub-Secret `FACEIT_API_KEY` verwendet. Optionale Match-Benachrichtigungen nutzen `DISCORD_WEBHOOK_URL`.

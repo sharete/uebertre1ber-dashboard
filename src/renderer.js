@@ -1,5 +1,40 @@
 const fs = require('fs');
 
+const escapeHtml = (value) => String(value ?? '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;');
+
+const normalizeUrl = (value) => {
+  try {
+    const url = new URL(String(value ?? ''));
+    return ['https:', 'http:'].includes(url.protocol) ? url.href : '#';
+  } catch {
+    return '#';
+  }
+};
+const safeUrl = (value) => escapeHtml(normalizeUrl(value));
+
+const serializeForScript = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
+
+const iconSvg = (name, className = 'ui-icon') => {
+  const paths = {
+    target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/>',
+    burst: '<path d="m12 2 1.8 6.2L20 6l-3.7 5 5.7 3-6.6.2.6 6.8-4-5.4L8 21l.6-6.8L2 14l5.7-3L4 6l6.2 2.2L12 2Z"/>',
+    bolt: '<path d="M13 2 5 13h6l-1 9 9-13h-6V2Z"/>',
+    trophy: '<path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/>',
+    flame: '<path d="M13 2s1 4-2 6c-2 1-3 3-3 5a4 4 0 0 0 8 0c0-2-1-4-3-6 0 2-1 3-2 4 0-4 2-6 2-9Z"/>',
+    shield: '<path d="M12 3 5 6v5c0 4.8 2.8 8 7 10 4.2-2 7-5.2 7-10V6l-7-3Z"/>',
+    map: '<path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/>',
+    users: '<path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/>',
+    skull: '<path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/>',
+    trend: '<path d="M3 17 9 11l4 4 8-9"/><path d="M15 6h6v6"/>'
+  };
+  return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.trend}</svg>`;
+};
+
 class Renderer {
   render(templatePath, outputPath, data) {
     const { players, lastUpdated, historyData, awards } = data;
@@ -8,8 +43,8 @@ class Renderer {
 
     let template = fs.readFileSync(templatePath, 'utf-8');
     template = template.replace("<!-- INSERT_ELO_TABLE_HERE -->", rows);
-    template = template.replace("<!-- INSERT_LAST_UPDATED -->", lastUpdated);
-    template = template.replace("<!-- INSERT_PLAYER_COUNT -->", players.length);
+    template = template.replaceAll("<!-- INSERT_LAST_UPDATED -->", lastUpdated);
+    template = template.replaceAll("<!-- INSERT_PLAYER_COUNT -->", players.length);
 
     // Inject awards section
     const awardsHtml = this.renderAwards(awards);
@@ -19,14 +54,45 @@ class Renderer {
     const comparisonData = players.map(p => ({
       id: p.playerId,
       nickname: p.nickname,
-      avatar: p.avatar,
-      history: p.stats.eloHistory || []
+      avatar: normalizeUrl(p.avatar),
+      faceitUrl: normalizeUrl(p.faceitUrl),
+      elo: Number.parseInt(p.elo) || 0,
+      winrate: Number.parseFloat(p.winrate) || 0,
+      level: Number.parseInt(p.level) || 0,
+      recent: p.stats.recent || {},
+      last5: p.stats.last5 || [],
+      matchHistory: p.stats.matchHistory || [],
+      personalBests: p.stats.personalBests || {},
+      dataQuality: p.stats.dataQuality || {},
+      insights: p.stats.insights || [],
+      teammates: p.stats.teammates || [],
+      history: (p.stats.eloHistory || []).slice(-100)
     }));
-    const comparisonScript = `<script>window.COMPARISON_DATA = ${JSON.stringify(comparisonData)};</script>`;
+    const trackedIds = new Set(players.map(player => player.playerId));
+    const synergies = [];
+    const seenPairs = new Set();
+    for (const player of comparisonData) {
+      for (const mate of player.teammates) {
+        if (!trackedIds.has(mate.playerId)) continue;
+        const pairKey = [player.id, mate.playerId].sort().join(":");
+        if (seenPairs.has(pairKey)) continue;
+        seenPairs.add(pairKey);
+        const other = comparisonData.find(candidate => candidate.id === mate.playerId);
+        synergies.push({
+          ids: [player.id, mate.playerId],
+          players: [player.nickname, other?.nickname || mate.nickname],
+          matches: Number(mate.count) || 0,
+          wins: Number(mate.wins) || 0,
+          winrate: Number(mate.winratePct) || 0
+        });
+      }
+    }
+    synergies.sort((a, b) => b.matches - a.matches || b.winrate - a.winrate);
+    const comparisonScript = `<script>window.COMPARISON_DATA = ${serializeForScript(comparisonData)};window.DASHBOARD_ANALYTICS = ${serializeForScript({ lastUpdated, synergies })};</script>`;
     template = template.replace("<!-- INSERT_COMPARISON_DATA -->", comparisonScript);
 
     // Inject history data
-    const historyScript = `<script>window.ELO_DATA = ${JSON.stringify(historyData)};</script>`;
+    const historyScript = `<script>window.ELO_DATA = ${serializeForScript(historyData)};</script>`;
     if (template.match(/<!--\s*INSERT_HISTORY_DATA\s*-->/)) {
       template = template.replace(/<!--\s*INSERT_HISTORY_DATA\s*-->/, historyScript);
     } else {
@@ -40,36 +106,42 @@ class Renderer {
   renderAwards(awards) {
     if (!awards || Object.keys(awards).length === 0) return "";
 
-    const card = (emoji, title, name, value, color) => `
-      <div class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
-        <div class="absolute right-0 top-0 w-20 h-20 bg-${color}-500/10 rounded-full blur-2xl -mr-8 -mt-8 group-hover:bg-${color}-500/20 transition"></div>
-        <div class="w-10 h-10 rounded-lg bg-${color}-500/10 flex items-center justify-center text-xl">${emoji}</div>
-        <div>
-          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">${title}</p>
-          <p class="font-bold text-white text-sm tracking-tight">${name}</p>
-          <p class="font-mono text-${color}-400 text-xs">${value}</p>
+    const card = (title, name, value, icon, accent) => `
+      <article class="award-card award-${accent}">
+        <span class="award-icon" aria-hidden="true">${iconSvg(icon, 'award-svg')}</span>
+        <div class="award-copy">
+          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">${escapeHtml(title)}</p>
+          <p class="font-bold text-white text-sm tracking-tight">${escapeHtml(name)}</p>
+          <p class="font-mono text-xs">${escapeHtml(value)}</p>
         </div>
-      </div>`;
+      </article>`;
 
     return `
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 w-full">
-      ${card("🎯", "Best K/D", awards.bestKD.name, awards.bestKD.value, "blue")}
-      ${card("💥", "Headshot King", awards.bestHS.name, awards.bestHS.value, "yellow")}
-      ${card("⚡", "Best ADR", awards.bestADR.name, awards.bestADR.value, "purple")}
-      ${card("🏆", "Best Winrate", awards.bestWinrate.name, `${awards.bestWinrate.value}%`, "green")}
-      ${card("🔥", "Win Streak", awards.longestStreak.name, `${awards.longestStreak.value}W`, "orange")}
-      ${card("🛡️", "Survivor", awards.lowestDeaths.name, `${awards.lowestDeaths.value} Deaths`, "cyan")}
+      ${card("Best K/D", awards.bestKD.name, awards.bestKD.value, "target", "blue")}
+      ${card("Headshot King", awards.bestHS.name, awards.bestHS.value, "burst", "yellow")}
+      ${card("Best ADR", awards.bestADR.name, awards.bestADR.value, "bolt", "violet")}
+      ${card("Best Winrate", awards.bestWinrate.name, `${awards.bestWinrate.value}%`, "trophy", "green")}
+      ${card("Win Streak", awards.longestStreak.name, `${awards.longestStreak.value}W`, "flame", "orange")}
+      ${card("Baiter", awards.lowestDeaths.name, `${Number.isFinite(awards.lowestDeaths.value) ? awards.lowestDeaths.value : 0} Deaths`, "shield", "cyan")}
     </div>`;
   }
 
   renderPlayer(p) {
     const { recent, teammates, streak, last5, mapPerformance, eloHistory } = p.stats;
-    
+    const personalBests = p.stats.personalBests || {};
+    const dataQuality = p.stats.dataQuality || { status: "partial", label: "Teilweise", matchCoverage: 0, eloSamples: 0 };
+    const insights = p.stats.insights || [];
+    const recentFormWins = last5.filter(result => result === 'W').length;
+    const recentFormPercent = last5.length ? Math.round(recentFormWins / last5.length * 100) : 0;
+    const nickname = escapeHtml(p.nickname);
+    const playerId = escapeHtml(p.playerId);
+
     // Radar Chart Data Preparation
     const validMaps = (mapPerformance || []).filter(m => m.map !== "Unknown");
     const radarLabels = validMaps.map(m => m.map);
     const radarData = validMaps.map(m => m.winrate);
-    const radarJson = JSON.stringify({ labels: radarLabels, data: radarData });
+    const radarJson = escapeHtml(JSON.stringify({ labels: radarLabels, data: radarData }));
 
     const topMates = [...teammates].sort((a, b) => b.count - a.count).slice(0, 5);
     const worstMates = [...teammates].sort((a, b) => b.losses - a.losses).slice(0, 5);
@@ -81,13 +153,11 @@ class Renderer {
 
     // Format Streak
     const streakStr = streak.count > 0 ? `${streak.count}${streak.type === 'win' ? 'W' : 'L'}` : '—';
-    const streakColor = streak.type === 'win' ? 'text-green-400' : (streak.type === 'loss' ? 'text-red-400' : 'text-gray-500');
-
-    // Streak badge
+    // Keep streak information on the form line so it never shifts the ELO column.
     const streakBadge = streak.count >= 2
       ? (streak.type === "win"
-        ? `<span class="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-500/20 text-green-400 border border-green-500/20">🔥${streak.count}W</span>`
-        : `<span class="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/20">💀${streak.count}L</span>`)
+        ? `<span class="streak-indicator streak-win" title="${streak.count} Siege in Folge">${streak.count}W</span>`
+        : `<span class="streak-indicator streak-loss" title="${streak.count} Niederlagen in Folge">${streak.count}L</span>`)
       : "";
 
     // Last 5 dots
@@ -96,21 +166,25 @@ class Renderer {
     ).join("");
 
     // Avatar
+    const initial = escapeHtml(String(p.nickname || '?').charAt(0).toUpperCase());
     const avatarHtml = p.avatar
-      ? `<img src="${p.avatar}" class="w-8 h-8 rounded-full object-cover border border-white/10" alt="${p.nickname}" loading="lazy" />`
-      : `<div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50">${p.nickname.charAt(0).toUpperCase()}</div>`;
+      ? `<div class="relative w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50 overflow-hidden"><span>${initial}</span><img src="${safeUrl(p.avatar)}" class="absolute inset-0 w-full h-full object-cover border border-white/10" alt="" loading="lazy" onerror="this.remove()" /></div>`
+      : `<div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/50">${initial}</div>`;
 
     const mainRow = `
 <tr class="player-row glass-card relative group cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
-    data-player-id="${p.playerId}"
+    data-player-id="${playerId}"
     data-elo="${p.elo}"
-    data-nickname="${p.nickname}"
+    data-nickname="${nickname}"
     data-winrate="${parseFloat(p.winrate) || 0}"
     data-matches="${parseInt(p.matches.toString().replace(/,/g, '')) || 0}"
     data-level="${p.level}"
-    data-last="${p.lastMatch}"
+    data-last="${escapeHtml(p.lastMatch)}"
     data-last-ts="${p.lastMatchTs || 0}"
     data-kd="${parseFloat(recent.kd) || 0}"
+    data-adr="${parseFloat(recent.adr) || 0}"
+    data-form="${recentFormPercent}"
+    data-quality="${escapeHtml(dataQuality.status)}"
     data-peak="${peakElo}"
     data-streak="${streakStr}"
     data-streak-type="${streak.type}">
@@ -121,10 +195,9 @@ class Renderer {
         ${avatarHtml}
         <div class="flex flex-col">
             <div class="flex items-center gap-1">
-                <a href="${p.faceitUrl}" target="_blank" class="nickname-link font-bold text-white text-base tracking-wide hover:text-faceit transition-colors z-10">${p.nickname}</a>
-                ${streakBadge}
+                <a href="${safeUrl(p.faceitUrl)}" target="_blank" rel="noopener noreferrer" class="nickname-link font-bold text-white text-base tracking-wide hover:text-faceit transition-colors z-10">${nickname}</a>
             </div>
-            <div class="flex items-center gap-1 mt-1">${last5Html}</div>
+            <div class="player-form flex items-center gap-1 mt-1">${last5Html}${streakBadge}</div>
         </div>
     </div>
   </td>
@@ -133,7 +206,7 @@ class Renderer {
   <td class="p-4 text-center">
     <div class="relative inline-block group/badge">
        <div class="absolute inset-0 bg-orange-500/20 blur-md rounded-full opacity-0 group-hover/badge:opacity-100 transition-opacity"></div>
-       <img src="icons/levels/level_${p.level}_icon.png" width="28" height="28" title="Level ${p.level}" class="relative drop-shadow-md level-badge">
+        <img src="icons/levels/level_${Math.max(1, Math.min(10, Number.parseInt(p.level) || 1))}_icon.png" width="28" height="28" alt="FACEIT Level ${escapeHtml(p.level)}" class="relative drop-shadow-md level-badge">
     </div>
   </td>
   <td class="p-4">
@@ -148,13 +221,13 @@ class Renderer {
     </div>
   </td>
   <td class="p-4 text-right font-mono text-white/70 text-sm">${p.matches}</td>
-  <td class="p-4 text-xs text-white/40 font-mono text-right last-match-cell" data-ts="${p.lastMatchTs || 0}">${p.lastMatch}</td>
+  <td class="p-4 text-xs text-white/40 font-mono text-right last-match-cell" data-ts="${p.lastMatchTs || 0}">${escapeHtml(p.lastMatch)}</td>
 </tr>`.trim();
 
     // Map Performance Table
     const mapRows = (mapPerformance || []).map(m => `
       <tr class="border-b border-white/5 last:border-0">
-        <td class="py-2 px-3 text-white/80 text-xs font-medium">${m.map}</td>
+        <td class="py-2 px-3 text-white/80 text-xs font-medium">${escapeHtml(m.map)}</td>
         <td class="py-2 px-3 text-center text-xs font-mono text-white/50">${m.matches}</td>
         <td class="py-2 px-3 text-center text-xs font-mono ${m.winrate >= 50 ? 'text-green-400' : 'text-red-400'}">${m.winrate}%</td>
         <td class="py-2 px-3 text-center text-xs font-mono ${parseFloat(m.kd) >= 1 ? 'text-green-400' : 'text-red-400'}">${m.kd}</td>
@@ -162,7 +235,7 @@ class Renderer {
 
     const mapBlock = mapPerformance && mapPerformance.length > 0 ? `
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">${iconSvg('map', 'heading-svg')}<span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -197,7 +270,7 @@ class Renderer {
   </div>
   
   <div class="mt-4 bg-[#0a0a14] border border-white/5 p-4 rounded-xl shadow-inner relative overflow-hidden">
-      <div class="font-bold text-white/60 mb-2 text-[10px] uppercase tracking-widest pl-1">🕸️ Performance Web</div>
+      <div class="font-bold text-white/60 mb-2 text-[10px] uppercase tracking-widest pl-1">Map-Profil</div>
       <div class="relative h-48 w-full">
          <canvas class="radar-chart" data-radar='${radarJson}'></canvas>
       </div>
@@ -214,17 +287,17 @@ class Renderer {
             // Invert colors: High Loss Rate = Bad (Red), Low Loss Rate = Good (Green)
             colorClass = displayPct >= 50 ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20';
         }
-        
+
         return `
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
-            <a href="${m.url}" target="_blank" class="nickname-link text-white/70 font-medium hover:text-neon-blue transition-colors text-xs">${m.nickname}</a>
+            <a href="${safeUrl(m.url)}" target="_blank" rel="noopener noreferrer" class="nickname-link text-white/70 font-medium hover:text-neon-blue transition-colors text-xs">${escapeHtml(m.nickname)}</a>
             <span class="text-[10px] text-white/40 font-mono">${m[valueKey]} ${suffix} <span class="ml-2 px-1.5 py-0.5 rounded font-bold ${colorClass}">${displayPct}%</span></span>
         </li>`;
     }).join("");
 
     const topMatesBlock = `
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">${iconSvg('users', 'heading-svg')}<span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     ${matesList(topMates, 'count', 'G')}
   </ul>
@@ -232,7 +305,7 @@ class Renderer {
 
     const bestMatesBlock = `
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">${iconSvg('trophy', 'heading-svg')}<span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     ${matesList(bestMates, 'wins', 'W')}
   </ul>
@@ -240,32 +313,59 @@ class Renderer {
 
     const worstMatesBlock = `
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">${iconSvg('skull', 'heading-svg')}<span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      ${matesList(worstMates, 'losses', 'L', true)}
   </ul>
 </div>`;
 
-    const historyJson = JSON.stringify(p.stats.eloHistory || []);
+    const historyJson = escapeHtml(JSON.stringify((p.stats.eloHistory || []).slice(-30)));
 
     const chartBlock = `
 <div class="mt-6 bg-[#0a0a14] border border-white/5 p-4 rounded-xl shadow-inner relative overflow-hidden group/chart">
-    <div class="absolute inset-0 bg-blue-500/5 blur-xl group-hover/chart:bg-blue-500/10 transition-colors"></div>
-    <div class="font-bold text-white/60 mb-4 text-[10px] uppercase tracking-widest relative z-10">
-        📈 ELO Trend (Last 30 Matches)
+    <div class="detail-heading detail-trend font-bold text-white/60 mb-4 text-[10px] uppercase tracking-widest relative z-10">
+        ${iconSvg('trend', 'heading-svg')}<span>ELO-Trend · letzte 30 Matches</span>
     </div>
     <div class="h-48 w-full relative z-10">
-        <canvas id="chart-${p.playerId}" class="elo-chart" data-history='${historyJson}'></canvas>
+        <canvas id="chart-${playerId}" class="elo-chart" data-history='${historyJson}'></canvas>
     </div>
 </div>
 `;
 
+    const bestMap = personalBests.bestMap;
+    const insightHtml = insights.length
+      ? insights.slice(0, 4).map(item => `
+        <article class="player-insight insight-${escapeHtml(item.type)}">
+          <span aria-hidden="true">${escapeHtml(item.icon)}</span>
+          <div><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.text)}</small></div>
+        </article>`).join("")
+      : `<p class="analytics-empty">Noch keine belastbare Auffälligkeit in den letzten Matches.</p>`;
+    const analyticsBlock = `
+<div class="player-analytics">
+  <div class="player-analytics-head">
+    <div>
+      <span class="data-status status-${escapeHtml(dataQuality.status)}"><i></i>${escapeHtml(dataQuality.label)}</span>
+      <small>${Number(dataQuality.matchCoverage) || 0}% Match-Abdeckung · ${Number(dataQuality.eloSamples) || 0} ELO-Werte</small>
+    </div>
+    <button type="button" class="share-player" data-share-player="${playerId}">Ansicht teilen <span aria-hidden="true">↗</span></button>
+  </div>
+  <div class="personal-bests" aria-label="Persönliche Bestwerte">
+    <article><span>Peak ELO</span><strong>${Number(personalBests.peakElo) || peakElo}</strong></article>
+    <article><span>Längste Serie</span><strong>${Number(personalBests.longestWinStreak) || 0}W</strong></article>
+    <article><span>Beste Map</span><strong>${escapeHtml(bestMap?.map || "—")}</strong><small>${bestMap ? `${bestMap.winrate}% WR` : "Noch offen"}</small></article>
+    <article><span>Beste 30er-Phase</span><strong>${Number(personalBests.bestThirtyGain) > 0 ? "+" : ""}${Number(personalBests.bestThirtyGain) || 0}</strong><small>ELO</small></article>
+    <article data-form-card><span>Letzte 5 Matches</span><strong>${last5.length ? `${recentFormWins}/${last5.length}` : "—"}</strong><small>${last5.length ? `${recentFormPercent}% Siege` : "Keine Daten"}</small></article>
+  </div>
+  <div class="insight-grid">${insightHtml}</div>
+</div>`;
+
     const detailRow = `
-<tr class="details-row hidden" data-player-id="${p.playerId}">
+<tr class="details-row hidden" data-player-id="${playerId}">
   <td colspan="7" class="p-0 border-none">
     <div class="mx-2 mb-4 p-6 glass-panel rounded-b-xl border-t-0 grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in relative shadow-neon-blue">
          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-50"></div>
         <div class="col-span-1 md:col-span-2">
+            ${analyticsBlock}
             ${statBlock}
             ${mapBlock}
             ${chartBlock}

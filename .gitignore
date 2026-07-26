@@ -1,7 +1,11 @@
 node_modules
+.npm-cache
 .DS_Store
 *.log
+*.bak
 .env
 data/*.json
+!data/discord_state.json
+!data/history-cache.json
 data_backup/
 backup/

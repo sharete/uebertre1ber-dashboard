@@ -6,11 +6,15 @@ const api = require('./src/api');
 const stats = require('./src/stats');
 const renderer = require('./src/renderer');
 const { normalizeMapName } = require('./src/map_utils');
+const notifier = require('./src/notifier');
 
 const PLAYERS_FILE = "players.txt";
 const DATA_DIR = path.join(__dirname, "data");
+const NOTIFICATION_STATE_FILE = path.join(DATA_DIR, "discord_state.json");
+const HISTORY_CACHE_FILE = path.join(DATA_DIR, "history-cache.json");
 const TEMPLATE_FILE = "index.template.html";
 const OUTPUT_FILE = "index.html";
+const MAX_MATCHES = 30;
 
 const RANGE_FILES = {
     daily: "elo-daily.json",
@@ -37,9 +41,28 @@ function getPeriodStart(range) {
     }
 }
 
-async function processPlayer(playerId) {
+function loadHistoryCache() {
+    if (fs.existsSync(HISTORY_CACHE_FILE)) {
+        try {
+            return JSON.parse(fs.readFileSync(HISTORY_CACHE_FILE, "utf-8"));
+        } catch (e) {
+            console.error("⚠️ Failed to load history cache:", e.message);
+        }
+    }
+    return {};
+}
+
+function saveHistoryCache(cache) {
     try {
-        const [profile, history, playerStats, eloHistoryData] = await Promise.all([
+        fs.writeFileSync(HISTORY_CACHE_FILE, JSON.stringify(cache, null, 2));
+    } catch (e) {
+        console.error("⚠️ Failed to save history cache:", e.message);
+    }
+}
+
+async function processPlayer(playerId, historyCache) {
+    try {
+        const [profile, history, playerStats, freshEloHistory] = await Promise.all([
             api.getPlayer(playerId),
             api.getPlayerHistory(playerId, 30),
             api.getPlayerStats(playerId),
@@ -51,8 +74,55 @@ async function processPlayer(playerId) {
             return null;
         }
 
-        const elo = profile.games?.cs2?.faceit_elo || null;
-        if (!elo) return null;
+        const currentElo = profile.games?.cs2?.faceit_elo || null;
+        if (!currentElo) return null;
+
+        // --- Elo History Logic ---
+        let eloHistoryData = historyCache[playerId] || [];
+        
+        // 2. Decide if we should try to seed/update history
+        // We update if:
+        // - Cache is empty (new player)
+        // - Cache is short (< 30 entries)
+        // - or occasionally to keep it fresh/calibrated with the internal API
+        const needsSeeding = eloHistoryData.length < 100;
+
+        if (freshEloHistory && freshEloHistory.length > 0) {
+            if (needsSeeding || freshEloHistory.length >= eloHistoryData.length) {
+                // For new players or if fresh history covers more ground, just use it
+                eloHistoryData = freshEloHistory;
+            } else {
+                // Merge fresh points that we don't have yet
+                const existingDates = new Set(eloHistoryData.map(h => h.date));
+                const newPoints = freshEloHistory.filter(h => !existingDates.has(h.date));
+                if (newPoints.length > 0) {
+                    eloHistoryData = [...eloHistoryData, ...newPoints].sort((a, b) => a.date - b.date);
+                }
+            }
+            historyCache[playerId] = eloHistoryData;
+        } else if (currentElo) {
+            // 3. If fresh history failed (Cloudflare block), append the current Elo to the existing cache
+            const lastTs = history.items[0]?.finished_at;
+            const nowTs = lastTs ? lastTs * 1000 : Date.now();
+            
+            const alreadyExists = eloHistoryData.some(h => Math.abs(h.date - nowTs) < 60000); // within 1 minute
+            
+            if (!alreadyExists) {
+                eloHistoryData.push({
+                    date: nowTs,
+                    elo: String(currentElo)
+                });
+                historyCache[playerId] = eloHistoryData;
+            }
+            
+            if (eloHistoryData.length === 1) {
+                console.warn(`⚠️ Only 1 Elo data point for ${profile.nickname}. History fetch likely blocked by Cloudflare.`);
+            }
+        }
+        
+        // Keep history at reasonable size
+        if (eloHistoryData.length > 300) eloHistoryData = eloHistoryData.slice(-300);
+        historyCache[playerId] = eloHistoryData;
 
         // Fetch match stats for all matches in history
         const matchStatsMap = {};
@@ -103,13 +173,15 @@ async function processPlayer(playerId) {
             playerId: profile.player_id,
             nickname: profile.nickname,
             avatar: profile.avatar || "",
-            elo,
+            elo: currentElo,
             level: profile.games?.cs2?.skill_level || 0,
             faceitUrl: url,
             winrate: playerStats.lifetime ? playerStats.lifetime["Win Rate %"] + "%" : "—",
             matches: playerStats.lifetime ? playerStats.lifetime["Matches"] : "—",
             lastMatch,
             lastMatchTs,
+            latestMatchId: history.items[0]?.match_id || null,
+            latestMatchResult: calculatedStats.last5[0] || null,
             stats: calculatedStats
         };
 
@@ -167,18 +239,140 @@ function calculateAwards(results) {
 
     await api.init();
 
+    // Load notification state
+    let notificationState = { lastRunTs: 0, players: {} };
+    let isMigration = false;
+    let isBrandNew = true;
+
+    if (fs.existsSync(NOTIFICATION_STATE_FILE)) {
+        isBrandNew = false;
+        try {
+            const data = JSON.parse(fs.readFileSync(NOTIFICATION_STATE_FILE, "utf-8"));
+            if (data.players) {
+                notificationState = data;
+            } else {
+                // Migration from old format (only players map)
+                notificationState = { lastRunTs: 0, players: data };
+                isMigration = true;
+            }
+        } catch (e) {
+            console.error("⚠️ Failed to load notification state:", e.message);
+        }
+    }
+
+    const runStartTimeTs = Math.floor(Date.now() / 1000);
+    let comparisonTs = notificationState.lastRunTs;
+
+    if (isBrandNew) {
+        console.log("ℹ️ Brand new installation. Using 24h fallback for initial seeding.");
+        comparisonTs = runStartTimeTs - 24 * 3600; 
+    } else if (isMigration || comparisonTs === 0) {
+        console.log("ℹ️ Migrating to time-based tracking. Using 24h fallback for this run.");
+        // Allow matches from the last 24h during migration transition
+        comparisonTs = runStartTimeTs - 24 * 3600;
+    }
+
     const lines = fs.readFileSync(PLAYERS_FILE, "utf-8")
         .trim()
         .split("\n")
         .map(l => l.split(/#|\/\//)[0].trim())
         .filter(Boolean);
 
+    const historyCache = loadHistoryCache();
+
     console.log(`ℹ️ Processing ${lines.length} players...`);
 
     const results = [];
-    for (const id of lines) {
-        const p = await processPlayer(id);
-        if (p) results.push(p);
+    for (let i = 0; i < lines.length; i++) {
+        const id = lines[i];
+        console.log(`  ⏳ Processing ${i + 1}/${lines.length}: ${id.substring(0, 8)}...`);
+        const p = await processPlayer(id, historyCache);
+        if (p) {
+            results.push(p);
+
+            // Discord Notification Logic
+            const lastSavedMatchId = notificationState.players[p.playerId];
+            
+            // Find all new matches
+            let newMatches = [];
+            if (p.stats.matchHistory && p.stats.matchHistory.length > 0) {
+                if (lastSavedMatchId) {
+                    const lastIdx = p.stats.matchHistory.findIndex(m => m.matchId === lastSavedMatchId);
+                    if (lastIdx > 0) {
+                        // Matches from 0 up to lastIdx - 1 are new
+                        newMatches = p.stats.matchHistory.slice(0, lastIdx);
+                    } else if (lastIdx === -1) {
+                        // Fallback if match fell out of history
+                        newMatches = p.stats.matchHistory.filter(m => m.date > comparisonTs);
+                    }
+                } else {
+                    newMatches = p.stats.matchHistory.filter(m => m.date > comparisonTs);
+                }
+            }
+
+            if (newMatches.length > 0) {
+                // Process oldest new match first for chronological notifications
+                newMatches.reverse();
+                
+                let lastSuccessfullyHandledId = lastSavedMatchId;
+
+                for (const matchStats of newMatches) {
+                    const matchTs = matchStats.date;
+                    const isAfterThreshold = matchTs > comparisonTs;
+                    const ageH = Math.round((runStartTimeTs - matchTs) / 3600);
+
+                    // We allow matches slightly older than comparisonTs if they are decidedly new (came after lastSavedMatchId) and < 24h
+                    if (isAfterThreshold || (lastSavedMatchId && ageH <= 24)) {
+                        console.log(`🔔 Sending notification for ${p.nickname}: ${matchStats.matchId}`);
+                        
+                        // Calculate Elo Diff
+                        let eloDiff = undefined;
+                        let matchElo = p.elo; // fallback to current Elo
+                        
+                        const eloHist = p.stats.eloHistory; // newest first
+                        // Find the corresponding Elo entry for this exact match time (+/- 1h)
+                        const closestEloEntry = eloHist.find(e => e.date >= matchTs - 3600 && e.date <= matchTs + 3600);
+                        
+                        if (closestEloEntry) {
+                            matchElo = closestEloEntry.elo;
+                            eloDiff = closestEloEntry.eloDiff;
+                        }
+
+                        // Detect Dashboard Teammates in this specific match
+                        const matchDetails = await api.getMatchDetails(matchStats.matchId);
+                        const dashboardTeammates = [];
+                        if (matchDetails && matchDetails.teams) {
+                            const allPlayersInMatch = Object.values(matchDetails.teams).flatMap(t => t.roster);
+                            for (const pm of allPlayersInMatch) {
+                                if (pm.nickname === p.nickname) continue;
+                                // Check if this player is in our players list
+                                if (lines.includes(pm.player_id)) {
+                                    dashboardTeammates.push(pm.nickname);
+                                }
+                            }
+                        }
+
+                        await notifier.sendMatchNotification({ ...p, elo: matchElo }, {
+                            ...matchStats,
+                            eloDiff,
+                            teammates: dashboardTeammates
+                        });
+                        
+                        lastSuccessfullyHandledId = matchStats.matchId;
+                    } else {
+                        console.log(`ℹ️ Match ${matchStats.matchId} for ${p.nickname} is before threshold (${ageH}h old). Skipping.`);
+                        if (ageH > 24) {
+                            lastSuccessfullyHandledId = matchStats.matchId;
+                        }
+                    }
+                }
+                
+                // Update final handled ID
+                if (lastSuccessfullyHandledId) {
+                    notificationState.players[p.playerId] = lastSuccessfullyHandledId;
+                }
+            }
+        }
     }
 
     results.sort((a, b) => b.elo - a.elo);
@@ -295,6 +489,15 @@ function calculateAwards(results) {
         historyData: snapshotData,
         awards
     });
+
+    // Update lastRunTs to the time we started processing
+    notificationState.lastRunTs = runStartTimeTs;
+
+    // Save notification state
+    fs.writeFileSync(NOTIFICATION_STATE_FILE, JSON.stringify(notificationState, null, 2));
+
+    // Save history cache
+    saveHistoryCache(historyCache);
 
     console.log("✨ Done!");
 })();
