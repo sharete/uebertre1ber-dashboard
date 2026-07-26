@@ -41,13 +41,104 @@
   </header>
 
   <main>
-    <section class="shell leaderboard-section first-section" id="leaderboard" aria-labelledby="leaderboard-title">
-      <div class="section-heading leaderboard-heading">
-        <div>
-          <p class="kicker">Live Leaderboard</p>
-          <h1 id="leaderboard-title">Crew Ranking</h1>
+    <section class="shell overview-section first-section" aria-label="Performance-Überblick">
+      <div class="overview-cards">
+        <article class="overview-card overview-king">
+          <span class="overview-icon" aria-hidden="true">👑</span>
+          <div>
+            <p>The King</p>
+            <strong id="hero-king-name">—</strong>
+            <small id="hero-king-elo">0 ELO</small>
+          </div>
+        </article>
+        <article class="overview-card overview-mvp">
+          <span class="overview-icon" aria-hidden="true">🔥</span>
+          <div>
+            <p>MVP</p>
+            <strong id="hero-mvp-name">—</strong>
+            <small id="hero-mvp-diff">±0</small>
+          </div>
+        </article>
+        <article class="overview-card overview-drop">
+          <span class="overview-icon" aria-hidden="true">💀</span>
+          <div>
+            <p>Opfer</p>
+            <strong id="hero-down-name">—</strong>
+            <small id="hero-down-diff">±0</small>
+          </div>
+        </article>
+        <article class="overview-card overview-tracked">
+          <span class="overview-icon" aria-hidden="true">📊</span>
+          <div>
+            <p>Tracked</p>
+            <strong><span>19</span> Players</strong>
+            <small><span class="live-dot" aria-hidden="true"></span> Live Updates</small>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell awards-section" aria-labelledby="awards-title">
+      <div class="compact-section-title">
+        <span aria-hidden="true">🏆</span>
+        <h2 id="awards-title">Awards <span>(Last 30 Matches)</span></h2>
+      </div>
+      <div id="awards-grid"><div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 w-full">
+      <article class="award-card award-blue">
+        <span class="award-icon" aria-hidden="true">🎯</span>
+        <div class="award-copy">
+          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Best K/D</p>
+          <p class="font-bold text-white text-sm tracking-tight">-rolan_</p>
+          <p class="font-mono text-xs">1.08</p>
         </div>
-        <p>Spieler öffnen, Details analysieren, Zeitraum wechseln.</p>
+      </article>
+      <article class="award-card award-yellow">
+        <span class="award-icon" aria-hidden="true">💥</span>
+        <div class="award-copy">
+          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Headshot King</p>
+          <p class="font-bold text-white text-sm tracking-tight">tezuG</p>
+          <p class="font-mono text-xs">65%</p>
+        </div>
+      </article>
+      <article class="award-card award-violet">
+        <span class="award-icon" aria-hidden="true">⚡</span>
+        <div class="award-copy">
+          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Best ADR</p>
+          <p class="font-bold text-white text-sm tracking-tight">-rolan_</p>
+          <p class="font-mono text-xs">85.9</p>
+        </div>
+      </article>
+      <article class="award-card award-green">
+        <span class="award-icon" aria-hidden="true">🏆</span>
+        <div class="award-copy">
+          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Best Winrate</p>
+          <p class="font-bold text-white text-sm tracking-tight">Saphyy</p>
+          <p class="font-mono text-xs">63%</p>
+        </div>
+      </article>
+      <article class="award-card award-orange">
+        <span class="award-icon" aria-hidden="true">🔥</span>
+        <div class="award-copy">
+          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Win Streak</p>
+          <p class="font-bold text-white text-sm tracking-tight">Saphyy</p>
+          <p class="font-mono text-xs">6W</p>
+        </div>
+      </article>
+      <article class="award-card award-cyan">
+        <span class="award-icon" aria-hidden="true">🛡️</span>
+        <div class="award-copy">
+          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Baiter</p>
+          <p class="font-bold text-white text-sm tracking-tight">Saphyy</p>
+          <p class="font-mono text-xs">400 Deaths</p>
+        </div>
+      </article>
+    </div></div>
+    </section>
+
+    <section class="shell leaderboard-section" id="leaderboard" aria-label="Live Leaderboard">
+      <div class="compact-section-title leaderboard-title">
+        <span class="live-dot" aria-hidden="true"></span>
+        <h2>Live Leaderboard</h2>
       </div>
 
       <div class="toolbar" aria-label="Ranking filtern">
@@ -5225,78 +5316,6 @@
       </div>
     </section>
 
-    <section class="shell awards-section" aria-labelledby="awards-title">
-      <div class="section-heading compact">
-        <div>
-          <p class="kicker">Recent Form</p>
-          <h2 id="awards-title">Top Performer</h2>
-        </div>
-        <p>Auswertung der letzten 30 Matches</p>
-      </div>
-      <div id="awards-grid"><div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 w-full awards-grid">
-
-      <div class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
-        <div class="absolute right-0 top-0 w-20 h-20 bg-blue-500/10 rounded-full blur-2xl -mr-8 -mt-8 group-hover:bg-blue-500/20 transition"></div>
-        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center text-xl shadow-inner">🎯</div>
-        <div class="min-w-0">
-          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Best K/D</p>
-          <p class="font-bold text-white text-sm tracking-tight truncate">-rolan_</p>
-          <p class="font-mono text-blue-400 text-xs font-bold">1.08</p>
-        </div>
-      </div>
-
-      <div class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
-        <div class="absolute right-0 top-0 w-20 h-20 bg-yellow-500/10 rounded-full blur-2xl -mr-8 -mt-8 group-hover:bg-yellow-500/20 transition"></div>
-        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-500/20 to-yellow-500/5 flex items-center justify-center text-xl shadow-inner">💥</div>
-        <div class="min-w-0">
-          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Headshot King</p>
-          <p class="font-bold text-white text-sm tracking-tight truncate">tezuG</p>
-          <p class="font-mono text-yellow-400 text-xs font-bold">65%</p>
-        </div>
-      </div>
-
-      <div class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
-        <div class="absolute right-0 top-0 w-20 h-20 bg-purple-500/10 rounded-full blur-2xl -mr-8 -mt-8 group-hover:bg-purple-500/20 transition"></div>
-        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center text-xl shadow-inner">⚡</div>
-        <div class="min-w-0">
-          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Best ADR</p>
-          <p class="font-bold text-white text-sm tracking-tight truncate">-rolan_</p>
-          <p class="font-mono text-purple-400 text-xs font-bold">85.9</p>
-        </div>
-      </div>
-
-      <div class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
-        <div class="absolute right-0 top-0 w-20 h-20 bg-green-500/10 rounded-full blur-2xl -mr-8 -mt-8 group-hover:bg-green-500/20 transition"></div>
-        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500/20 to-green-500/5 flex items-center justify-center text-xl shadow-inner">🏆</div>
-        <div class="min-w-0">
-          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Best Winrate</p>
-          <p class="font-bold text-white text-sm tracking-tight truncate">Saphyy</p>
-          <p class="font-mono text-green-400 text-xs font-bold">63%</p>
-        </div>
-      </div>
-
-      <div class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
-        <div class="absolute right-0 top-0 w-20 h-20 bg-orange-500/10 rounded-full blur-2xl -mr-8 -mt-8 group-hover:bg-orange-500/20 transition"></div>
-        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-500/5 flex items-center justify-center text-xl shadow-inner">🔥</div>
-        <div class="min-w-0">
-          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Win Streak</p>
-          <p class="font-bold text-white text-sm tracking-tight truncate">Saphyy</p>
-          <p class="font-mono text-orange-400 text-xs font-bold">6W</p>
-        </div>
-      </div>
-
-      <div class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
-        <div class="absolute right-0 top-0 w-20 h-20 bg-cyan-500/10 rounded-full blur-2xl -mr-8 -mt-8 group-hover:bg-cyan-500/20 transition"></div>
-        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 flex items-center justify-center text-xl shadow-inner">🛡️</div>
-        <div class="min-w-0">
-          <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Survivor</p>
-          <p class="font-bold text-white text-sm tracking-tight truncate">Saphyy</p>
-          <p class="font-mono text-cyan-400 text-xs font-bold">400 Deaths</p>
-        </div>
-      </div>
-    </div></div>
-    </section>
-
     <section class="comparison-section" id="elo-vergleich" aria-labelledby="comparison-title">
       <div class="comparison-grid" aria-hidden="true"></div>
       <div class="shell">
@@ -5311,13 +5330,14 @@
         <div class="chart-panel">
           <div class="chart-meta">
             <span>Performance Timeline</span>
-            <span>Letzte 100 erfasste Werte</span>
+            <span>Letzte 30 Matches</span>
           </div>
           <div class="chart-wrap">
             <canvas id="comparison-chart" aria-label="Vergleich der ELO-Verläufe" role="img"></canvas>
             <div class="chart-fallback" id="chartFallback">Verlaufsdaten werden geladen …</div>
           </div>
         </div>
+        <p class="last-update">Last Update: <time>2026-07-26 01:25</time></p>
       </div>
     </section>
   </main>
@@ -5326,7 +5346,7 @@
     <div class="shell footer-inner">
       <img class="footer-logo" src="icons/levels/uebertreiber_logo.png" alt="Uebertr1eber">
       <p>Performance-Daten für die Crew. Gebaut für bessere Sessions.</p>
-      <a href="https://www.faceit.com/de/players/sha-" target="_blank" rel="noopener noreferrer">FACEIT Profil <span aria-hidden="true">↗</span></a>
+      <span class="footer-credit">Dashboard by <a href="https://www.faceit.com/de/players/sha-" target="_blank" rel="noopener noreferrer">sha</a></span>
     </div>
   </footer>
 

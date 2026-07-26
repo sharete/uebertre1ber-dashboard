@@ -8,6 +8,7 @@ const stats = require("../src/stats");
 const root = path.resolve(__dirname, "..");
 const template = fs.readFileSync(path.join(root, "index.template.html"), "utf8");
 const generated = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const dashboardScript = fs.readFileSync(path.join(root, "dashboard.js"), "utf8");
 
 for (const marker of [
   "INSERT_ELO_TABLE_HERE",
@@ -27,7 +28,28 @@ assert.match(generated, /src="dashboard\.js"/);
 assert.match(generated, /src="vendor\/chart\.min\.js"/);
 assert.doesNotMatch(generated, /cdn\.jsdelivr\.net\/npm\/chart\.js/);
 assert.match(generated, /href="dashboard\.css"/);
+assert.doesNotMatch(generated, /Crew Ranking/);
+assert.match(generated, />Baiter</);
+assert.match(generated, /class="award-icon"/);
+assert.match(generated, /Last Update:/);
+assert.match(generated, /Dashboard by <a [^>]*>sha<\/a>/);
 assert.equal(fs.statSync(path.join(root, "vendor", "chart.min.js")).size > 100000, true);
+assert.match(dashboardScript, /toMatchSeries/);
+assert.match(dashboardScript, /cubicInterpolationMode: "monotone"/);
+assert.match(dashboardScript, /max: 30/);
+
+const awardHtml = renderer.renderAwards({
+  bestKD: { name: "One", value: "1.20" },
+  bestHS: { name: "Two", value: "60" },
+  bestADR: { name: "Three", value: "90" },
+  bestWinrate: { name: "Four", value: "70" },
+  longestStreak: { name: "Five", value: 5 },
+  lowestDeaths: { name: "Six", value: 300 }
+});
+assert.match(awardHtml, /🎯/);
+assert.match(awardHtml, /🛡️/);
+assert.match(awardHtml, />Baiter</);
+assert.doesNotMatch(awardHtml, />Survivor</);
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "dashboard-render-"));
 const templatePath = path.join(tempDir, "template.html");

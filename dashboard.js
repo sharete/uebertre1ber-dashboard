@@ -77,12 +77,13 @@
     const avg = Math.round(rows.reduce((sum, row) => sum + number(row.dataset.elo), 0) / rows.length);
 
     setText("hero-king-name", leader.dataset.nickname || "—");
-    setText("hero-king-elo", Math.round(number(leader.dataset.elo)).toLocaleString("de-DE"));
+    setText("hero-king-elo", `${Math.round(number(leader.dataset.elo)).toLocaleString("de-DE")} ELO`);
     setText("hero-king-level", leader.dataset.level || "—");
     setText("hero-mvp-name", mvp.dataset.nickname || "—");
-    setSignedText("hero-mvp-diff", number(mvp.dataset.diff), " ELO");
-    setText("hero-down-name", drop.dataset.nickname || "—");
-    setSignedText("hero-down-diff", number(drop.dataset.diff), " ELO");
+    setSignedText("hero-mvp-diff", number(mvp.dataset.diff));
+    const dropValue = number(drop.dataset.diff);
+    setText("hero-down-name", dropValue < 0 ? (drop.dataset.nickname || "—") : "Alle im Plus 💪");
+    setSignedText("hero-down-diff", Math.min(0, dropValue));
     setText("crew-average", avg.toLocaleString("de-DE"));
     setSignedText("hero-king-diff", number(leader.dataset.diff));
 
@@ -221,6 +222,14 @@
     return normalizeHistory(cache?.[playerId], limit);
   };
 
+  const toMatchSeries = (history, limit = 30) => history
+    .slice(-limit)
+    .map((point, index) => ({
+      x: index + 1,
+      y: point.y,
+      date: point.x
+    }));
+
   const showDetailFallback = (canvas, message) => {
     if (!canvas) return;
     canvas.hidden = true;
@@ -240,13 +249,15 @@
 
     const lineCanvas = details.querySelector(".elo-chart");
     if (lineCanvas && !state.detailCharts.has(lineCanvas)) {
-      const history = await resolveHistory(
+      const history = toMatchSeries(await resolveHistory(
         details.dataset.playerId,
         parseJSONAttribute(lineCanvas, "history"),
         30
-      );
+      ));
       if (history.length >= 2) {
         lineCanvas.hidden = false;
+        lineCanvas.dataset.pointCount = String(history.length);
+        lineCanvas.dataset.axisMode = "match";
         state.detailCharts.set(lineCanvas, new Chart(lineCanvas, {
           type: "line",
           data: {
@@ -257,7 +268,9 @@
               fill: true,
               borderWidth: 2,
               pointRadius: 0,
-              tension: .28
+              pointHoverRadius: 4,
+              tension: .34,
+              cubicInterpolationMode: "monotone"
             }]
           },
           options: detailChartOptions()
@@ -312,9 +325,18 @@
     responsive: true,
     maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
-    plugins: { legend: { display: false }, tooltip: { displayColors: false } },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        displayColors: false,
+        callbacks: {
+          title: items => items.length ? `Match ${items[0].parsed.x} / ${items[0].dataset.data.length}` : "",
+          label: context => `${context.parsed.y} ELO`
+        }
+      }
+    },
     scales: {
-      x: { type: "linear", display: false },
+      x: { type: "linear", min: 1, max: 30, display: false },
       y: { grid: { color: "rgba(255,255,255,.055)" }, ticks: { maxTicksLimit: 5, font: { size: 9 } } }
     }
   });
@@ -493,7 +515,7 @@
 
     const selected = (await Promise.all(selectedPlayers.map(async player => ({
       ...player,
-      points: await resolveHistory(player.id, player.history, 100)
+      points: toMatchSeries(await resolveHistory(player.id, player.history, 30))
     })))).filter(player => player.points.length >= 2);
     if (renderId !== state.comparisonRenderId) return;
 
@@ -503,6 +525,8 @@
     }
 
     canvas.hidden = false;
+    canvas.dataset.pointCounts = selected.map(player => player.points.length).join(",");
+    canvas.dataset.axisMode = "match";
     if (fallback) fallback.hidden = true;
     state.comparisonChart = new Chart(canvas, {
       type: "line",
@@ -515,7 +539,8 @@
           borderWidth: 2,
           pointRadius: 0,
           pointHoverRadius: 4,
-          tension: .28
+          tension: .34,
+          cubicInterpolationMode: "monotone"
         }))
       },
       options: {
@@ -524,10 +549,23 @@
         interaction: { mode: "nearest", axis: "x", intersect: false },
         plugins: {
           legend: { position: "top", align: "start", labels: { usePointStyle: true, boxWidth: 7, boxHeight: 7, padding: 18, font: { size: 10 } } },
-          tooltip: { displayColors: true, callbacks: { label: context => ` ${context.dataset.label}: ${context.parsed.y} ELO` } }
+          tooltip: {
+            displayColors: true,
+            callbacks: {
+              title: items => items.length ? `Match ${items[0].parsed.x} / 30` : "",
+              label: context => ` ${context.dataset.label}: ${context.parsed.y} ELO`
+            }
+          }
         },
         scales: {
-          x: { type: "linear", grid: { display: false }, ticks: { maxTicksLimit: 6, callback: value => new Intl.DateTimeFormat("de", { day: "2-digit", month: "short" }).format(new Date(value)), font: { size: 9 } } },
+          x: {
+            type: "linear",
+            min: 1,
+            max: 30,
+            grid: { color: "rgba(255,255,255,.035)" },
+            title: { display: true, text: "Letzte 30 Matches →", color: "#606a78", font: { size: 9 } },
+            ticks: { maxTicksLimit: 10, precision: 0, font: { size: 9 } }
+          },
           y: { grid: { color: "rgba(255,255,255,.055)" }, ticks: { maxTicksLimit: 6, font: { size: 9 } } }
         }
       }

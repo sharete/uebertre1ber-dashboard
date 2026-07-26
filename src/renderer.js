@@ -59,25 +59,24 @@ class Renderer {
   renderAwards(awards) {
     if (!awards || Object.keys(awards).length === 0) return "";
 
-    const card = (title, name, value) => `
-      <div class="glass-panel p-4 rounded-xl flex items-center gap-4 relative overflow-hidden group">
-        <div aria-hidden="true"></div>
-        <div aria-hidden="true"></div>
-        <div>
+    const card = (title, name, value, icon, accent) => `
+      <article class="award-card award-${accent}">
+        <span class="award-icon" aria-hidden="true">${icon}</span>
+        <div class="award-copy">
           <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">${escapeHtml(title)}</p>
           <p class="font-bold text-white text-sm tracking-tight">${escapeHtml(name)}</p>
           <p class="font-mono text-xs">${escapeHtml(value)}</p>
         </div>
-      </div>`;
+      </article>`;
 
     return `
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 w-full">
-      ${card("Best K/D", awards.bestKD.name, awards.bestKD.value)}
-      ${card("Headshot King", awards.bestHS.name, awards.bestHS.value)}
-      ${card("Best ADR", awards.bestADR.name, awards.bestADR.value)}
-      ${card("Best Winrate", awards.bestWinrate.name, `${awards.bestWinrate.value}%`)}
-      ${card("Win Streak", awards.longestStreak.name, `${awards.longestStreak.value}W`)}
-      ${card("Survivor", awards.lowestDeaths.name, `${Number.isFinite(awards.lowestDeaths.value) ? awards.lowestDeaths.value : 0} Deaths`)}
+      ${card("Best K/D", awards.bestKD.name, awards.bestKD.value, "🎯", "blue")}
+      ${card("Headshot King", awards.bestHS.name, awards.bestHS.value, "💥", "yellow")}
+      ${card("Best ADR", awards.bestADR.name, awards.bestADR.value, "⚡", "violet")}
+      ${card("Best Winrate", awards.bestWinrate.name, `${awards.bestWinrate.value}%`, "🏆", "green")}
+      ${card("Win Streak", awards.longestStreak.name, `${awards.longestStreak.value}W`, "orange")}
+      ${card("Baiter", awards.lowestDeaths.name, `${Number.isFinite(awards.lowestDeaths.value) ? awards.lowestDeaths.value : 0} Deaths`, "🛡️", "cyan")}
     </div>`;
   }
 

@@ -41,13 +41,55 @@
   </header>
 
   <main>
-    <section class="shell leaderboard-section first-section" id="leaderboard" aria-labelledby="leaderboard-title">
-      <div class="section-heading leaderboard-heading">
-        <div>
-          <p class="kicker">Live Leaderboard</p>
-          <h1 id="leaderboard-title">Crew Ranking</h1>
-        </div>
-        <p>Spieler öffnen, Details analysieren, Zeitraum wechseln.</p>
+    <section class="shell overview-section first-section" aria-label="Performance-Überblick">
+      <div class="overview-cards">
+        <article class="overview-card overview-king">
+          <span class="overview-icon" aria-hidden="true">👑</span>
+          <div>
+            <p>The King</p>
+            <strong id="hero-king-name">—</strong>
+            <small id="hero-king-elo">0 ELO</small>
+          </div>
+        </article>
+        <article class="overview-card overview-mvp">
+          <span class="overview-icon" aria-hidden="true">🔥</span>
+          <div>
+            <p>MVP</p>
+            <strong id="hero-mvp-name">—</strong>
+            <small id="hero-mvp-diff">±0</small>
+          </div>
+        </article>
+        <article class="overview-card overview-drop">
+          <span class="overview-icon" aria-hidden="true">💀</span>
+          <div>
+            <p>Opfer</p>
+            <strong id="hero-down-name">—</strong>
+            <small id="hero-down-diff">±0</small>
+          </div>
+        </article>
+        <article class="overview-card overview-tracked">
+          <span class="overview-icon" aria-hidden="true">📊</span>
+          <div>
+            <p>Tracked</p>
+            <strong><span><!-- INSERT_PLAYER_COUNT --></span> Players</strong>
+            <small><span class="live-dot" aria-hidden="true"></span> Live Updates</small>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell awards-section" aria-labelledby="awards-title">
+      <div class="compact-section-title">
+        <span aria-hidden="true">🏆</span>
+        <h2 id="awards-title">Awards <span>(Last 30 Matches)</span></h2>
+      </div>
+      <div id="awards-grid"><!-- INSERT_AWARDS_SECTION --></div>
+    </section>
+
+    <section class="shell leaderboard-section" id="leaderboard" aria-label="Live Leaderboard">
+      <div class="compact-section-title leaderboard-title">
+        <span class="live-dot" aria-hidden="true"></span>
+        <h2>Live Leaderboard</h2>
       </div>
 
       <div class="toolbar" aria-label="Ranking filtern">
@@ -95,17 +137,6 @@
       </div>
     </section>
 
-    <section class="shell awards-section" aria-labelledby="awards-title">
-      <div class="section-heading compact">
-        <div>
-          <p class="kicker">Recent Form</p>
-          <h2 id="awards-title">Top Performer</h2>
-        </div>
-        <p>Auswertung der letzten 30 Matches</p>
-      </div>
-      <div id="awards-grid"><!-- INSERT_AWARDS_SECTION --></div>
-    </section>
-
     <section class="comparison-section" id="elo-vergleich" aria-labelledby="comparison-title">
       <div class="comparison-grid" aria-hidden="true"></div>
       <div class="shell">
@@ -120,13 +151,14 @@
         <div class="chart-panel">
           <div class="chart-meta">
             <span>Performance Timeline</span>
-            <span>Letzte 100 erfasste Werte</span>
+            <span>Letzte 30 Matches</span>
           </div>
           <div class="chart-wrap">
             <canvas id="comparison-chart" aria-label="Vergleich der ELO-Verläufe" role="img"></canvas>
             <div class="chart-fallback" id="chartFallback">Verlaufsdaten werden geladen …</div>
           </div>
         </div>
+        <p class="last-update">Last Update: <time><!-- INSERT_LAST_UPDATED --></time></p>
       </div>
     </section>
   </main>
@@ -135,7 +167,7 @@
     <div class="shell footer-inner">
       <img class="footer-logo" src="icons/levels/uebertreiber_logo.png" alt="Uebertr1eber">
       <p>Performance-Daten für die Crew. Gebaut für bessere Sessions.</p>
-      <a href="https://www.faceit.com/de/players/sha-" target="_blank" rel="noopener noreferrer">FACEIT Profil <span aria-hidden="true">↗</span></a>
+      <span class="footer-credit">Dashboard by <a href="https://www.faceit.com/de/players/sha-" target="_blank" rel="noopener noreferrer">sha</a></span>
     </div>
   </footer>
 
