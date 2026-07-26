@@ -9,6 +9,7 @@ const root = path.resolve(__dirname, "..");
 const template = fs.readFileSync(path.join(root, "index.template.html"), "utf8");
 const generated = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const dashboardScript = fs.readFileSync(path.join(root, "dashboard.js"), "utf8");
+const dashboardCss = fs.readFileSync(path.join(root, "dashboard.css"), "utf8");
 
 for (const marker of [
   "INSERT_ELO_TABLE_HERE",
@@ -31,6 +32,7 @@ assert.match(generated, /href="dashboard\.css"/);
 assert.doesNotMatch(generated, /Crew Ranking/);
 assert.match(generated, />Baiter</);
 assert.match(generated, /class="award-icon"/);
+assert.doesNotMatch(generated, /class="award-icon"[^>]*>\?+/);
 assert.match(generated, /Last Update:/);
 assert.match(generated, /Dashboard by <a [^>]*>sha<\/a>/);
 assert.match(generated, /id="formSort"/);
@@ -47,6 +49,10 @@ assert.match(dashboardScript, /Klicken, um das FACEIT-Match zu öffnen/);
 assert.match(dashboardScript, /renderComparisonMetrics/);
 assert.match(dashboardScript, /renderSynergies/);
 assert.match(dashboardScript, /sharePlayer/);
+assert.match(dashboardScript, /upgradeInterfaceIcons/);
+assert.match(dashboardScript, /formWins/);
+assert.match(dashboardCss, /\.chart-fallback\[hidden\]/);
+assert.match(dashboardCss, /\.sort-control select option/);
 
 const awardHtml = renderer.renderAwards({
   bestKD: { name: "One", value: "1.20" },
@@ -56,10 +62,11 @@ const awardHtml = renderer.renderAwards({
   longestStreak: { name: "Five", value: 5 },
   lowestDeaths: { name: "Six", value: 300 }
 });
-assert.match(awardHtml, /🎯/);
-assert.match(awardHtml, /🛡️/);
+assert.match(awardHtml, /class="award-svg"/);
+assert.match(awardHtml, /award-orange/);
 assert.match(awardHtml, />Baiter</);
 assert.doesNotMatch(awardHtml, />Survivor</);
+assert.doesNotMatch(awardHtml, /\?\?/);
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "dashboard-render-"));
 const templatePath = path.join(tempDir, "template.html");
@@ -86,7 +93,7 @@ renderer.render(templatePath, outputPath, {
       recent: { kd: "1.00", kr: "0.70", kills: 100, deaths: 100, assists: 20, adr: "75.0", hsPercent: "50%", matches: 10 },
       teammates: [],
       streak: { count: 0, type: "none" },
-      last5: [],
+      last5: ["W", "L", "W", "W", "L"],
       mapPerformance: [],
       eloHistory: []
     }
@@ -100,6 +107,9 @@ const rendered = fs.readFileSync(outputPath, "utf8");
 assert.doesNotMatch(rendered, /javascript:alert/);
 assert.doesNotMatch(rendered, /<script>alert/);
 assert.match(rendered, /&lt;script&gt;/);
+assert.match(rendered, /data-form="60"/);
+assert.match(rendered, />3\/5</);
+assert.match(rendered, /60% Siege/);
 fs.rmSync(tempDir, { recursive: true, force: true });
 
 const normalizedStats = stats.calculatePlayerStats("player-1", [], {}, [

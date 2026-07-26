@@ -87,7 +87,7 @@
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 w-full">
       
       <article class="award-card award-blue">
-        <span class="award-icon" aria-hidden="true">🎯</span>
+        <span class="award-icon" aria-hidden="true"><svg class="award-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg></span>
         <div class="award-copy">
           <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Best K/D</p>
           <p class="font-bold text-white text-sm tracking-tight">-rolan_</p>
@@ -96,7 +96,7 @@
       </article>
       
       <article class="award-card award-yellow">
-        <span class="award-icon" aria-hidden="true">💥</span>
+        <span class="award-icon" aria-hidden="true"><svg class="award-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 1.8 6.2L20 6l-3.7 5 5.7 3-6.6.2.6 6.8-4-5.4L8 21l.6-6.8L2 14l5.7-3L4 6l6.2 2.2L12 2Z"/></svg></span>
         <div class="award-copy">
           <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Headshot King</p>
           <p class="font-bold text-white text-sm tracking-tight">tezuG</p>
@@ -105,7 +105,7 @@
       </article>
       
       <article class="award-card award-violet">
-        <span class="award-icon" aria-hidden="true">⚡</span>
+        <span class="award-icon" aria-hidden="true"><svg class="award-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 5 13h6l-1 9 9-13h-6V2Z"/></svg></span>
         <div class="award-copy">
           <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Best ADR</p>
           <p class="font-bold text-white text-sm tracking-tight">-rolan_</p>
@@ -114,7 +114,7 @@
       </article>
       
       <article class="award-card award-green">
-        <span class="award-icon" aria-hidden="true">🏆</span>
+        <span class="award-icon" aria-hidden="true"><svg class="award-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg></span>
         <div class="award-copy">
           <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Best Winrate</p>
           <p class="font-bold text-white text-sm tracking-tight">Saphyy</p>
@@ -122,8 +122,8 @@
         </div>
       </article>
       
-      <article class="award-card award-undefined">
-        <span class="award-icon" aria-hidden="true">orange</span>
+      <article class="award-card award-orange">
+        <span class="award-icon" aria-hidden="true"><svg class="award-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2s1 4-2 6c-2 1-3 3-3 5a4 4 0 0 0 8 0c0-2-1-4-3-6 0 2-1 3-2 4 0-4 2-6 2-9Z"/></svg></span>
         <div class="award-copy">
           <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Win Streak</p>
           <p class="font-bold text-white text-sm tracking-tight">Saphyy</p>
@@ -132,7 +132,7 @@
       </article>
       
       <article class="award-card award-cyan">
-        <span class="award-icon" aria-hidden="true">🛡️</span>
+        <span class="award-icon" aria-hidden="true"><svg class="award-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.8 2.8 8 7 10 4.2-2 7-5.2 7-10V6l-7-3Z"/></svg></span>
         <div class="award-copy">
           <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Baiter</p>
           <p class="font-bold text-white text-sm tracking-tight">Saphyy</p>
@@ -161,7 +161,7 @@
             <select id="formSort" aria-label="Leaderboard sortieren">
               <option value="elo">ELO</option>
               <option value="diff">Aktueller Trend</option>
-              <option value="form">Form · letzte 5</option>
+              <option value="form">Letzte 5 Matches</option>
               <option value="winrate">Winrate</option>
             </select>
           </label>
@@ -301,7 +301,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -370,7 +370,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -399,7 +399,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -426,7 +426,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -561,7 +561,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -624,7 +624,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -653,7 +653,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -680,7 +680,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -823,7 +823,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -886,7 +886,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -915,7 +915,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -942,7 +942,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -1077,7 +1077,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -1146,7 +1146,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -1175,7 +1175,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -1202,7 +1202,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -1337,7 +1337,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -1406,7 +1406,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -1435,7 +1435,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -1462,7 +1462,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -1601,7 +1601,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -1664,7 +1664,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -1693,7 +1693,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -1720,7 +1720,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -1863,7 +1863,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -1926,7 +1926,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -1955,7 +1955,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -1982,7 +1982,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -2125,7 +2125,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -2188,7 +2188,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -2217,7 +2217,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -2244,7 +2244,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -2383,7 +2383,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -2452,7 +2452,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -2481,7 +2481,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -2508,7 +2508,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -2643,7 +2643,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -2706,7 +2706,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -2735,7 +2735,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -2762,7 +2762,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -2901,7 +2901,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -2970,7 +2970,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -2999,7 +2999,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -3026,7 +3026,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -3161,7 +3161,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -3224,7 +3224,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -3253,7 +3253,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -3280,7 +3280,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -3419,7 +3419,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -3482,7 +3482,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -3511,7 +3511,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -3538,7 +3538,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -3681,7 +3681,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -3750,7 +3750,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -3779,7 +3779,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -3806,7 +3806,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -3941,7 +3941,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -4004,7 +4004,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -4033,7 +4033,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -4060,7 +4060,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -4199,7 +4199,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -4262,7 +4262,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -4291,7 +4291,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -4318,7 +4318,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -4457,7 +4457,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -4514,7 +4514,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -4543,7 +4543,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -4570,7 +4570,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -4705,7 +4705,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -4762,7 +4762,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -4791,7 +4791,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -4818,7 +4818,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -4961,7 +4961,7 @@
 </div>
             
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/></svg><span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -5042,7 +5042,7 @@
         <div>
              
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/></svg><span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -5071,7 +5071,7 @@
         <div class="space-y-0">
              
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/></svg><span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -5098,7 +5098,7 @@
 </div>
              
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1"><svg class="heading-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      
         <li class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded transition-colors group/mate">
@@ -5159,7 +5159,7 @@
           </div>
           <div class="chart-wrap">
             <canvas id="comparison-chart" aria-label="Vergleich der ELO-Verläufe" role="img"></canvas>
-            <div class="chart-fallback" id="chartFallback">Verlaufsdaten werden geladen …</div>
+            <div class="chart-fallback" id="chartFallback" hidden></div>
           </div>
         </div>
         <div class="comparison-metrics" id="comparison-metrics" aria-live="polite"></div>

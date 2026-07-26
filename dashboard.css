@@ -259,8 +259,9 @@ img { max-width: 100%; }
 }
 .award-icon {
   width: 40px; height: 40px; flex: 0 0 auto; display: grid; place-items: center;
-  border-radius: 9px; background: var(--award-tint); font-size: 19px;
+  color: var(--award-accent); border-radius: 9px; background: var(--award-tint);
 }
+.award-svg { width: 21px; height: 21px; display: block; }
 .award-copy { min-width: 0; }
 .award-card p { margin: 0; }
 .award-card p:first-child { margin-bottom: 5px; color: var(--muted) !important; font: 800 8px/1.1 var(--display); letter-spacing: .1em; }
@@ -412,6 +413,7 @@ img { max-width: 100%; }
 .chart-meta { padding: 0 2px 15px; display: flex; justify-content: space-between; color: var(--muted-2); font-size: 9px; text-transform: uppercase; letter-spacing: .12em; }
 .chart-wrap { position: relative; height: 360px; }
 .chart-fallback { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
+.chart-fallback[hidden] { display: none !important; }
 .last-update { margin: 34px 0 0; color: var(--muted-2); font-size: 11px; text-align: center; }
 .last-update time { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
@@ -422,9 +424,15 @@ img { max-width: 100%; }
   font: 700 9px var(--display); letter-spacing: .08em; text-transform: uppercase;
 }
 .sort-control select {
-  min-width: 128px; color: var(--text); border: 0; outline: 0; background: transparent;
+  min-width: 128px; color: var(--text); border: 0; outline: 0; background: var(--surface);
   font: 600 11px var(--body); color-scheme: dark;
 }
+.sort-control select option {
+  color: #eef2f7;
+  background: #11151a;
+}
+.detail-heading { display: flex; align-items: center; gap: 7px; }
+.heading-svg { width: 14px; height: 14px; flex: 0 0 14px; display: block; color: currentColor; }
 .insights-strip { margin: 0 0 14px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .global-insight, .player-insight {
   padding: 12px 14px; display: flex; align-items: center; gap: 10px;
@@ -458,7 +466,7 @@ img { max-width: 100%; }
   border-radius: 9px; cursor: pointer; background: rgba(255,255,255,.025); font: 700 10px var(--body);
 }
 .share-player:hover { border-color: rgba(255,92,26,.45); color: var(--orange-soft); }
-.personal-bests { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.personal-bests { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 8px; }
 .personal-bests article { min-height: 76px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .personal-bests span { display: block; color: var(--muted-2); font: 700 8px var(--display); letter-spacing: .09em; text-transform: uppercase; }
 .personal-bests strong { display: inline-block; margin-top: 7px; color: var(--text); font: 800 17px var(--display); }

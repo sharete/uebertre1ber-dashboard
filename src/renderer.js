@@ -19,6 +19,22 @@ const safeUrl = (value) => escapeHtml(normalizeUrl(value));
 
 const serializeForScript = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
 
+const iconSvg = (name, className = 'ui-icon') => {
+  const paths = {
+    target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/>',
+    burst: '<path d="m12 2 1.8 6.2L20 6l-3.7 5 5.7 3-6.6.2.6 6.8-4-5.4L8 21l.6-6.8L2 14l5.7-3L4 6l6.2 2.2L12 2Z"/>',
+    bolt: '<path d="M13 2 5 13h6l-1 9 9-13h-6V2Z"/>',
+    trophy: '<path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/>',
+    flame: '<path d="M13 2s1 4-2 6c-2 1-3 3-3 5a4 4 0 0 0 8 0c0-2-1-4-3-6 0 2-1 3-2 4 0-4 2-6 2-9Z"/>',
+    shield: '<path d="M12 3 5 6v5c0 4.8 2.8 8 7 10 4.2-2 7-5.2 7-10V6l-7-3Z"/>',
+    map: '<path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/>',
+    users: '<path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/>',
+    skull: '<path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/>',
+    trend: '<path d="M3 17 9 11l4 4 8-9"/><path d="M15 6h6v6"/>'
+  };
+  return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.trend}</svg>`;
+};
+
 class Renderer {
   render(templatePath, outputPath, data) {
     const { players, lastUpdated, historyData, awards } = data;
@@ -92,7 +108,7 @@ class Renderer {
 
     const card = (title, name, value, icon, accent) => `
       <article class="award-card award-${accent}">
-        <span class="award-icon" aria-hidden="true">${icon}</span>
+        <span class="award-icon" aria-hidden="true">${iconSvg(icon, 'award-svg')}</span>
         <div class="award-copy">
           <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold">${escapeHtml(title)}</p>
           <p class="font-bold text-white text-sm tracking-tight">${escapeHtml(name)}</p>
@@ -102,12 +118,12 @@ class Renderer {
 
     return `
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 w-full">
-      ${card("Best K/D", awards.bestKD.name, awards.bestKD.value, "🎯", "blue")}
-      ${card("Headshot King", awards.bestHS.name, awards.bestHS.value, "💥", "yellow")}
-      ${card("Best ADR", awards.bestADR.name, awards.bestADR.value, "⚡", "violet")}
-      ${card("Best Winrate", awards.bestWinrate.name, `${awards.bestWinrate.value}%`, "🏆", "green")}
-      ${card("Win Streak", awards.longestStreak.name, `${awards.longestStreak.value}W`, "orange")}
-      ${card("Baiter", awards.lowestDeaths.name, `${Number.isFinite(awards.lowestDeaths.value) ? awards.lowestDeaths.value : 0} Deaths`, "🛡️", "cyan")}
+      ${card("Best K/D", awards.bestKD.name, awards.bestKD.value, "target", "blue")}
+      ${card("Headshot King", awards.bestHS.name, awards.bestHS.value, "burst", "yellow")}
+      ${card("Best ADR", awards.bestADR.name, awards.bestADR.value, "bolt", "violet")}
+      ${card("Best Winrate", awards.bestWinrate.name, `${awards.bestWinrate.value}%`, "trophy", "green")}
+      ${card("Win Streak", awards.longestStreak.name, `${awards.longestStreak.value}W`, "flame", "orange")}
+      ${card("Baiter", awards.lowestDeaths.name, `${Number.isFinite(awards.lowestDeaths.value) ? awards.lowestDeaths.value : 0} Deaths`, "shield", "cyan")}
     </div>`;
   }
 
@@ -116,6 +132,8 @@ class Renderer {
     const personalBests = p.stats.personalBests || {};
     const dataQuality = p.stats.dataQuality || { status: "partial", label: "Teilweise", matchCoverage: 0, eloSamples: 0 };
     const insights = p.stats.insights || [];
+    const recentFormWins = last5.filter(result => result === 'W').length;
+    const recentFormPercent = last5.length ? Math.round(recentFormWins / last5.length * 100) : 0;
     const nickname = escapeHtml(p.nickname);
     const playerId = escapeHtml(p.playerId);
 
@@ -165,7 +183,7 @@ class Renderer {
     data-last-ts="${p.lastMatchTs || 0}"
     data-kd="${parseFloat(recent.kd) || 0}"
     data-adr="${parseFloat(recent.adr) || 0}"
-    data-form="${last5.filter(result => result === 'W').length * 20}"
+    data-form="${recentFormPercent}"
     data-quality="${escapeHtml(dataQuality.status)}"
     data-peak="${peakElo}"
     data-streak="${streakStr}"
@@ -217,7 +235,7 @@ class Renderer {
 
     const mapBlock = mapPerformance && mapPerformance.length > 0 ? `
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🗺️ Map Performance</div>
+  <div class="detail-heading detail-map font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">${iconSvg('map', 'heading-svg')}<span>Map Performance</span></div>
   <div class="bg-[#0a0a14] border border-white/5 rounded-xl overflow-hidden">
     <table class="w-full" style="border-spacing:0">
       <thead><tr class="border-b border-white/10">
@@ -279,7 +297,7 @@ class Renderer {
 
     const topMatesBlock = `
 <div class="mb-4">
-  <div class="font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">👥 Most played with</div>
+  <div class="detail-heading detail-mates font-bold text-white/60 mb-3 text-[10px] uppercase tracking-widest pl-1">${iconSvg('users', 'heading-svg')}<span>Most played with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     ${matesList(topMates, 'count', 'G')}
   </ul>
@@ -287,7 +305,7 @@ class Renderer {
 
     const bestMatesBlock = `
 <div class="mb-4">
-  <div class="font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">🏆 Most wins with</div>
+  <div class="detail-heading detail-wins font-bold text-green-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">${iconSvg('trophy', 'heading-svg')}<span>Most wins with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
     ${matesList(bestMates, 'wins', 'W')}
   </ul>
@@ -295,7 +313,7 @@ class Renderer {
 
     const worstMatesBlock = `
 <div class="mb-4">
-  <div class="font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">💀 Most losses with</div>
+  <div class="detail-heading detail-losses font-bold text-red-400/60 mb-3 text-[10px] uppercase tracking-widest pl-1">${iconSvg('skull', 'heading-svg')}<span>Most losses with</span></div>
   <ul class="bg-[#0a0a14] border border-white/5 rounded-xl p-1">
      ${matesList(worstMates, 'losses', 'L', true)}
   </ul>
@@ -305,8 +323,8 @@ class Renderer {
 
     const chartBlock = `
 <div class="mt-6 bg-[#0a0a14] border border-white/5 p-4 rounded-xl shadow-inner relative overflow-hidden group/chart">
-    <div class="font-bold text-white/60 mb-4 text-[10px] uppercase tracking-widest relative z-10">
-        ELO-Trend · letzte 30 Matches
+    <div class="detail-heading detail-trend font-bold text-white/60 mb-4 text-[10px] uppercase tracking-widest relative z-10">
+        ${iconSvg('trend', 'heading-svg')}<span>ELO-Trend · letzte 30 Matches</span>
     </div>
     <div class="h-48 w-full relative z-10">
         <canvas id="chart-${playerId}" class="elo-chart" data-history='${historyJson}'></canvas>
@@ -336,6 +354,7 @@ class Renderer {
     <article><span>Längste Serie</span><strong>${Number(personalBests.longestWinStreak) || 0}W</strong></article>
     <article><span>Beste Map</span><strong>${escapeHtml(bestMap?.map || "—")}</strong><small>${bestMap ? `${bestMap.winrate}% WR` : "Noch offen"}</small></article>
     <article><span>Beste 30er-Phase</span><strong>${Number(personalBests.bestThirtyGain) > 0 ? "+" : ""}${Number(personalBests.bestThirtyGain) || 0}</strong><small>ELO</small></article>
+    <article data-form-card><span>Letzte 5 Matches</span><strong>${last5.length ? `${recentFormWins}/${last5.length}` : "—"}</strong><small>${last5.length ? `${recentFormPercent}% Siege` : "Keine Daten"}</small></article>
   </div>
   <div class="insight-grid">${insightHtml}</div>
 </div>`;

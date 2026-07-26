@@ -32,6 +32,47 @@
 
   const text = value => String(value ?? "").trim();
 
+  const iconMarkup = (name, className = "ui-icon") => {
+    const paths = {
+      target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/>',
+      burst: '<path d="m12 2 1.8 6.2L20 6l-3.7 5 5.7 3-6.6.2.6 6.8-4-5.4L8 21l.6-6.8L2 14l5.7-3L4 6l6.2 2.2L12 2Z"/>',
+      bolt: '<path d="M13 2 5 13h6l-1 9 9-13h-6V2Z"/>',
+      trophy: '<path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H4v1a4 4 0 0 0 4 4m8-5h4v1a4 4 0 0 1-4 4M12 12v5m-4 3h8m-6-3h4"/>',
+      flame: '<path d="M13 2s1 4-2 6c-2 1-3 3-3 5a4 4 0 0 0 8 0c0-2-1-4-3-6 0 2-1 3-2 4 0-4 2-6 2-9Z"/>',
+      shield: '<path d="M12 3 5 6v5c0 4.8 2.8 8 7 10 4.2-2 7-5.2 7-10V6l-7-3Z"/>',
+      map: '<path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15m6-12v15"/>',
+      users: '<path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 1 4 4v2m-5-14a4 4 0 0 1 0 8"/>',
+      skull: '<path d="M8 18v3m4-3v3m4-3v3M5 14a8 8 0 1 1 14 0l-3 4H8l-3-4Z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/>',
+      trend: '<path d="M3 17 9 11l4 4 8-9"/><path d="M15 6h6v6"/>'
+    };
+    return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.trend}</svg>`;
+  };
+
+  const upgradeInterfaceIcons = () => {
+    const awardIcons = ["target", "burst", "bolt", "trophy", "flame", "shield"];
+    document.querySelectorAll(".award-card").forEach((card, index) => {
+      const icon = card.querySelector(".award-icon");
+      if (icon) icon.innerHTML = iconMarkup(awardIcons[index] || "trophy", "award-svg");
+    });
+
+    const headings = [
+      { match: "PERFORMANCE WEB", label: "Performance Web", icon: "trend", className: "detail-performance" },
+      { match: "MAP PERFORMANCE", label: "Map Performance", icon: "map", className: "detail-map" },
+      { match: "ELO TREND", label: "ELO-Trend · letzte 30 Matches", icon: "trend", className: "detail-trend" },
+      { match: "ELO-TREND", label: "ELO-Trend · letzte 30 Matches", icon: "trend", className: "detail-trend" },
+      { match: "MOST PLAYED WITH", label: "Most played with", icon: "users", className: "detail-mates" },
+      { match: "MOST WINS WITH", label: "Most wins with", icon: "trophy", className: "detail-wins" },
+      { match: "MOST LOSSES WITH", label: "Most losses with", icon: "skull", className: "detail-losses" }
+    ];
+    document.querySelectorAll(".details-row .font-bold").forEach(element => {
+      const content = text(element.textContent).toUpperCase().replace(/^\?+\s*/, "");
+      const heading = headings.find(item => content.includes(item.match));
+      if (!heading) return;
+      element.classList.add("detail-heading", heading.className);
+      element.innerHTML = `${iconMarkup(heading.icon, "heading-svg")}<span>${heading.label}</span>`;
+    });
+  };
+
   const relativeTime = timestamp => {
     const seconds = Number(timestamp);
     if (!seconds) return "Keine Aktivität";
@@ -483,6 +524,8 @@
     const bestGain = calculateBestThirty(history);
     const status = number(row.dataset.lastTs) && Date.now() / 1000 - number(row.dataset.lastTs) < 72 * 3600 ? "fresh" : "stale";
     const label = status === "fresh" ? "Aktuell" : "Veraltet";
+    const formWins = number(row.dataset.formWins);
+    const formTotal = number(row.dataset.formTotal);
     const analytics = document.createElement("div");
     analytics.className = "player-analytics";
     analytics.innerHTML = `
@@ -493,13 +536,24 @@
       <div class="personal-bests">
         <article><span>Peak ELO</span><strong>${peak || number(row.dataset.elo)}</strong></article>
         <article><span>Aktuelle Serie</span><strong>${text(row.dataset.streak) || "—"}</strong></article>
-        <article><span>Form · letzte 5</span><strong>${number(row.dataset.form)}%</strong></article>
+        <article data-form-card><span>Letzte 5 Matches</span><strong>${formTotal ? `${formWins}/${formTotal}` : "—"}</strong><small>${formTotal ? `${number(row.dataset.form)}% Siege` : "Keine Daten"}</small></article>
         <article><span>Beste 30er-Phase</span><strong>${bestGain > 0 ? "+" : ""}${bestGain}</strong><small>ELO</small></article>
       </div>
       <div class="insight-grid"></div>`;
     const primaryColumn = [...(details.querySelector("td > div")?.children || [])]
       .find(element => element.querySelector(".elo-chart"));
     primaryColumn?.prepend(analytics);
+  };
+
+  const syncFormCard = row => {
+    const analytics = pairedDetailRow(row)?.querySelector(".player-analytics .personal-bests");
+    if (!analytics || analytics.querySelector("[data-form-card]")) return;
+    const wins = number(row.dataset.formWins);
+    const total = number(row.dataset.formTotal);
+    const card = document.createElement("article");
+    card.dataset.formCard = "";
+    card.innerHTML = `<span>Letzte 5 Matches</span><strong>${total ? `${wins}/${total}` : "—"}</strong><small>${total ? `${number(row.dataset.form)}% Siege` : "Keine Daten"}</small>`;
+    analytics.append(card);
   };
 
   const toast = message => {
@@ -539,13 +593,19 @@
       cell.title = absolute;
     });
     playerRows().forEach(row => {
-      if (!row.dataset.form) {
-        const wins = row.querySelectorAll(".player-form .bg-green-400").length;
-        const total = row.querySelectorAll(".player-form > div").length;
-        row.dataset.form = String(total ? Math.round(wins / total * 100) : 0);
-      }
+      const playerResults = playerData(row.dataset.playerId)?.last5;
+      const formLine = row.querySelector(".player-form")
+        || row.querySelector(".nickname-link")?.closest(".flex-col")?.querySelector(".mt-1");
+      const inferredResults = [...(formLine?.querySelectorAll(":scope > div") || [])]
+        .map(dot => dot.classList.contains("bg-green-400") ? "W" : "L");
+      const results = Array.isArray(playerResults) && playerResults.length ? playerResults.slice(0, 5) : inferredResults.slice(0, 5);
+      const wins = results.filter(result => result === "W").length;
+      row.dataset.formWins = String(wins);
+      row.dataset.formTotal = String(results.length);
+      row.dataset.form = String(results.length ? Math.round(wins / results.length * 100) : 0);
       normalizeStreakDisplay(row);
       enhancePlayerAnalytics(row);
+      syncFormCard(row);
       row.tabIndex = 0;
       row.setAttribute("role", "button");
       row.setAttribute("aria-expanded", "false");
@@ -678,7 +738,7 @@
     container.replaceChildren();
     if (!selected.length) return;
     const table = document.createElement("table");
-    table.innerHTML = `<thead><tr><th>Spieler</th><th>ELO</th><th>Winrate</th><th>K/D</th><th>ADR</th><th>Form</th><th>Gemeinsame Matches</th></tr></thead>`;
+    table.innerHTML = `<thead><tr><th>Spieler</th><th>ELO</th><th>Winrate</th><th>K/D</th><th>ADR</th><th>Letzte 5</th><th>Gemeinsame Matches</th></tr></thead>`;
     const body = document.createElement("tbody");
     selected.forEach(player => {
       const shared = Math.max(...selected.filter(other => other.id !== player.id).map(other => commonMatches(player, other)), 0);
@@ -745,7 +805,10 @@
     canvas.hidden = false;
     canvas.dataset.pointCounts = selected.map(player => player.points.length).join(",");
     canvas.dataset.axisMode = "match";
-    if (fallback) fallback.hidden = true;
+    if (fallback) {
+      fallback.hidden = true;
+      fallback.textContent = "";
+    }
     state.comparisonChart = new Chart(canvas, {
       type: "line",
       data: {
@@ -848,6 +911,7 @@
     else void renderComparison();
   };
 
+  upgradeInterfaceIcons();
   setupRows();
   setupFilters();
   setupSorting();
