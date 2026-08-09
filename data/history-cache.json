@@ -70120,55 +70120,6 @@
   "e457a9b3-9029-4a33-bccd-ab4e2ffd505f": [
     {
       "_id": {
-        "matchId": "696c00231795f1f3aa7e99e6",
-        "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
-      },
-      "created_at": 1768685604256,
-      "updated_at": 1768685694475,
-      "i10": "0",
-      "i13": "10",
-      "i15": "1",
-      "i14": "1",
-      "i16": "0",
-      "nickname": "_Gianni",
-      "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f",
-      "i40": "4",
-      "i20": "2209",
-      "i6": "20",
-      "i7": "9",
-      "i8": "19",
-      "i9": "5",
-      "c10": "92",
-      "c2": "1.05",
-      "c3": "0.83",
-      "c4": "50",
-      "c1": "1",
-      "i19": "0",
-      "teamId": "122290aa-caaf-4cc1-bf81-2a5b5a258cd3",
-      "i3": "9",
-      "i4": "2",
-      "i5": "team_KyP",
-      "premade": false,
-      "c5": "11",
-      "bestOf": "1",
-      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
-      "date": 1768685603000,
-      "game": "cs2",
-      "gameMode": "5v5",
-      "i0": "EU",
-      "i1": "de_anubis",
-      "i12": "24",
-      "i18": "13 / 11",
-      "i2": "785f0220-d62f-43c1-af11-7355ff67f0cf",
-      "matchId": "1-39d09996-1bc7-4787-b18d-2e32f4736849",
-      "matchRound": "1",
-      "played": "1",
-      "status": "APPLIED",
-      "elo": "2010",
-      "elo_delta": "-25"
-    },
-    {
-      "_id": {
         "matchId": "696bf565ae1231705d165f3d",
         "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
       },
@@ -72712,6 +72663,10 @@
     {
       "date": 1786283356000,
       "elo": "1977"
+    },
+    {
+      "date": 1786285526000,
+      "elo": "1947"
     }
   ],
   "7c07eb9d-3244-4409-af92-b307b4c82113": [
