@@ -70165,55 +70165,6 @@
   "e457a9b3-9029-4a33-bccd-ab4e2ffd505f": [
     {
       "_id": {
-        "matchId": "696cdb2eab05ec2c210d74d6",
-        "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
-      },
-      "created_at": 1768741678580,
-      "updated_at": 1768741768743,
-      "i10": "0",
-      "i13": "13",
-      "i15": "0",
-      "i14": "1",
-      "i16": "0",
-      "nickname": "_Gianni",
-      "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f",
-      "i40": "2",
-      "i20": "2499",
-      "i6": "19",
-      "i7": "8",
-      "i8": "22",
-      "i9": "1",
-      "c10": "86.2",
-      "c2": "0.86",
-      "c3": "0.66",
-      "c4": "68",
-      "c1": "1",
-      "i19": "1",
-      "teamId": "77c9a7b4-d199-4ad3-87fa-c5d37dfd7d5d",
-      "i3": "5",
-      "i4": "7",
-      "i5": "team_wikiib",
-      "premade": false,
-      "c5": "13",
-      "bestOf": "1",
-      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
-      "date": 1768741677000,
-      "game": "cs2",
-      "gameMode": "5v5",
-      "i0": "EU",
-      "i1": "de_mirage",
-      "i12": "29",
-      "i18": "13 / 16",
-      "i2": "8b37a940-c178-4fcf-b0b3-a7b37c6cd144",
-      "matchId": "1-e48aff6e-1002-443d-90a3-e7f77f649c88",
-      "matchRound": "1",
-      "played": "1",
-      "status": "APPLIED",
-      "elo": "2009",
-      "elo_delta": "-30"
-    },
-    {
-      "_id": {
         "matchId": "696c37f0252c57a604e70426",
         "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
       },
@@ -73026,6 +72977,10 @@
     },
     {
       "date": 1786263221000,
+      "elo": "2028"
+    },
+    {
+      "date": 1786268321000,
       "elo": "2028"
     }
   ],
