@@ -70165,55 +70165,6 @@
   "e457a9b3-9029-4a33-bccd-ab4e2ffd505f": [
     {
       "_id": {
-        "matchId": "696cef2fae1231705d16fe0f",
-        "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
-      },
-      "created_at": 1768746799411,
-      "updated_at": 1768746889515,
-      "i10": "1",
-      "i13": "9",
-      "i15": "0",
-      "i14": "1",
-      "i16": "0",
-      "nickname": "_Gianni",
-      "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f",
-      "i40": "5",
-      "i20": "1629",
-      "i6": "18",
-      "i7": "5",
-      "i8": "7",
-      "i9": "5",
-      "c10": "90.5",
-      "c2": "2.57",
-      "c3": "1",
-      "c4": "50",
-      "c1": "1",
-      "i19": "0",
-      "teamId": "00d8669f-19aa-4912-9f8b-5df384ba7370",
-      "i3": "8",
-      "i4": "5",
-      "i5": "team_Chaieb",
-      "premade": false,
-      "c5": "13",
-      "bestOf": "1",
-      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
-      "date": 1768746798000,
-      "game": "cs2",
-      "gameMode": "5v5",
-      "i0": "EU",
-      "i1": "de_inferno",
-      "i12": "18",
-      "i18": "13 / 5",
-      "i2": "00d8669f-19aa-4912-9f8b-5df384ba7370",
-      "matchId": "1-9e529026-2ca4-4927-ae50-0f569aeff3c6",
-      "matchRound": "1",
-      "played": "1",
-      "status": "APPLIED",
-      "elo": "2069",
-      "elo_delta": "30"
-    },
-    {
-      "_id": {
         "matchId": "696ce49f2c68b7805c35ea1f",
         "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
       },
@@ -73116,6 +73067,10 @@
     },
     {
       "date": 1786216982000,
+      "elo": "2024"
+    },
+    {
+      "date": 1786260306000,
       "elo": "2024"
     }
   ],
