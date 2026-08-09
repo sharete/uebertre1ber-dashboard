@@ -70120,55 +70120,6 @@
   "e457a9b3-9029-4a33-bccd-ab4e2ffd505f": [
     {
       "_id": {
-        "matchId": "696c100e7d14abcb9c4d66c6",
-        "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
-      },
-      "created_at": 1768689678985,
-      "updated_at": 1768689769695,
-      "i10": "1",
-      "i13": "10",
-      "i15": "0",
-      "i14": "1",
-      "i16": "0",
-      "nickname": "_Gianni",
-      "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f",
-      "i40": "4",
-      "i20": "1559",
-      "i6": "16",
-      "i7": "8",
-      "i8": "14",
-      "i9": "4",
-      "c10": "78",
-      "c2": "1.14",
-      "c3": "0.8",
-      "c4": "62",
-      "c1": "1",
-      "i19": "0",
-      "teamId": "d34634be-f093-4c2f-ae07-e3fe51051a4f",
-      "i3": "8",
-      "i4": "5",
-      "i5": "team_MOUMAITEEE",
-      "premade": false,
-      "c5": "13",
-      "bestOf": "1",
-      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
-      "date": 1768689678000,
-      "game": "cs2",
-      "gameMode": "5v5",
-      "i0": "EU",
-      "i1": "de_dust2",
-      "i12": "20",
-      "i18": "13 / 7",
-      "i2": "d34634be-f093-4c2f-ae07-e3fe51051a4f",
-      "matchId": "1-cd34a087-c00b-4b19-a5d2-05a93d40eea8",
-      "matchRound": "1",
-      "played": "1",
-      "status": "APPLIED",
-      "elo": "2038",
-      "elo_delta": "28"
-    },
-    {
-      "_id": {
         "matchId": "696c00231795f1f3aa7e99e6",
         "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
       },
@@ -72757,6 +72708,10 @@
     {
       "date": 1786278865000,
       "elo": "1974"
+    },
+    {
+      "date": 1786283356000,
+      "elo": "1977"
     }
   ],
   "7c07eb9d-3244-4409-af92-b307b4c82113": [
