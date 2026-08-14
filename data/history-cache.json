@@ -69802,55 +69802,6 @@
   "e457a9b3-9029-4a33-bccd-ab4e2ffd505f": [
     {
       "_id": {
-        "matchId": "696b07b7ae1231705d15c540",
-        "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
-      },
-      "created_at": 1768622007759,
-      "updated_at": 1768622096094,
-      "i10": "1",
-      "i13": "12",
-      "i15": "0",
-      "i14": "1",
-      "i16": "0",
-      "nickname": "_Gianni",
-      "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f",
-      "i40": "6",
-      "i20": "2065",
-      "i6": "19",
-      "i7": "5",
-      "i8": "14",
-      "i9": "1",
-      "c10": "93.9",
-      "c2": "1.36",
-      "c3": "0.86",
-      "c4": "63",
-      "c1": "1",
-      "i19": "0",
-      "teamId": "d86d693c-faf9-4f51-abdc-e9a3e77b9030",
-      "i3": "6",
-      "i4": "7",
-      "i5": "team_Laskiperse69",
-      "premade": false,
-      "c5": "13",
-      "bestOf": "1",
-      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
-      "date": 1768622002000,
-      "game": "cs2",
-      "gameMode": "5v5",
-      "i0": "EU",
-      "i1": "de_anubis",
-      "i12": "22",
-      "i18": "13 / 9",
-      "i2": "d86d693c-faf9-4f51-abdc-e9a3e77b9030",
-      "matchId": "1-5c46bada-3507-46dd-bdb4-85294ced645f",
-      "matchRound": "1",
-      "played": "1",
-      "status": "APPLIED",
-      "elo": "2135",
-      "elo_delta": "30"
-    },
-    {
-      "_id": {
         "matchId": "696afe9eae1231705d15bfce",
         "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
       },
@@ -71899,6 +71850,10 @@
     {
       "date": 1786655255000,
       "elo": "2068"
+    },
+    {
+      "date": 1786750402000,
+      "elo": "2098"
     }
   ],
   "7c07eb9d-3244-4409-af92-b307b4c82113": [
