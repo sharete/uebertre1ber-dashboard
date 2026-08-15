@@ -69728,55 +69728,6 @@
   "e457a9b3-9029-4a33-bccd-ab4e2ffd505f": [
     {
       "_id": {
-        "matchId": "69695682b4ee2bc1f37c31aa",
-        "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
-      },
-      "created_at": 1768511106819,
-      "updated_at": 1768511196349,
-      "i10": "0",
-      "i13": "9",
-      "i15": "0",
-      "i14": "1",
-      "i16": "0",
-      "nickname": "_Gianni",
-      "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f",
-      "i40": "4",
-      "i20": "1958",
-      "i6": "16",
-      "i7": "5",
-      "i8": "16",
-      "i9": "2",
-      "c10": "85.1",
-      "c2": "1",
-      "c3": "0.7",
-      "c4": "56",
-      "c1": "1",
-      "i19": "0",
-      "teamId": "1bdf6595-151e-46a5-b1c0-a875709873b4",
-      "i3": "5",
-      "i4": "5",
-      "i5": "team_cakaz",
-      "premade": false,
-      "c5": "10",
-      "bestOf": "1",
-      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
-      "date": 1768511105000,
-      "game": "cs2",
-      "gameMode": "5v5",
-      "i0": "EU",
-      "i1": "de_mirage",
-      "i12": "23",
-      "i18": "10 / 13",
-      "i2": "ffaf6c37-58f1-41c9-9c51-740d1615e7c6",
-      "matchId": "1-35890b7f-f237-42f3-a4ab-8f2854915627",
-      "matchRound": "1",
-      "played": "1",
-      "status": "APPLIED",
-      "elo": "2312",
-      "elo_delta": "-30"
-    },
-    {
-      "_id": {
         "matchId": "696940e70643a164411dafe8",
         "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
       },
@@ -71015,6 +70966,10 @@
     {
       "date": 1786817152000,
       "elo": "1952"
+    },
+    {
+      "date": 1786819477000,
+      "elo": "1980"
     }
   ],
   "7c07eb9d-3244-4409-af92-b307b4c82113": [
