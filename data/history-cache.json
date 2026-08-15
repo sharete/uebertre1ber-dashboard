@@ -69727,55 +69727,6 @@
   ],
   "e457a9b3-9029-4a33-bccd-ab4e2ffd505f": [
     {
-      "_id": {
-        "matchId": "696940e70643a164411dafe8",
-        "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
-      },
-      "created_at": 1768505575545,
-      "updated_at": 1768505665886,
-      "i10": "0",
-      "i13": "5",
-      "i15": "0",
-      "i14": "0",
-      "i16": "0",
-      "nickname": "_Gianni",
-      "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f",
-      "i40": "0",
-      "i20": "910",
-      "i6": "6",
-      "i7": "4",
-      "i8": "16",
-      "i9": "0",
-      "c10": "56.9",
-      "c2": "0.38",
-      "c3": "0.38",
-      "c4": "83",
-      "c1": "1",
-      "i19": "0",
-      "teamId": "8bb4165b-cb1d-41c1-8957-d0ad6766cbfb",
-      "i3": "2",
-      "i4": "1",
-      "i5": "team_broxey",
-      "premade": false,
-      "c5": "3",
-      "bestOf": "1",
-      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
-      "date": 1768505575000,
-      "game": "cs2",
-      "gameMode": "5v5",
-      "i0": "EU",
-      "i1": "de_mirage",
-      "i12": "16",
-      "i18": "3 / 13",
-      "i2": "f0bca42e-ecb9-4c94-b9a7-ed2ebbb7c449",
-      "matchId": "1-3b359491-d2ce-432b-8842-cc50bbf47ac1",
-      "matchRound": "1",
-      "played": "1",
-      "status": "APPLIED",
-      "elo": "2342",
-      "elo_delta": "-30"
-    },
-    {
       "date": 1771764563000,
       "elo": "2143"
     },
@@ -70970,6 +70921,10 @@
     {
       "date": 1786819477000,
       "elo": "1980"
+    },
+    {
+      "date": 1786822009000,
+      "elo": "1953"
     }
   ],
   "7c07eb9d-3244-4409-af92-b307b4c82113": [
