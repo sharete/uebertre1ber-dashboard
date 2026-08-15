@@ -69806,55 +69806,6 @@
   "e457a9b3-9029-4a33-bccd-ab4e2ffd505f": [
     {
       "_id": {
-        "matchId": "696ad4713ddca85f83592ede",
-        "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
-      },
-      "created_at": 1768608881687,
-      "updated_at": 1768608972359,
-      "i10": "0",
-      "i13": "4",
-      "i15": "0",
-      "i14": "0",
-      "i16": "0",
-      "nickname": "_Gianni",
-      "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f",
-      "i40": "1",
-      "i20": "965",
-      "i6": "8",
-      "i7": "1",
-      "i8": "14",
-      "i9": "0",
-      "c10": "60.3",
-      "c2": "0.57",
-      "c3": "0.5",
-      "c4": "50",
-      "c1": "1",
-      "i19": "0",
-      "teamId": "2bc44969-3c55-48fa-b602-afbb15c6ae54",
-      "i3": "3",
-      "i4": "0",
-      "i5": "team_Fr0xxy-M-",
-      "premade": false,
-      "c5": "3",
-      "bestOf": "1",
-      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
-      "date": 1768608881000,
-      "game": "cs2",
-      "gameMode": "5v5",
-      "i0": "EU",
-      "i1": "de_mirage",
-      "i12": "16",
-      "i18": "13 / 3",
-      "i2": "26e82ad6-e811-4d4b-9bc3-093bd84e263d",
-      "matchId": "1-33564866-76c4-46eb-9e21-816684068b7d",
-      "matchRound": "1",
-      "played": "1",
-      "status": "APPLIED",
-      "elo": "2196",
-      "elo_delta": "-30"
-    },
-    {
-      "_id": {
         "matchId": "696a6ac41940fdd4bf2be294",
         "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
       },
@@ -71633,6 +71584,10 @@
     {
       "date": 1786785851000,
       "elo": "2007"
+    },
+    {
+      "date": 1786787910000,
+      "elo": "2037"
     }
   ],
   "7c07eb9d-3244-4409-af92-b307b4c82113": [
