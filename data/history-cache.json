@@ -63845,55 +63845,6 @@
   "ecf3dbf9-e632-4756-a401-0ecb32335aa3": [
     {
       "_id": {
-        "matchId": "6987c4f8d35db777ccaac30d",
-        "playerId": "ecf3dbf9-e632-4756-a401-0ecb32335aa3"
-      },
-      "created_at": 1770505464890,
-      "updated_at": 1770505555420,
-      "i10": "0",
-      "i13": "6",
-      "i15": "1",
-      "i14": "0",
-      "i16": "0",
-      "nickname": "TIMZNq",
-      "playerId": "ecf3dbf9-e632-4756-a401-0ecb32335aa3",
-      "i40": "1",
-      "i20": "1082",
-      "i6": "10",
-      "i7": "5",
-      "i8": "19",
-      "i9": "1",
-      "c10": "49.2",
-      "c2": "0.53",
-      "c3": "0.45",
-      "c4": "60",
-      "c1": "1",
-      "i19": "0",
-      "teamId": "57d37b46-4032-4383-9126-26b6ea6de3a0",
-      "i3": "4",
-      "i4": "5",
-      "i5": "team_elod0dgeR",
-      "premade": false,
-      "c5": "9",
-      "bestOf": "1",
-      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
-      "date": 1770505464000,
-      "game": "cs2",
-      "gameMode": "5v5",
-      "i0": "EU",
-      "i1": "de_dust2",
-      "i12": "22",
-      "i18": "9 / 13",
-      "i2": "3ba4e9a4-d187-414f-bba0-d93c503a5253",
-      "matchId": "1-c84e12bb-1290-44f2-862b-888083819caf",
-      "matchRound": "1",
-      "played": "1",
-      "status": "APPLIED",
-      "elo": "2483",
-      "elo_delta": "-24"
-    },
-    {
-      "_id": {
         "matchId": "6987bbb74bb5adf7781d544f",
         "playerId": "ecf3dbf9-e632-4756-a401-0ecb32335aa3"
       },
@@ -69497,6 +69448,10 @@
     {
       "date": 1786914043000,
       "elo": "2923"
+    },
+    {
+      "date": 1786971930000,
+      "elo": "2953"
     }
   ],
   "e457a9b3-9029-4a33-bccd-ab4e2ffd505f": [
