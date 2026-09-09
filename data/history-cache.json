@@ -63577,55 +63577,6 @@
   "ecf3dbf9-e632-4756-a401-0ecb32335aa3": [
     {
       "_id": {
-        "matchId": "695175ef0db17717855431db",
-        "playerId": "ecf3dbf9-e632-4756-a401-0ecb32335aa3"
-      },
-      "created_at": 1766946287603,
-      "updated_at": 1766946378026,
-      "i10": "0",
-      "i13": "3",
-      "i15": "0",
-      "i14": "3",
-      "i16": "0",
-      "nickname": "TIMZNq",
-      "playerId": "ecf3dbf9-e632-4756-a401-0ecb32335aa3",
-      "i40": "0",
-      "i20": "1492",
-      "i6": "14",
-      "i7": "5",
-      "i8": "15",
-      "i9": "4",
-      "c10": "67.8",
-      "c2": "0.93",
-      "c3": "0.64",
-      "c4": "21",
-      "c1": "1",
-      "i19": "0",
-      "teamId": "b24b225e-3796-4283-a5e4-a351bbf82295",
-      "i3": "6",
-      "i4": "3",
-      "i5": "team_SEYED",
-      "premade": false,
-      "c5": "9",
-      "bestOf": "1",
-      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
-      "date": 1766946287000,
-      "game": "cs2",
-      "gameMode": "5v5",
-      "i0": "EU",
-      "i1": "de_inferno",
-      "i12": "22",
-      "i18": "13 / 9",
-      "i2": "70c15764-0469-49aa-a4fc-2c2f4e49a0f8",
-      "matchId": "1-d287ca08-17a8-4839-93a8-4e174321c507",
-      "matchRound": "1",
-      "played": "1",
-      "status": "APPLIED",
-      "elo": "2436",
-      "elo_delta": "-26"
-    },
-    {
-      "_id": {
         "matchId": "69516b2ca56906c1515a03c0",
         "playerId": "ecf3dbf9-e632-4756-a401-0ecb32335aa3"
       },
@@ -67294,6 +67245,10 @@
     {
       "date": 1788875699000,
       "elo": "2839"
+    },
+    {
+      "date": 1788958749000,
+      "elo": "2869"
     }
   ],
   "e457a9b3-9029-4a33-bccd-ab4e2ffd505f": [
