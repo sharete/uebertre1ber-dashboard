@@ -71669,10 +71669,6 @@
   ],
   "ecf3dbf9-e632-4756-a401-0ecb32335aa3": [
     {
-      "date": 1780694846000,
-      "elo": "2476"
-    },
-    {
       "date": 1780698539000,
       "elo": "2450"
     },
@@ -75297,6 +75293,53 @@
       "status": "APPLIED",
       "elo": "2558",
       "elo_delta": "-25"
+    },
+    {
+      "_id": {
+        "matchId": "6af482a238b361a7c722f1cd",
+        "playerId": "ecf3dbf9-e632-4756-a401-0ecb32335aa3"
+      },
+      "created_at": 1794409122574,
+      "updated_at": 1794409122574,
+      "i10": "1",
+      "i13": "7",
+      "i15": "1",
+      "i14": "2",
+      "i16": "0",
+      "nickname": "timzN_",
+      "playerId": "ecf3dbf9-e632-4756-a401-0ecb32335aa3",
+      "i40": "2",
+      "i20": "2004",
+      "i6": "19",
+      "i7": "5",
+      "i8": "9",
+      "i9": "5",
+      "c10": "105.5",
+      "c3": "1",
+      "c4": "37",
+      "c2": "2.11",
+      "c1": "1",
+      "i19": "0",
+      "teamId": "612fdfdf-090b-48ee-ab62-6db2b71cf7b9",
+      "i3": "8",
+      "i4": "5",
+      "i5": "team_marbury",
+      "premade": false,
+      "c5": "13",
+      "bestOf": "1",
+      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
+      "date": 1794409122000,
+      "game": "cs2",
+      "gameMode": "5v5",
+      "i0": "EU",
+      "i1": "de_inferno",
+      "i12": "19",
+      "i18": "6 / 13",
+      "i2": "612fdfdf-090b-48ee-ab62-6db2b71cf7b9",
+      "matchId": "1-d6f6423e-9c9d-4777-a545-24a8c7bad496",
+      "matchRound": "1",
+      "played": "1",
+      "status": "APPLIED"
     }
   ],
   "e457a9b3-9029-4a33-bccd-ab4e2ffd505f": [
