@@ -38917,10 +38917,6 @@
   ],
   "73062f0c-1841-48cc-8e9b-3c5c8338f480": [
     {
-      "date": 1787502599000,
-      "elo": "2613"
-    },
-    {
       "date": 1787685145000,
       "elo": "2643"
     },
@@ -45650,6 +45646,55 @@
       "status": "APPLIED",
       "elo": "2959",
       "elo_delta": "-30"
+    },
+    {
+      "_id": {
+        "matchId": "6afdd19ca5ac4d9bf932baf6",
+        "playerId": "73062f0c-1841-48cc-8e9b-3c5c8338f480"
+      },
+      "created_at": 1795019165105,
+      "updated_at": 1795019255981,
+      "i10": "0",
+      "i13": "4",
+      "i15": "0",
+      "i14": "0",
+      "i16": "0",
+      "nickname": "xolodez",
+      "playerId": "73062f0c-1841-48cc-8e9b-3c5c8338f480",
+      "i40": "1",
+      "i20": "998",
+      "i6": "10",
+      "i7": "1",
+      "i8": "18",
+      "i9": "0",
+      "c3": "0.5",
+      "c10": "49.9",
+      "c2": "0.56",
+      "c4": "40",
+      "c1": "1",
+      "i19": "0",
+      "teamId": "f4edcbc0-9506-4945-a93a-841ae1d64acc",
+      "i3": "4",
+      "i4": "3",
+      "i5": "team_Hikar1-",
+      "premade": false,
+      "c5": "7",
+      "bestOf": "1",
+      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
+      "date": 1795019164000,
+      "game": "cs2",
+      "gameMode": "5v5",
+      "i0": "EU",
+      "i1": "de_mirage",
+      "i12": "20",
+      "i18": "7 / 13",
+      "i2": "01d4e34a-fe69-45a6-aa11-f1a63217fd6b",
+      "matchId": "1-2381bdd1-d805-4b8f-9eb2-e9e995db349b",
+      "matchRound": "1",
+      "played": "1",
+      "status": "APPLIED",
+      "elo": "2930",
+      "elo_delta": "-29"
     }
   ],
   "122290aa-caaf-4cc1-bf81-2a5b5a258cd3": [
