@@ -39052,10 +39052,6 @@
   ],
   "73062f0c-1841-48cc-8e9b-3c5c8338f480": [
     {
-      "date": 1787849878000,
-      "elo": "2595"
-    },
-    {
       "date": 1788032739000,
       "elo": "2625"
     },
@@ -46235,6 +46231,55 @@
       "status": "APPLIED",
       "elo": "2899",
       "elo_delta": "-31"
+    },
+    {
+      "_id": {
+        "matchId": "6b03d5d2b082d6e6fbfbcb47",
+        "playerId": "73062f0c-1841-48cc-8e9b-3c5c8338f480"
+      },
+      "created_at": 1795413458493,
+      "updated_at": 1795413548072,
+      "i10": "1",
+      "i13": "7",
+      "i15": "0",
+      "i14": "1",
+      "i16": "0",
+      "nickname": "xolodez",
+      "playerId": "73062f0c-1841-48cc-8e9b-3c5c8338f480",
+      "i40": "3",
+      "i20": "1619",
+      "i6": "17",
+      "i7": "2",
+      "i8": "18",
+      "i9": "5",
+      "c4": "41",
+      "c3": "0.71",
+      "c2": "0.94",
+      "c10": "67.5",
+      "c1": "1",
+      "i19": "0",
+      "teamId": "50e002e2-c806-4f10-800a-4ab143e1223d",
+      "i3": "4",
+      "i4": "9",
+      "i5": "team_donkq666",
+      "premade": false,
+      "c5": "13",
+      "bestOf": "1",
+      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
+      "date": 1795413456000,
+      "game": "cs2",
+      "gameMode": "5v5",
+      "i0": "EU",
+      "i1": "de_mirage",
+      "i12": "24",
+      "i18": "13 / 11",
+      "i2": "50e002e2-c806-4f10-800a-4ab143e1223d",
+      "matchId": "1-64c2ee05-e330-4027-aa1f-d42b302cfeb2",
+      "matchRound": "1",
+      "played": "1",
+      "status": "APPLIED",
+      "elo": "2928",
+      "elo_delta": "29"
     }
   ],
   "122290aa-caaf-4cc1-bf81-2a5b5a258cd3": [
@@ -80727,10 +80772,6 @@
   ],
   "e457a9b3-9029-4a33-bccd-ab4e2ffd505f": [
     {
-      "date": 1786787910000,
-      "elo": "2037"
-    },
-    {
       "date": 1786790906000,
       "elo": "2007"
     },
@@ -88090,6 +88131,55 @@
       "status": "APPLIED",
       "elo": "1891",
       "elo_delta": "-28"
+    },
+    {
+      "_id": {
+        "matchId": "6b0385771cfa8c16c3aec1fc",
+        "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f"
+      },
+      "created_at": 1795392887815,
+      "updated_at": 1795392978315,
+      "i10": "1",
+      "i13": "9",
+      "i15": "0",
+      "i14": "2",
+      "i16": "0",
+      "nickname": "Gi4nn1",
+      "playerId": "e457a9b3-9029-4a33-bccd-ab4e2ffd505f",
+      "i40": "1",
+      "i20": "1787",
+      "i6": "17",
+      "i7": "3",
+      "i8": "14",
+      "i9": "2",
+      "c4": "53",
+      "c3": "0.74",
+      "c2": "1.21",
+      "c10": "77.7",
+      "c1": "1",
+      "i19": "0",
+      "teamId": "c4cc0dc0-17bb-44ed-bcaf-0fa9aaefd515",
+      "i3": "8",
+      "i4": "5",
+      "i5": "team_AguilaS",
+      "premade": false,
+      "c5": "13",
+      "bestOf": "1",
+      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
+      "date": 1795392887000,
+      "game": "cs2",
+      "gameMode": "5v5",
+      "i0": "EU",
+      "i1": "de_dust2",
+      "i12": "23",
+      "i18": "13 / 10",
+      "i2": "c4cc0dc0-17bb-44ed-bcaf-0fa9aaefd515",
+      "matchId": "1-71420f11-b15b-414f-b826-73ac421a3cda",
+      "matchRound": "1",
+      "played": "1",
+      "status": "APPLIED",
+      "elo": "1923",
+      "elo_delta": "32"
     }
   ],
   "7c07eb9d-3244-4409-af92-b307b4c82113": [
