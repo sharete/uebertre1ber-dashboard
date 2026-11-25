@@ -39052,10 +39052,6 @@
   ],
   "73062f0c-1841-48cc-8e9b-3c5c8338f480": [
     {
-      "date": 1788566243000,
-      "elo": "2764"
-    },
-    {
       "date": 1788607656000,
       "elo": "2794"
     },
@@ -46910,6 +46906,55 @@
       "status": "APPLIED",
       "elo": "2928",
       "elo_delta": "30"
+    },
+    {
+      "_id": {
+        "matchId": "6b06267a69c07b4c6d68552c",
+        "playerId": "73062f0c-1841-48cc-8e9b-3c5c8338f480"
+      },
+      "created_at": 1795565179075,
+      "updated_at": 1795565269616,
+      "i10": "0",
+      "i13": "12",
+      "i15": "2",
+      "i14": "1",
+      "i16": "0",
+      "nickname": "xolodez",
+      "playerId": "73062f0c-1841-48cc-8e9b-3c5c8338f480",
+      "i40": "3",
+      "i20": "2500",
+      "i6": "24",
+      "i7": "7",
+      "i8": "13",
+      "i9": "7",
+      "c3": "1",
+      "c10": "104.2",
+      "c2": "1.85",
+      "c4": "50",
+      "c1": "1",
+      "i19": "0",
+      "teamId": "f49c081b-da4c-4245-b331-b9f1b88110e5",
+      "i3": "4",
+      "i4": "7",
+      "i5": "team_terazinho",
+      "premade": false,
+      "c5": "11",
+      "bestOf": "1",
+      "competitionId": "f4148ddd-bce8-41b8-9131-ee83afcdd6dd",
+      "date": 1795565178000,
+      "game": "cs2",
+      "gameMode": "5v5",
+      "i0": "EU",
+      "i1": "de_inferno",
+      "i12": "24",
+      "i18": "13 / 11",
+      "i2": "b0dcda25-311b-45b6-8949-ee33bba17282",
+      "matchId": "1-95bdfb7c-072d-49a9-9be8-686830499da5",
+      "matchRound": "1",
+      "played": "1",
+      "status": "APPLIED",
+      "elo": "2898",
+      "elo_delta": "-30"
     }
   ],
   "122290aa-caaf-4cc1-bf81-2a5b5a258cd3": [
